@@ -31,134 +31,49 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.InsertOneResult;
 
+import arso.modelo.Plato;
 import arso.modelo.Restaurante;
 import arso.modelo.SitioTuristico;
+import restaurantes.servicio.ServicioRestaurante;
 
 public class TestMongo  {
 
 	public static void main(String[] args) throws Exception {
 
-		ConnectionString connectionString = new ConnectionString(
-				"mongodb+srv://sofia:sofia@zeppelinum.68qbknn.mongodb.net/?retryWrites=true&w=majority");
-		
-		CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build());
-	    CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
-		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString).codecRegistry(codecRegistry)
-				.serverApi(ServerApi.builder().version(ServerApiVersion.V1).build()).build();
-		MongoClient mongoClient = MongoClients.create(settings);
-		MongoDatabase database = mongoClient.getDatabase("ZeppelinUM");
-		MongoCollection<Restaurante> collection = database.getCollection("restaurante", Restaurante.class).withCodecRegistry(codecRegistry);
-
+		ServicioRestaurante s = new ServicioRestaurante();
+	
 		
 		//CREAMOS RESTAURANTE
 		Restaurante r = new Restaurante();
-		r.setNombre("McGonzalo");
+		r.setNombre("McPorfavor");
 		r.setCp("30150");
 		
+		Restaurante r2 = new Restaurante();
+		r2.setNombre("Burger Queen");
+		r2.setCp("30161");
 		
 		
+		Plato p = new Plato();
+		p.setNombre("patatas");
+		p.setDescripcion("aaaaaaaaaaaaaaa");
+		p.setPrecio(10.0);
 		
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		// 1. Obtener una factoría
-		DocumentBuilderFactory factoria = DocumentBuilderFactory.newInstance();
-		// 2. Pedir a la factoría la construcción del analizador
-		DocumentBuilder analizador = factoria.newDocumentBuilder();
-		// 3. Analizar el documento
-		Document documento = analizador.parse(new URL(
-				"http://api.geonames.org/findNearbyWikipedia?postalcode=" + r.getCp() + "&country=ES&username=arso_gs&lang=ES")
-				.openStream());
-
-		NodeList elementos = documento.getElementsByTagName("title");
+		String id = s.create(r);
+		s.create(r2);
+		s.addPlato(id, p);
+		System.out.println(id);
 		
-		List<SitioTuristico> sitios= new LinkedList<SitioTuristico>();
+		Plato p2 = new Plato();
+		p2.setNombre("patatas");
+		p2.setPrecio(20.00);
+		p2.setDescripcion("Plato modificado");
 		
-		for (int i = 0; i < elementos.getLength(); i++) {
-
-			Element entry = (Element) elementos.item(i);
-
-			String sitio = entry.getTextContent().replace(' ', '_');
-
-			// JSON
-
-			InputStreamReader fuente = new InputStreamReader(
-					new URL("https://es.dbpedia.org/data/" + sitio + ".json").openStream());
-			System.out.println("-----------------------------------------------------");
-
-			JsonReader jsonReader = Json.createReader(fuente);
-			JsonObject obj = jsonReader.readObject();
-			
-			SitioTuristico sitio_clase = new SitioTuristico();
-			sitio_clase.setNombre(sitio);
-			
-			JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio);
-
-			JsonArray categorias = infoSitio.getJsonArray("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-			JsonArray propiedadesResumen = infoSitio.getJsonArray("http://dbpedia.org/ontology/abstract");
-			
-			boolean check = false;
-
-			System.out.println(sitio);
-
-			System.out.println("CATEGORIAS: ");
-			List<String> categorias_clase= new LinkedList<String>();
-
-			for (JsonObject categoria : categorias.getValuesAs(JsonObject.class)) {
-				// categoria
-				if (categoria.getString("value").equals( "http://dbpedia.org/ontology/ArchitecturalStructure")
-						|| categoria.getString("value").equals("http://dbpedia.org/ontology/HistoricBuilding")) {
-					System.out.println(categoria.getString("value"));
-					categorias_clase.add(categoria.getString("value"));
-					check = true;
-				}
-			}
-			
-			sitio_clase.setCategorias(categorias_clase);
-
-			if (check == true) {
-				System.out.println("FOTO: ");
-				// COMPROBACION DE LA FOTO
-				if (infoSitio.containsKey("http://es.dbpedia.org/property/imagen")) {
-
-					JsonObject propiedadesImagen = infoSitio.getJsonArray("http://es.dbpedia.org/property/imagen")
-							.getJsonObject(0);
-
-					if (propiedadesImagen.get("value").getValueType().equals(ValueType.NUMBER)) {
-						System.out.println(propiedadesImagen.getJsonNumber("value"));
-						sitio_clase.setFoto(propiedadesImagen.getJsonNumber("value").toString());
-					} else if (propiedadesImagen.get("value").getValueType().equals(ValueType.STRING)) {
-						System.out.println(propiedadesImagen.getJsonString("value"));
-						sitio_clase.setFoto(propiedadesImagen.getString("value"));
-					}
-
-				} else {
-					System.out.println("No tiene foto");
-				}
-
-				System.out.println("RESUMEN: " + propiedadesResumen.getJsonObject(0).getJsonString("value"));
-				sitio_clase.setResumen(propiedadesResumen.getJsonObject(0).getString("value"));
-				
-				System.out.println("ENLACES: ");
-				if (infoSitio.containsKey("http://dbpedia.org/ontology/wikiPageExternalLink")) {
-					List<String> enlaces_clase= new LinkedList<String>();
-					JsonArray enlaces = infoSitio.getJsonArray("http://dbpedia.org/ontology/wikiPageExternalLink");
-					for (JsonObject enlace : enlaces.getValuesAs(JsonObject.class)) {
-						// categoria
-						System.out.println(enlace.getJsonString("value"));
-						enlaces_clase.add(enlace.getString("value"));
-					}
-					sitio_clase.setEnlaces(enlaces_clase);
-
-				} else {
-					System.out.println("No tiene enlaces externos");
-				}
-				
-				sitios.add(sitio_clase);	
-			}
-		}
+		List<SitioTuristico> s1 = s.obtenerSitiosTuristicos(id);
+		s.setSitiosTuristicos(id, s1);
+		//s.removePlato(id, "patatas");
+		s.updatePlato(id, p2);
 		
-		r.setSitios(sitios);
-		InsertOneResult result = collection.insertOne(r);
-		
+		System.out.println(s.getListadoRestaurantes());
 	}
 
 }
