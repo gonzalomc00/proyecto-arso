@@ -31,9 +31,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.InsertOneResult;
 
-import arso.modelo.Plato;
-import arso.modelo.Restaurante;
-import arso.modelo.SitioTuristico;
+import restaurantes.modelo.Plato;
+import restaurantes.modelo.Restaurante;
+import restaurantes.modelo.SitioTuristico;
 import restaurantes.servicio.ServicioRestaurante;
 
 public class TestMongo  {

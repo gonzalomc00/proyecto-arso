@@ -43,9 +43,9 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
-import arso.modelo.Plato;
-import arso.modelo.Restaurante;
-import arso.modelo.SitioTuristico;
+import restaurantes.modelo.Plato;
+import restaurantes.modelo.Restaurante;
+import restaurantes.modelo.SitioTuristico;
 
 public class ServicioRestaurante implements IServicioRestaurante {
 

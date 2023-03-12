@@ -1,4 +1,4 @@
-package arso.modelo;
+package restaurantes.modelo;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +7,9 @@ import org.bson.BsonType;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonRepresentation;
 
-public class Restaurante {
+import repositorio.Identificable;
+
+public class Restaurante implements Identificable{
 	@BsonId
 	@BsonRepresentation(BsonType.OBJECT_ID)
 	private String id;

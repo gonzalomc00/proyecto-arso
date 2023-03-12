@@ -1,4 +1,4 @@
-package arso.modelo;
+package restaurantes.modelo;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -9,9 +9,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import arso.modelo.Plato;
-import arso.modelo.Restaurante;
-import arso.modelo.SitioTuristico;
+import restaurantes.modelo.Plato;
+import restaurantes.modelo.Restaurante;
+import restaurantes.modelo.SitioTuristico;
 
 public interface IServicioRestaurante {
 	/**
