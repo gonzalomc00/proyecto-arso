@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,71 +18,42 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerApi;
-import com.mongodb.ServerApiVersion;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
 
+import repositorio.EntidadNoEncontrada;
+import repositorio.FactoriaRepositorios;
+import repositorio.Repositorio;
+import repositorio.RepositorioException;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
 
 public class ServicioRestaurante implements IServicioRestaurante {
 
-	ConnectionString connectionString = new ConnectionString(
-			"mongodb+srv://sofia:sofia@zeppelinum.68qbknn.mongodb.net/?retryWrites=true&w=majority");
+	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 
-	CodecRegistry pojoCodecRegistry = CodecRegistries
-			.fromProviders(PojoCodecProvider.builder().automatic(true).build());
-	CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-			pojoCodecRegistry);
-	MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString)
-			.codecRegistry(codecRegistry).serverApi(ServerApi.builder().version(ServerApiVersion.V1).build()).build();
-	MongoClient mongoClient = MongoClients.create(settings);
-	MongoDatabase database = mongoClient.getDatabase("ZeppelinUM");
-	MongoCollection<Restaurante> collection = database.getCollection("restaurante", Restaurante.class)
-			.withCodecRegistry(codecRegistry);
+	public String create(Restaurante restaurante) throws RepositorioException {
 
-	@Override
-	public String create(Restaurante restaurante) {
-
-		collection.insertOne(restaurante);
-		return restaurante.getId();
+		return repositorio.add(restaurante);
+		
 
 	}
 
-	@Override
-	public void update(Restaurante restaurante) {
-		collection.updateOne(Filters.eq("_id", restaurante.getId()), new Document("cp", restaurante.getCp()));
-		collection.updateOne(Filters.eq("_id", restaurante.getId()), new Document("nombre", restaurante.getNombre()));
+	public void update(Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
+		repositorio.update(restaurante);
 	}
 
 	@Override
 	public List<SitioTuristico> obtenerSitiosTuristicos(String idRes)
-			throws MalformedURLException, SAXException, IOException, ParserConfigurationException {
-		Bson query = Filters.eq("_id", new ObjectId(idRes));
-		FindIterable<Restaurante> resultados = collection.find(query);
-		MongoCursor<Restaurante> it = resultados.iterator();
-		Restaurante r = it.tryNext();
+			throws MalformedURLException, SAXException, IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
+		
+		Restaurante r= repositorio.getById(idRes);
+	
 
 		System.out.println(r);
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -187,65 +157,61 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios) {
-		Bson filter = Filters.eq("_id", new ObjectId(idRes));
-		Document actualizacion = new Document("$set", new Document("sitios", sitios));
-		collection.updateOne(filter, actualizacion);
+	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios) throws RepositorioException, EntidadNoEncontrada {
+		Restaurante r= repositorio.getById(idRes);
+		r.setSitios(sitios);
+		repositorio.update(r);
+	}
+
+	@Override
+	public String addPlato(String idRes, Plato p) throws RepositorioException, EntidadNoEncontrada {
+		Restaurante r= repositorio.getById(idRes);
+		r.add(p);
+		repositorio.update(r);
+		return p.getNombre();
 
 	}
 
 	@Override
-	public void addPlato(String idRes, Plato p) {
-		Bson filter = Filters.eq("_id", new ObjectId(idRes));
-		Document actualizacion = new Document("$push", new Document("platos", p));
-		collection.updateOne(filter, actualizacion);
+	public void removePlato(String idRes, String nombrePlato) throws RepositorioException, EntidadNoEncontrada {
+		Restaurante r= repositorio.getById(idRes);
+		r.remove(nombrePlato);
+		repositorio.update(r);
 
 	}
 
 	@Override
-	public void removePlato(String idRes, String nombrePlato) {
-
-		Bson filter = Filters.eq("_id", new ObjectId(idRes));
-
-		Document actualizacion = new Document("$pull", new Document("platos", new Document("nombre", nombrePlato)));
-		collection.updateOne(filter, actualizacion);
-
+	public void updatePlato(String idRes, Plato plato) throws RepositorioException, EntidadNoEncontrada {
+		
+		Restaurante r= repositorio.getById(idRes);
+		r.remove(plato.getNombre());
+		r.add(plato);
 	}
 
 	@Override
-	public void updatePlato(String idRes, Plato plato) {
-		// TODO: revisar
-		Bson filter = Filters.eq("_id", new ObjectId(idRes));
-
-		Bson update = Updates.set("platos.$[elem]", plato);
-		Document arrayFilters = new Document("elem.nombre", plato.getNombre());
-
-		// Ejecutar la actualización
-		collection.updateOne(filter, update, new UpdateOptions().arrayFilters(Collections.singletonList(arrayFilters)));
+	public void deleteRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada {
+		Restaurante r= repositorio.getById(idRes);
+		repositorio.delete(r);
+		
 	}
 
 	@Override
-	public void deleteRestaurante(String idRes) {
-		Bson filter = Filters.eq("_id", new ObjectId(idRes));
-		collection.deleteOne(filter);
-	}
-
-	@Override
-	public List<RestauranteResumen> getListadoRestaurantes() {
-		FindIterable<Restaurante> resultados = collection.find();
-
-		MongoCursor<Restaurante> it = resultados.iterator();
+	public List<RestauranteResumen> getListadoRestaurantes() throws RepositorioException {
+		
+		List<Restaurante> restaurantes= repositorio.getAll();		
 		List<RestauranteResumen> resumenes = new ArrayList<RestauranteResumen>();
 		
-		while (it.hasNext()) {
-			RestauranteResumen r = new RestauranteResumen();
-			r.setId(it.next().getId());
-			r.setNombre(it.next().getNombre());
-			r.setCp(it.next().getCp());
-			resumenes.add(r);
+		for(Restaurante r: restaurantes) {
+			RestauranteResumen rr = new RestauranteResumen();
+			r.setId(r.getId());
+			r.setNombre(r.getNombre());
+			r.setCp(r.getCp());
+			resumenes.add(rr);
 		}
 
 		return resumenes;
 	}
+
+	
 
 }

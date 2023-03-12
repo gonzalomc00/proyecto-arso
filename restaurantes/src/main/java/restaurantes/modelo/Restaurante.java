@@ -64,5 +64,19 @@ public class Restaurante implements Identificable{
 	public void setPlatos(List<Plato> platos) {
 		this.platos = platos;
 	}
+	
+	public void add(Plato p) {
+		platos.add(p);
+	}
+	
+	public boolean remove(String nombrePlato) {
+		for(Plato p: platos) {
+			if(p.getNombre().equals(nombrePlato)) {
+				return platos.remove(p);
+			
+			}
+		}
+	return false;
+	}
 
 }
