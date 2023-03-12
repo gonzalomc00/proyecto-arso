@@ -1,4 +1,4 @@
-package arso.modelo;
+package restaurantes.modelo;
 
 public class Plato {
 	// Por el momento, la clase Plato tendrá tres propiedades: nombre, descripción y
