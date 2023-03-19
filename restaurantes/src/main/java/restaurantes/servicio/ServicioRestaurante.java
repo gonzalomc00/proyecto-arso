@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.geojson.Point;
 
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
@@ -37,12 +38,31 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 
-	public String create(Restaurante restaurante) throws RepositorioException {
-
-		return repositorio.add(restaurante);
+	
+	
+	@Override
+	public String create(String nombre, String cp, String ciudad, Point coordenadas) throws RepositorioException {
 		
-
+		//Control de integridad de los datos
+		
+		if (nombre == null || nombre.isEmpty())
+			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+		
+		if (cp == null || cp.isEmpty())
+			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
+		
+		if (ciudad == null || ciudad.isEmpty())
+			throw new IllegalArgumentException("ciudad: no debe ser nulo ni vacio");
+		
+		if (coordenadas == null )
+			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+		
+		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, coordenadas);
+		
+		String id = repositorio.add(restaurante);
+		return id;
 	}
+
 
 	public void update(Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
 		repositorio.update(restaurante);
@@ -212,6 +232,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return resumenes;
 	}
 
+	
 	
 
 }

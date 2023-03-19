@@ -7,6 +7,8 @@ import org.bson.BsonType;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonRepresentation;
 
+import com.mongodb.client.model.geojson.Point;
+
 import repositorio.Identificable;
 
 public class Restaurante implements Identificable{
@@ -16,13 +18,26 @@ public class Restaurante implements Identificable{
 
 	private String nombre;
 	private String cp;
-	private List<SitioTuristico> sitios = new LinkedList<SitioTuristico>();
-	private List<Plato> platos = new LinkedList<Plato>();
+	private String ciudad;
+	private Point coordenadas;
+	private List<SitioTuristico> sitios = new LinkedList<>();
+	private List<Plato> platos = new LinkedList<>();
+
+	public Restaurante() { //POJO
+		
+	}
+	public Restaurante(String nombre2, String cp2, String ciudad2, Point coordenadas2) {
+
+		this.nombre = nombre2;
+		this.cp = cp2;
+		this.ciudad = ciudad2;
+		this.coordenadas = coordenadas2;
+	}
 
 	@Override
 	public String toString() {
-		return "Restaurante [id=" + id + ", nombre=" + nombre + ", cp=" + cp + ", sitios=" + sitios + ", platos="
-				+ platos + "]";
+		return "Restaurante [id=" + id + ", nombre=" + nombre + ", cp=" + cp + ", ciudad=" + ciudad + ", coordenadas="
+				+ coordenadas + ", sitios=" + sitios + ", platos=" + platos + "]";
 	}
 
 	public String getId() {
@@ -78,5 +93,23 @@ public class Restaurante implements Identificable{
 		}
 	return false;
 	}
+
+	public String getCiudad() {
+		return ciudad;
+	}
+
+	public void setCiudad(String ciudad) {
+		this.ciudad = ciudad;
+	}
+
+	public Point getCoordenadas() {
+		return coordenadas;
+	}
+
+	public void setCoordenadas(Point coordenadas) {
+		this.coordenadas = coordenadas;
+	}
+	
+	
 
 }

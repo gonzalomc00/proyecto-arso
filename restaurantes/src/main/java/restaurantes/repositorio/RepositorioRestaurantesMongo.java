@@ -9,5 +9,5 @@ import restaurantes.modelo.Restaurante;
 public class RepositorioRestaurantesMongo extends RepositorioMongo<Restaurante> {
 
 
-	MongoCollection<Restaurante> collection = 
+	// MongoCollection<Restaurante> collection = 
 }
