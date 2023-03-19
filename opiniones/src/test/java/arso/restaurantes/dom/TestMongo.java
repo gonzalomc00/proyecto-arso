@@ -1,7 +1,7 @@
 package arso.restaurantes.dom;
 
+import opiniones.modelo.Restaurante;
 import repositorio.FactoriaRepositorios;
-import restaurantes.modelo.Restaurante;
 import restaurantes.repositorio.RepositorioRestaurantesMongo;
 import restaurantes.servicio.IServicioRestaurante;
 import restaurantes.servicio.ServicioRestaurante;

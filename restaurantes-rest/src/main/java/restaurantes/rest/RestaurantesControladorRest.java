@@ -40,7 +40,6 @@ import restaurantes.modelo.SitioTuristico;
 import restaurantes.rest.Listado.ResumenExtendido;
 import restaurantes.servicio.IServicioRestaurante;
 import restaurantes.servicio.RestauranteResumen;
-import restaurantes.servicio.ServicioRestaurante;
 import servicio.FactoriaServicios;
 
 @Api
@@ -53,6 +52,15 @@ public class RestaurantesControladorRest {
 	private UriInfo uriInfo;
 
 	// 1.String create(Restaurante restaurante);
+	/*
+	curl --location 'http://127.0.0.1:8080/api/restaurantes' --header 'content-type: application/json' --data '{
+	    "nombre":"Prueba",
+	    "cp": "30161",
+	    "ciudad":"Murcia",
+	    "coordenadas":"30, 30"
+	}'
+	
+	*/
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Crear un nuevo restaurante", notes = "Crea un nuevo restaurante en la base de datos con los datos proporcionados en el cuerpo de la solicitud.")
