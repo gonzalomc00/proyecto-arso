@@ -8,6 +8,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import com.mongodb.client.model.geojson.Point;
+
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.modelo.Plato;
@@ -16,7 +18,7 @@ import restaurantes.modelo.SitioTuristico;
 
 public interface IServicioRestaurante {
 
-	String create(Restaurante entity) throws RepositorioException;
+	String create(String nombre, String cp, String ciudad, Point coordenadas ) throws RepositorioException;
 
 	void update(Restaurante entity) throws RepositorioException, EntidadNoEncontrada;
 	
