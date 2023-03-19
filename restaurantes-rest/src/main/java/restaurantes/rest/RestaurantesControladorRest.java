@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -33,6 +34,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
+import restaurantes.dto.PlatoRequest;
 import restaurantes.dto.RestauranteRequest;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
@@ -45,6 +47,8 @@ import servicio.FactoriaServicios;
 @Api
 @Path("restaurantes")
 public class RestaurantesControladorRest {
+	
+	//TODO: PREGUNTAR FORMATO DE ENTRADA EN PUTS
 
 	private IServicioRestaurante servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
 
@@ -54,13 +58,13 @@ public class RestaurantesControladorRest {
 	// 1.String create(Restaurante restaurante);
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Crear un nuevo restaurante", notes = "Crea un nuevo restaurante en la base de datos con los datos proporcionados en el cuerpo de la solicitud.")
-	@ApiResponses(value = { 
-			@ApiResponse(code = HttpServletResponse.SC_OK, message = "Restaurante creado con éxito"),
-			@ApiResponse(code = 400, message = "Formato de coordenadas incorrecto"),
-			@ApiResponse(code = 500, message = "Error interno del servidor") })
+	@ApiOperation(value = "Crear un nuevo restaurante", notes = "")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = "Restaurante creado con éxito"),
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
 
-	public Response create(@ApiParam(value = "Datos del restaurante a crear", required = true) RestauranteRequest restaurante) throws Exception {
+	public Response create(
+			@ApiParam(value = "datos del restaurante a crear", required = true) RestauranteRequest restaurante)
+			throws Exception {
 
 		// APLICACION DEL PATRON DTO
 		try {
@@ -91,7 +95,11 @@ public class RestaurantesControladorRest {
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response update(@PathParam("id") String id, Restaurante restaurante) throws Exception {
+	@ApiOperation(value = "Actualiza un restaurante", notes = "")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Restaurante actualizado con éxito"),
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+	public Response update(@ApiParam(value = "id del restaurante a modificar", required = true)@PathParam("id") String id, @ApiParam(value = "datos del restaurante modificados", required = true)Restaurante restaurante) throws Exception {
+
 		if (!id.equals(restaurante.getId()))
 			throw new IllegalArgumentException("El identificador no coincide: " + id);
 
@@ -106,7 +114,10 @@ public class RestaurantesControladorRest {
 	@GET
 	@Path("/{id}/sitios")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response obtenerSitiosTuristicos(@PathParam("id") String id) throws MalformedURLException, SAXException,
+	@ApiOperation(value = "Consulta los sitios turisticos de un restaurante", notes = "Retorna listado de sitios turisticos de un restaurantes ")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
+			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Sitiso turisticos no encontrados") })
+	public Response obtenerSitiosTuristicos(@ApiParam(value = "id del restaurante", required = true)@PathParam("id") String id) throws MalformedURLException, SAXException,
 			IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
 
 		List<SitioTuristico> resultado = servicio.obtenerSitiosTuristicos(id);
@@ -118,7 +129,10 @@ public class RestaurantesControladorRest {
 	@PUT
 	@Path("/{id}/sitios")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setSitiosTuristicos(@PathParam("id") String id, List<SitioTuristico> sitios)
+	@ApiOperation(value = "Modifica los sitios turisticos de un restaurante", notes = " ")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = ""),
+		 })
+	public Response setSitiosTuristicos(@ApiParam(value = "id del restaurante a modificar", required = true)@PathParam("id") String id,@ApiParam(value = "lista de sitios turisticos", required = true) List<SitioTuristico> sitios)
 			throws RepositorioException, EntidadNoEncontrada {
 
 		servicio.setSitiosTuristicos(id, sitios);
@@ -130,18 +144,37 @@ public class RestaurantesControladorRest {
 	@POST
 	@Path("/{id}/platos")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addPlato(@PathParam("id") String id, Plato plato) throws RepositorioException, EntidadNoEncontrada {
+	@ApiOperation(value = "Añade un nuevo plato a un restaurante", notes = " ")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = ""),
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+	public Response addPlato(@ApiParam(value = "id del restaurante", required = true)@PathParam("id") String id, @ApiParam(value = "datos del plato para añadir", required = true)PlatoRequest platoDTO)
+			throws RepositorioException, EntidadNoEncontrada {
 
-		String nombre = servicio.addPlato(id, plato);
-		URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(nombre).build();
+		try {
+			String precioPlatoDTO = platoDTO.getPrecio();
 
-		return Response.created(nuevaURL).build();
+			Double precio = Double.parseDouble(precioPlatoDTO);
+
+			Plato plato = new Plato(platoDTO.getNombre(), platoDTO.getDescripcion(), precio);
+			String nombre = servicio.addPlato(id, plato);
+
+			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(nombre).build();
+
+			return Response.created(nuevaURL).build();
+		} catch (NumberFormatException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("formato de precio incorrecto").build();
+
+		}
+
 	}
 
 	// 6.void removePlato(String idRes, String nombrePlato);
 	@DELETE
 	@Path("/{id}/platos/{nombrePlato}")
-	public Response removePlato(@PathParam("id") String id, @PathParam("nombrePlato") String nombrePlato)
+	@ApiOperation(value = "Borra un plato del restaurante", notes = "")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Plato borrado correctamente"),
+			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Sitiso turisticos no encontrados") })
+	public Response removePlato(@ApiParam(value = "id del restaurante", required = true)@PathParam("id") String id, @ApiParam(value = "nombre del plato", required = true)@PathParam("nombrePlato") String nombrePlato)
 			throws RepositorioException, EntidadNoEncontrada {
 
 		servicio.removePlato(id, nombrePlato);
@@ -152,10 +185,14 @@ public class RestaurantesControladorRest {
 	@PUT
 	@Path("/{id}/platos/")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updatePlato(@PathParam("id") String id, Plato plato)
-			throws RepositorioException, EntidadNoEncontrada {
+	@ApiOperation(value = "Actualiza un plato", notes = "")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = ""),
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+	public Response updatePlato(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id,
+			@ApiParam(value = "plato a actualizar ", required = true)Plato plato) throws RepositorioException, EntidadNoEncontrada {
 
 		servicio.updatePlato(id, plato);
+
 		return Response.status(Response.Status.NO_CONTENT).build();
 
 	}
@@ -163,7 +200,10 @@ public class RestaurantesControladorRest {
 	// 8.void deleteRestaurante(String idRes);
 	@DELETE
 	@Path("/{id}")
-	public Response deleteRestaurante(@PathParam("id") String id) throws RepositorioException, EntidadNoEncontrada {
+	@ApiOperation(value = "Borra un restaurante", notes = "")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = ""),
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+	public Response deleteRestaurante(@ApiParam(value = "id del restaurante ", required = true)@PathParam("id") String id) throws RepositorioException, EntidadNoEncontrada {
 
 		servicio.deleteRestaurante(id);
 		return Response.status(Response.Status.NO_CONTENT).build();
@@ -172,6 +212,9 @@ public class RestaurantesControladorRest {
 	// 9.List<RestauranteResumen> getListadoRestaurantes();
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
+	@ApiOperation(value = "Consulta los restaurantes", notes = "Retorna un listado de restaurantes")
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""), //falta response
+			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
 	public Response getListadoActividades() throws Exception {
 
 		List<RestauranteResumen> resultado = servicio.getListadoRestaurantes();
