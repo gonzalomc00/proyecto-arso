@@ -31,16 +31,27 @@ import restaurantes.modelo.SitioTuristico;
 import restaurantes.rest.Listado.ResumenExtendido;
 import restaurantes.servicio.IServicioRestaurante;
 import restaurantes.servicio.RestauranteResumen;
+import restaurantes.servicio.ServicioRestaurante;
 import servicio.FactoriaServicios;
 
 @Api
 @Path("restaurantes")
 public class RestaurantesControladorRest {
 	
-	private IServicioRestaurante servicio=FactoriaServicios.getServicio(IServicioRestaurante.class);
+	private IServicioRestaurante servicio= FactoriaServicios.getServicio(IServicioRestaurante.class);
 	@Context
 	private UriInfo uriInfo;
 	
+	
+	/*
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response ey() throws Exception {
+		
+		return Response.ok().build();
+	}
+	*/
+	//2.
 	
 	//1.String create(Restaurante restaurante);
 	@POST

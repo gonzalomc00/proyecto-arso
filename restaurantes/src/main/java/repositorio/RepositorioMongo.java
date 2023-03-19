@@ -24,10 +24,10 @@ import com.mongodb.client.model.Filters;
 
 import restaurantes.modelo.Restaurante;
 
-public class RepositorioMongo<T extends Identificable> implements RepositorioString<T> {
+public abstract class RepositorioMongo<T extends Identificable> implements RepositorioString<T> {
 
 	protected ConnectionString connectionString = new ConnectionString(
-			"mongodb+srv://sofia:sofia@zeppelinum.68qbknn.mongodb.net/?retryWrites=true&w=majority");
+			"mongodb://sofia:sofia@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority");
 
 	CodecRegistry pojoCodecRegistry = CodecRegistries
 			.fromProviders(PojoCodecProvider.builder().automatic(true).build());
@@ -42,19 +42,8 @@ public class RepositorioMongo<T extends Identificable> implements RepositorioStr
 	
 	protected MongoDatabase database = mongoClient.getDatabase("ZeppelinUM");
 	
-	protected MongoCollection<T> collection=database.getCollection("restaurante", getGenericTypeClass())
-			.withCodecRegistry(codecRegistry);;
+	protected MongoCollection<T> collection;
 
-			
-	private Class<T> getGenericTypeClass() {
-			    try {
-			        String className = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0].getTypeName();
-			        Class<?> clazz = Class.forName(className);
-			        return (Class<T>) clazz;
-			    } catch (Exception e) {
-			        throw new IllegalStateException("Class is not parametrized with generic type!!! Please use extends <> ");
-			    }
-			} 
 	@Override
 	public String add(T entity) throws RepositorioException {
 
