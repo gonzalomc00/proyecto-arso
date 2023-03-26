@@ -1,18 +1,30 @@
 package arso.restaurantes.dom;
 
+import java.util.List;
+
 import repositorio.FactoriaRepositorios;
 import restaurantes.modelo.Restaurante;
 import restaurantes.repositorio.RepositorioRestaurantesMongo;
 import restaurantes.servicio.IServicioRestaurante;
+import restaurantes.servicio.RestauranteResumen;
 import restaurantes.servicio.ServicioRestaurante;
 import servicio.FactoriaServicios;
 
 public class TestMongo  {
 
 	public static void main(String[] args) throws Exception {
+		
+		
 
 		IServicioRestaurante servicio=FactoriaServicios.getServicio(IServicioRestaurante.class);
-		Restaurante r = new Restaurante();
+		
+		List<RestauranteResumen> r= servicio.getListadoRestaurantes();
+		
+		for(RestauranteResumen rr: r) {
+			System.out.println(rr.getNombre());
+		}
+		
+		/*Restaurante r = new Restaurante();
 		r.setNombre("eo");
 		r.setCp("30150");
 

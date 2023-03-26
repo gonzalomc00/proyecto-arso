@@ -101,6 +101,7 @@ public class RestaurantesControladorRest {
 
 	// 2.void update(Restaurante restaurante);
 
+	
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -117,13 +118,22 @@ public class RestaurantesControladorRest {
 
 	}
 
+	
+	
 	// 3.List<SitioTuristico> obtenerSitiosTuristicos(String idRes) throws
 	// MalformedURLException, SAXException, IOException,
 	// ParserConfigurationException;
+	
+	
+	/*
+	 * curl --location 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/sitios' \
+		--header 'content-type: application/json' \
+		--data ''
+	 */
 	@GET
 	@Path("/{id}/sitios")
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Consulta los sitios turisticos de un restaurante", notes = "Retorna listado de sitios turisticos de un restaurantes ")
+	@ApiOperation(value = "Consulta los sitios turisticos cercanos a un restaurante", notes = "Retorna listado de sitios turisticos cercanos un restaurante ")
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Sitiso turisticos no encontrados") })
 	public Response obtenerSitiosTuristicos(@ApiParam(value = "id del restaurante", required = true)@PathParam("id") String id) throws MalformedURLException, SAXException,
@@ -150,6 +160,16 @@ public class RestaurantesControladorRest {
 	}
 
 	// 5.void addPlato(String idRes, Plato plato);
+	/*
+	 * curl --location 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/platos' \
+		--header 'content-type: application/json' \
+		--data '{
+    		"nombre": "Plato de prueba",
+    		"descripcion": "Descripcion del plato",
+    		"precio": "10"
+
+		}'
+	 */
 	@POST
 	@Path("/{id}/platos")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -178,6 +198,16 @@ public class RestaurantesControladorRest {
 	}
 
 	// 6.void removePlato(String idRes, String nombrePlato);
+	/*
+	 * curl --location --request DELETE 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/platos/Plato%20de%20prueba' \
+		--header 'content-type: application/json' \
+		--data '{
+    		"nombre": "Plato de prueba",
+    		"descripcion": "Descripcion del plato",
+    		"precio": "10"
+
+		}'
+	 */
 	@DELETE
 	@Path("/{id}/platos/{nombrePlato}")
 	@ApiOperation(value = "Borra un plato del restaurante", notes = "")
@@ -191,6 +221,16 @@ public class RestaurantesControladorRest {
 	}
 
 	// 7.void updatePlato(String idRes, Plato plato);
+	/*
+	 * curl --location --request PUT 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/platos' \
+		--header 'content-type: application/json' \
+		--data '{
+    "nombre": "Plato de prueba",
+    "descripcion": "Descripcion del plato modificada",
+    "precio": "10"
+
+	}'
+	 */
 	@PUT
 	@Path("/{id}/platos/")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -207,6 +247,11 @@ public class RestaurantesControladorRest {
 	}
 
 	// 8.void deleteRestaurante(String idRes);
+	/*
+	 * curl --location --request DELETE 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/' \
+		--header 'content-type: application/json' \
+		--data ''
+	 */
 	@DELETE
 	@Path("/{id}")
 	@ApiOperation(value = "Borra un restaurante", notes = "")
@@ -219,6 +264,12 @@ public class RestaurantesControladorRest {
 	}
 
 	// 9.List<RestauranteResumen> getListadoRestaurantes();
+	/*
+	 * curl --location 'http://127.0.0.1:8080/api/restaurantes/' \
+		--header 'content-type: application/json' \
+		--data ''
+	 */
+	
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Consulta los restaurantes", notes = "Retorna un listado de restaurantes")
@@ -240,7 +291,7 @@ public class RestaurantesControladorRest {
 
 			String id = restauranteResumen.getId();
 			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(id).build();
-
+			System.out.println(nuevaURL.toString());
 			resumenExtendido.setUrl(nuevaURL.toString()); // string
 
 			extendido.add(resumenExtendido);

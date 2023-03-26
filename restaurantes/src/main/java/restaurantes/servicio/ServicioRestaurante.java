@@ -216,6 +216,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		Restaurante r = repositorio.getById(idRes);
 		r.remove(plato.getNombre());
 		r.add(plato);
+		update(r);
 	}
 
 	@Override
@@ -232,10 +233,11 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		List<RestauranteResumen> resumenes = new ArrayList<RestauranteResumen>();
 
 		for (Restaurante r : restaurantes) {
+			System.out.println(r.toString());
 			RestauranteResumen rr = new RestauranteResumen();
-			r.setId(r.getId());
-			r.setNombre(r.getNombre());
-			r.setCp(r.getCp());
+			rr.setId(r.getId());
+			rr.setNombre(r.getNombre());
+			rr.setCp(r.getCp());
 			resumenes.add(rr);
 		}
 
