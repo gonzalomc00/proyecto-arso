@@ -41,20 +41,6 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	@Override
 	public String create(String nombre, String cp, String ciudad, Point coordenadas) throws RepositorioException {
 
-		// Control de integridad de los datos
-
-		if (nombre == null || nombre.isEmpty())
-			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
-
-		if (cp == null || cp.isEmpty())
-			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
-
-		if (ciudad == null || ciudad.isEmpty())
-			throw new IllegalArgumentException("ciudad: no debe ser nulo ni vacio");
-
-		if (coordenadas == null)
-			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
-
 		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, coordenadas);
 
 		String id = repositorio.add(restaurante);
