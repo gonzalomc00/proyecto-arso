@@ -63,8 +63,8 @@ public class RestaurantesControladorRest {
 	    "ciudad":"Murcia",
 	    "coordenadas":"30, 30"
 	}'
-	
 	*/
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Crear un nuevo restaurante", notes = "")
@@ -77,7 +77,22 @@ public class RestaurantesControladorRest {
 
 		// APLICACION DEL PATRON DTO
 		try {
-			// parseamos las coordenadsa de String a Point
+			// parseamos las coordenadsa de String a Point			
+			
+			// Control de integridad de los datos
+
+			if (restaurante.getNombre() == null || restaurante.getNombre().isEmpty())
+				throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+
+			if (restaurante.getCp() == null || restaurante.getCp().isEmpty())
+				throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
+
+			if (restaurante.getCiudad() == null || restaurante.getCiudad().isEmpty())
+				throw new IllegalArgumentException("ciudad: no debe ser nulo ni vacio");
+
+			if (restaurante.getCoordenadas() == null)
+				throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+			
 			String coordenadasStr = restaurante.getCoordenadas();
 			String[] coordenadasArray = coordenadasStr.split(", ");
 			double x = Double.parseDouble(coordenadasArray[0]);
@@ -130,6 +145,7 @@ public class RestaurantesControladorRest {
 			IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
 
 		List<SitioTuristico> resultado = servicio.obtenerSitiosTuristicos(id);
+		
 		return Response.ok(resultado).build();
 
 	}
@@ -150,6 +166,7 @@ public class RestaurantesControladorRest {
 	}
 
 	// 5.void addPlato(String idRes, Plato plato);
+	//TODO: 
 	@POST
 	@Path("/{id}/platos")
 	@Consumes(MediaType.APPLICATION_JSON)
