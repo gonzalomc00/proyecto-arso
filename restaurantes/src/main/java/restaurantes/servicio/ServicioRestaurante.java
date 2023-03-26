@@ -38,42 +38,38 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 
-	
-	
 	@Override
 	public String create(String nombre, String cp, String ciudad, Point coordenadas) throws RepositorioException {
-		
-		//Control de integridad de los datos
-		
+
+		// Control de integridad de los datos
+
 		if (nombre == null || nombre.isEmpty())
 			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
-		
+
 		if (cp == null || cp.isEmpty())
 			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
-		
+
 		if (ciudad == null || ciudad.isEmpty())
 			throw new IllegalArgumentException("ciudad: no debe ser nulo ni vacio");
-		
-		if (coordenadas == null )
+
+		if (coordenadas == null)
 			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
-		
+
 		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, coordenadas);
-		
+
 		String id = repositorio.add(restaurante);
 		return id;
 	}
-
 
 	public void update(Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
 		repositorio.update(restaurante);
 	}
 
 	@Override
-	public List<SitioTuristico> obtenerSitiosTuristicos(String idRes)
-			throws MalformedURLException, SAXException, IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
-		
-		Restaurante r= repositorio.getById(idRes);
-	
+	public List<SitioTuristico> obtenerSitiosTuristicos(String idRes) throws MalformedURLException, SAXException,
+			IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
+
+		Restaurante r = repositorio.getById(idRes);
 
 		System.out.println(r);
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -177,24 +173,38 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios) throws RepositorioException, EntidadNoEncontrada {
-		Restaurante r= repositorio.getById(idRes);
+	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios)
+			throws RepositorioException, EntidadNoEncontrada {
+		Restaurante r = repositorio.getById(idRes);
 		r.setSitios(sitios);
 		repositorio.update(r);
 	}
 
 	@Override
 	public String addPlato(String idRes, Plato p) throws RepositorioException, EntidadNoEncontrada {
-		Restaurante r= repositorio.getById(idRes);
+		Restaurante r = repositorio.getById(idRes);
+
+		// Tratamiento de errores
+		List<Plato> listaPlatos = r.getPlatos();
+
+		for (Plato plato : listaPlatos) {
+			if (plato.getNombre().equals(p.getNombre())) {
+				throw new IllegalArgumentException("ERROR: plato ya existente");
+			}
+
+		}
+
 		r.add(p);
+		
 		repositorio.update(r);
+		 
 		return p.getNombre();
 
 	}
 
 	@Override
 	public void removePlato(String idRes, String nombrePlato) throws RepositorioException, EntidadNoEncontrada {
-		Restaurante r= repositorio.getById(idRes);
+		Restaurante r = repositorio.getById(idRes);
 		r.remove(nombrePlato);
 		repositorio.update(r);
 
@@ -202,26 +212,26 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 	@Override
 	public void updatePlato(String idRes, Plato plato) throws RepositorioException, EntidadNoEncontrada {
-		
-		Restaurante r= repositorio.getById(idRes);
+
+		Restaurante r = repositorio.getById(idRes);
 		r.remove(plato.getNombre());
 		r.add(plato);
 	}
 
 	@Override
 	public void deleteRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada {
-		Restaurante r= repositorio.getById(idRes);
+		Restaurante r = repositorio.getById(idRes);
 		repositorio.delete(r);
-		
+
 	}
 
 	@Override
 	public List<RestauranteResumen> getListadoRestaurantes() throws RepositorioException {
-		
-		List<Restaurante> restaurantes= repositorio.getAll();		
+
+		List<Restaurante> restaurantes = repositorio.getAll();
 		List<RestauranteResumen> resumenes = new ArrayList<RestauranteResumen>();
-		
-		for(Restaurante r: restaurantes) {
+
+		for (Restaurante r : restaurantes) {
 			RestauranteResumen rr = new RestauranteResumen();
 			r.setId(r.getId());
 			r.setNombre(r.getNombre());
@@ -231,8 +241,5 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 		return resumenes;
 	}
-
-	
-	
 
 }

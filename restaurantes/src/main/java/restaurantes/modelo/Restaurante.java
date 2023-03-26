@@ -26,6 +26,7 @@ public class Restaurante implements Identificable{
 	public Restaurante() { //POJO
 		
 	}
+	
 	public Restaurante(String nombre2, String cp2, String ciudad2, Point coordenadas2) {
 
 		this.nombre = nombre2;
