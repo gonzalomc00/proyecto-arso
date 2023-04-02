@@ -22,7 +22,7 @@ public interface IServicioRestaurante {
 
 	Restaurante getRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada;
 	
-	void update(String id, Restaurante entity) throws RepositorioException, EntidadNoEncontrada;
+	void update( Restaurante entity) throws RepositorioException, EntidadNoEncontrada;
 	
 	List<SitioTuristico> obtenerSitiosTuristicos(String idRes) throws MalformedURLException, SAXException, IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada;
 	

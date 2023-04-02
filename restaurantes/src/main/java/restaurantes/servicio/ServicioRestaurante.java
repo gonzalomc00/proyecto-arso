@@ -47,10 +47,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return id;
 	}
 
-	public void update(String idRes, Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
-		if (idRes == null || idRes.isEmpty()) {
+	public void update(Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
+		/**if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
-		}
+		}*/
 		
 		repositorio.update(restaurante);
 	}
@@ -242,10 +242,17 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+		if (plato == null ) {
+			throw new IllegalArgumentException("plato: no debe ser nulo ni vacio");
+		}
 		
 		Restaurante r = repositorio.getById(idRes);
-		r.remove(plato.getNombre());
+		
+		boolean borrado = r.remove(plato.getNombre());
+		
+		if (!borrado) {
+			throw new IllegalStateException("plato: no existe en este restaurante");
+		}
 		
 		r.add(plato);
 		update(r);
