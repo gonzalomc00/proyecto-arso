@@ -77,7 +77,6 @@ public class RestaurantesControladorRest {
 
 		// APLICACION DEL PATRON DTO
 		try {
-			// parseamos las coordenadsa de String a Point			
 			
 			// Control de integridad de los datos
 
@@ -94,9 +93,11 @@ public class RestaurantesControladorRest {
 
 			if (restaurante.getCoordenadas() == null)
 				throw new IllegalArgumentException("coordenadas: no debe ser nulo");
-			
+			// parseamos las coordenadsa de String a Point			
+
 			String coordenadasStr = restaurante.getCoordenadas();
 			String[] coordenadasArray = coordenadasStr.split(", ");
+			
 			double x = Double.parseDouble(coordenadasArray[0]);
 			double y = Double.parseDouble(coordenadasArray[1]);
 			Position posicion = new Position(x, y);

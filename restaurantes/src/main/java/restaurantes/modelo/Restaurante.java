@@ -28,6 +28,18 @@ public class Restaurante implements Identificable{
 	}
 	
 	public Restaurante(String nombre2, String cp2, String ciudad2, Point coordenadas2) {
+		
+		if (nombre2 == null || nombre2.isEmpty())
+			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+		
+		if (cp2 == null || cp2.isEmpty())
+			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
+		
+		if (ciudad2 == null || ciudad2.isEmpty())
+			throw new IllegalArgumentException("nombre de la ciudad: no debe ser nulo ni vacio");
+		
+		if (coordenadas2 == null)
+			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
 
 		this.nombre = nombre2;
 		this.cp = cp2;
@@ -107,8 +119,8 @@ public class Restaurante implements Identificable{
 		return coordenadas;
 	}
 
-	public void setCoordenadas(Point coordenadas) {
-		this.coordenadas = coordenadas;
+	public void setCoordenadas(Point point) {
+		this.coordenadas = point;
 	}
 	
 	

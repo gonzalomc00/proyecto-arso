@@ -13,7 +13,7 @@ public class Plato {
 	}
 	
 	public Plato(String nom, String desc, Double precio) {
-		
+		//Control de precondiciones
 		if (nom == null || nom.isEmpty())
 			throw new IllegalArgumentException("nombre del plato: no debe ser nulo ni vacio");
 		
@@ -60,7 +60,7 @@ public class Plato {
 		this.precio = precio;
 	}
 
-	public boolean isDisponibilidad() {
+	public boolean isDisponible() {
 		return disponibilidad;
 	}
 

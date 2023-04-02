@@ -20,7 +20,9 @@ public interface IServicioRestaurante {
 
 	String create(String nombre, String cp, String ciudad, Point coordenadas ) throws RepositorioException;
 
-	void update(Restaurante entity) throws RepositorioException, EntidadNoEncontrada;
+	Restaurante getRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada;
+	
+	void update(String id, Restaurante entity) throws RepositorioException, EntidadNoEncontrada;
 	
 	List<SitioTuristico> obtenerSitiosTuristicos(String idRes) throws MalformedURLException, SAXException, IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada;
 	
@@ -28,7 +30,7 @@ public interface IServicioRestaurante {
 	
 	String addPlato(String idRes, Plato plato) throws RepositorioException, EntidadNoEncontrada;
 
-	void removePlato(String idRes, String nombrePlato) throws RepositorioException, EntidadNoEncontrada;
+	boolean removePlato(String idRes, String nombrePlato) throws RepositorioException, EntidadNoEncontrada;
 	
 	void updatePlato(String idRes, Plato plato) throws RepositorioException, EntidadNoEncontrada;
 	

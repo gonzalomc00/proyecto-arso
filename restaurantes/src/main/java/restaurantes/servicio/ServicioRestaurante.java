@@ -47,7 +47,11 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return id;
 	}
 
-	public void update(Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
+	public void update(String idRes, Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		
 		repositorio.update(restaurante);
 	}
 
@@ -55,6 +59,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	public List<SitioTuristico> obtenerSitiosTuristicos(String idRes) throws MalformedURLException, SAXException,
 			IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
 
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		
 		Restaurante r = repositorio.getById(idRes);
 
 		System.out.println(r);
@@ -161,6 +169,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	@Override
 	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios)
 			throws RepositorioException, EntidadNoEncontrada {
+		
 		Restaurante r = repositorio.getById(idRes);
 		r.setSitios(sitios);
 		repositorio.update(r);
@@ -168,14 +177,21 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 	@Override
 	public String addPlato(String idRes, Plato p) throws RepositorioException, EntidadNoEncontrada {
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		if (p == null) {
+			throw new IllegalArgumentException("Plato: no debe ser nulo");
+		}
+		
 		Restaurante r = repositorio.getById(idRes);
 
-		// Tratamiento de errores
+		// No añadir platos repetidos
 		List<Plato> listaPlatos = r.getPlatos();
 
 		for (Plato plato : listaPlatos) {
 			if (plato.getNombre().equals(p.getNombre())) {
-				throw new IllegalArgumentException("ERROR: plato ya existente");
+				throw new IllegalStateException("ERROR: plato duplicado");
 			}
 
 		}
@@ -189,24 +205,58 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void removePlato(String idRes, String nombrePlato) throws RepositorioException, EntidadNoEncontrada {
+	public boolean removePlato(String idRes, String nombrePlato) throws RepositorioException, EntidadNoEncontrada {
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		if (nombrePlato == null || nombrePlato.isEmpty()) {
+			throw new IllegalArgumentException("nombre del plato: no debe ser nulo ni vacio");
+		}
+		
+		
 		Restaurante r = repositorio.getById(idRes);
-		r.remove(nombrePlato);
+		
+		
+		List<Plato> listaPlatos = r.getPlatos();
+
+		boolean existePlato = false;
+		for (Plato plato : listaPlatos) {
+			if (plato.getNombre().equals(nombrePlato)) {
+				existePlato = true;
+			}
+		}
+		
+		if (!existePlato) {
+			throw new IllegalStateException("ERROR: No existe el plato en este restaurante");
+		}
+		
+		boolean borrado = r.remove(nombrePlato);
 		repositorio.update(r);
+		
+		return borrado;
 
 	}
 
 	@Override
 	public void updatePlato(String idRes, Plato plato) throws RepositorioException, EntidadNoEncontrada {
-
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		
+		
 		Restaurante r = repositorio.getById(idRes);
 		r.remove(plato.getNombre());
+		
 		r.add(plato);
 		update(r);
 	}
 
 	@Override
 	public void deleteRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada {
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		
 		Restaurante r = repositorio.getById(idRes);
 		repositorio.delete(r);
 
@@ -228,6 +278,16 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		return resumenes;
+	}
+
+	@Override
+	public Restaurante getRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada {
+
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		
+		return repositorio.getById(idRes);
 	}
 
 }
