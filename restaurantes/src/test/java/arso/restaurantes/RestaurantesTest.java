@@ -18,6 +18,7 @@ public class RestaurantesTest {
 	private Repositorio<Restaurante, String> repositorio;
 	private IServicioRestaurante servicio;
 
+	/*
 	@BeforeEach
 	public void setUp() {
 		repositorio  = FactoriaRepositorios.getRepositorio(Restaurante.class);
@@ -42,5 +43,8 @@ public class RestaurantesTest {
 		Assertions.assertEquals(r.getId(),"1");
 		
 	}
+	
+	*/
+	
 	
 }

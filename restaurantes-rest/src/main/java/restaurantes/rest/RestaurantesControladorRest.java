@@ -81,9 +81,11 @@ public class RestaurantesControladorRest {
 			
 			// Control de integridad de los datos
 
-			if (restaurante.getNombre() == null || restaurante.getNombre().isEmpty())
-				throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
 
+			if (restaurante.getNombre() == null || restaurante.getNombre().isEmpty()) {
+				throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+			
+			}
 			if (restaurante.getCp() == null || restaurante.getCp().isEmpty())
 				throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
 
@@ -155,7 +157,9 @@ public class RestaurantesControladorRest {
 			IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
 
 		List<SitioTuristico> resultado = servicio.obtenerSitiosTuristicos(id);
-		
+		for(SitioTuristico s: resultado) {
+			System.out.println(s.getNombre());
+		}
 		return Response.ok(resultado).build();
 
 	}
