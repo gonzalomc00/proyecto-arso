@@ -249,7 +249,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 		for (Plato platoLista : listaPlatos) {
 			if (platoLista.getNombre().equals(plato.getNombre())) {
-				throw new IllegalStateException("ERROR: plato duplicado");
+				throw new IllegalArgumentException("ERROR: plato duplicado");
 			}
 
 		}
@@ -284,7 +284,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 		
 		if (!existePlato) {
-			throw new IllegalStateException("ERROR: No existe el plato en este restaurante");
+			throw new IllegalArgumentException("ERROR: No existe el plato en este restaurante");
 		}
 		
 		boolean borrado = r.remove(nombrePlato);
@@ -360,7 +360,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	@Override
 	public Restaurante getRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada {
 
-		if (idRes == null || idRes.isEmpty()) {
+		if (idRes == null || idRes.isEmpty() || idRes.isBlank()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
 		
