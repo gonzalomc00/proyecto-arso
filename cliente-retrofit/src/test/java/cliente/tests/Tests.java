@@ -268,7 +268,8 @@ class Tests {
 		Response<Void> resultado2 = service.addPlato(id1, plato2).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
-		System.out.println("Mensaje de respuesta: " + resultado2.message().toString());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Cuerpo del mensaje:" + resultado2.errorBody().string());
 
 		//TODO: Duda: plato repetido deberia devolver BadRequest (400) o IllegalState (Server Error 500) ??
 	}
@@ -307,7 +308,7 @@ class Tests {
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
-		
+
 		System.out.println("-------------------------------");
 
 	}
