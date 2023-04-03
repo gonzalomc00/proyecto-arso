@@ -119,6 +119,18 @@ public class RestaurantesControladorRest {
 
 	// 2.void update(Restaurante restaurante);
 
+	/*
+	 * curl --location --request PUT 'http://127.0.0.1:8080/api/restaurantes/641754dabbef43047199d631' \
+		--header 'Content-Type: application/json' \
+		--data '{
+    		"nombre": "Actualizado",
+    		"ciudad": "Albacete",
+    		"cp": "29183",
+    		"coordenadas": "20, 30"
+		}'
+	 * 
+	 * 
+	 */
 	
 	@PUT
 	@Path("/{id}")
@@ -126,14 +138,27 @@ public class RestaurantesControladorRest {
 	@ApiOperation(value = "Actualiza un restaurante", notes = "")
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Restaurante actualizado con éxito"),
 			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
-	public Response update(@ApiParam(value = "id del restaurante a modificar", required = true)@PathParam("id") String id, @ApiParam(value = "datos del restaurante modificados", required = true)Restaurante restaurante) throws Exception {
+	public Response update(@ApiParam(value = "id del restaurante a modificar", required = true)@PathParam("id") String id, @ApiParam(value = "datos del restaurante modificados", required = true)RestauranteRequest restaurante) throws Exception {
 
-		if (!id.equals(restaurante.getId()))
-			throw new IllegalArgumentException("El identificador no coincide: " + id);
 
-		servicio.update(restaurante);
+		
+		if (restaurante.getNombre() == null || restaurante.getNombre().isEmpty()) {
+			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+		
+		}
+		if (restaurante.getCp() == null || restaurante.getCp().isEmpty())
+			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
+
+		if (restaurante.getCiudad() == null || restaurante.getCiudad().isEmpty())
+			throw new IllegalArgumentException("ciudad: no debe ser nulo ni vacio");
+
+		if (restaurante.getCoordenadas() == null)
+			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+		
+		
+
+		servicio.update(id,restaurante.getNombre(),restaurante.getCiudad(),restaurante.getCp(),restaurante.getCoordenadas());
 		return Response.status(Response.Status.NO_CONTENT).build();
-
 	}
 
 	
@@ -158,9 +183,6 @@ public class RestaurantesControladorRest {
 			IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
 
 		List<SitioTuristico> resultado = servicio.obtenerSitiosTuristicos(id);
-		for(SitioTuristico s: resultado) {
-			System.out.println(s.getNombre());
-		}
 		return Response.ok(resultado).build();
 
 	}
@@ -201,13 +223,8 @@ public class RestaurantesControladorRest {
 			throws RepositorioException, EntidadNoEncontrada {
 
 		try {
-			String precioPlatoDTO = platoDTO.getPrecio();
 
-			Double precio = Double.parseDouble(precioPlatoDTO);
-
-			Plato plato = new Plato(platoDTO.getNombre(), platoDTO.getDescripcion(), precio);
-			String nombre = servicio.addPlato(id, plato);
-
+			String nombre = servicio.addPlato(id, platoDTO.getNombre(),platoDTO.getDescripcion(),platoDTO.getPrecio(),platoDTO.isDisponibilidad());
 			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(nombre).build();
 
 			return Response.created(nuevaURL).build();
@@ -259,9 +276,10 @@ public class RestaurantesControladorRest {
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = ""),
 			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
 	public Response updatePlato(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id,
-			@ApiParam(value = "plato a actualizar ", required = true)Plato plato) throws RepositorioException, EntidadNoEncontrada {
+			@ApiParam(value = "plato a actualizar ", required = true)PlatoRequest plato) throws RepositorioException, EntidadNoEncontrada {
 
-		servicio.updatePlato(id, plato);
+		
+		servicio.updatePlato(id, plato.getNombre(),plato.getDescripcion(),plato.getPrecio(),plato.isDisponibilidad());
 
 		return Response.status(Response.Status.NO_CONTENT).build();
 

@@ -28,16 +28,16 @@ public interface RestaurantesRestClient {
 	
 	
 	@PUT("restaurantes/{id}")
-	Call<Void> updateRestaurante(@Path("id") String id, @Body Restaurante restaurante);
+	Call<Void> updateRestaurante(@Path("id") String id, @Body RestauranteRequest restaurante);
 	
-	@POST("/{id}/platos")
+	@POST("restaurantes/{id}/platos")
 	Call<Void> addPlato(@Path("id") String id, @Body PlatoRequest platoDTO);
 	
-	@DELETE("/{id}/platos/{nombrePlato}")
+	@DELETE("restaurantes/{id}/platos/{nombrePlato}")
 	Call<Void> removePlato(@Path("id") String id, @Path("nombrePlato") String nombrePlato);
 	
-	@PUT("/{id}/platos/")
-	Call<Void> updatePlato(@Path("id") String id, @Body Plato plato);
+	@PUT("restaurantes/{id}/platos/")
+	Call<Void> updatePlato(@Path("id") String id, @Body PlatoRequest plato);
 
 	@DELETE("restaurantes/{id}")
 	Call<Void> removeRestaurante(@Path("id") String id);

@@ -48,17 +48,18 @@ public abstract class RepositorioMongo<T extends Identificable> implements Repos
 
 		collection.insertOne(entity);
 		return entity.getId();
+		
 	}
 
 	@Override
 	public void update(T entity) throws RepositorioException, EntidadNoEncontrada {
 
-	
+		//Comprobamos si existe el restaurante
 		this.getById(entity.getId());
 		
 		ObjectId idMongo = new ObjectId(entity.getId());
-		    Bson filtro = Filters.eq("_id", idMongo);
-		    collection.findOneAndReplace(filtro, entity);
+		Bson filtro = Filters.eq("_id", idMongo);
+		collection.findOneAndReplace(filtro, entity);
 
 	}
 

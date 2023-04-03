@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
@@ -47,12 +48,42 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return id;
 	}
 
-	public void update(Restaurante restaurante) throws RepositorioException, EntidadNoEncontrada {
-		/**if (idRes == null || idRes.isEmpty()) {
-			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
-		}*/
+	public void update(String id, String nombre, String ciudad, String cp, String coordenadas) throws RepositorioException, EntidadNoEncontrada {
 		
-		repositorio.update(restaurante);
+	
+		if (id == null || id.isEmpty()) 
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+			
+		if (nombre == null || nombre.isEmpty()) 
+			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+	
+		if (ciudad == null || ciudad.isEmpty()) 
+			throw new IllegalArgumentException("ciudad del restaurante: no debe ser nulo ni vacio");
+			
+		if (cp == null || cp.isEmpty()) 
+			throw new IllegalArgumentException("cp del restaurante: no debe ser nulo ni vacio");
+			
+		if (coordenadas == null ||coordenadas.isEmpty() ) 
+			throw new IllegalArgumentException("coordenadas del restaurante: no debe ser nulo ni vacio");
+			
+		
+		String[] coordenadasArray = coordenadas.split(", ");
+		
+		double x = Double.parseDouble(coordenadasArray[0]);
+		double y = Double.parseDouble(coordenadasArray[1]);
+		Position posicion = new Position(x, y);
+		Point coordenadasPoint = new Point(posicion);
+		
+		
+		Restaurante r= repositorio.getById(id);
+		
+		r.setNombre(nombre);
+		r.setCiudad(ciudad);
+		r.setCp(cp);
+		r.setCoordenadas(coordenadasPoint);
+		
+		repositorio.update(r);
+		
 	}
 
 	@Override
@@ -176,31 +207,47 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public String addPlato(String idRes, Plato p) throws RepositorioException, EntidadNoEncontrada {
+	public String addPlato(String idRes, String nombre, String descripcion,String precio,boolean disponibilidad) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		if (p == null) {
-			throw new IllegalArgumentException("Plato: no debe ser nulo");
+		
+		if (nombre == null || nombre.isEmpty()) {
+			throw new IllegalArgumentException("nombre del plato: no debe ser nulo ni vacio");
 		}
 		
+		if (descripcion == null || descripcion.isEmpty()) {
+			throw new IllegalArgumentException("descripcion del plato: no debe ser nulo ni vacio");
+		}
+		
+		if (precio == null || precio.isEmpty()) {
+			throw new IllegalArgumentException("precio del plato: no debe ser nulo ni vacio");
+		}
+		
+		Double precioD = Double.parseDouble(precio);
+
+		Plato plato = new Plato();
+		plato.setNombre(nombre);
+		plato.setDescripcion(descripcion);
+		plato.setPrecio(precioD);
+		plato.setDisponibilidad(disponibilidad);
 		Restaurante r = repositorio.getById(idRes);
+		System.out.println(r.getNombre());
 
 		// No añadir platos repetidos
 		List<Plato> listaPlatos = r.getPlatos();
 
-		for (Plato plato : listaPlatos) {
-			if (plato.getNombre().equals(p.getNombre())) {
+		for (Plato platoLista : listaPlatos) {
+			if (platoLista.getNombre().equals(plato.getNombre())) {
 				throw new IllegalStateException("ERROR: plato duplicado");
 			}
 
 		}
-
-		r.add(p);
-		
+		System.out.println(plato.toString());
+		r.add(plato);
 		repositorio.update(r);
-		 
-		return p.getNombre();
+		System.out.println("eeeeee");
+		return plato.getNombre();
 
 	}
 
@@ -238,24 +285,37 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void updatePlato(String idRes, Plato plato) throws RepositorioException, EntidadNoEncontrada {
+	public void updatePlato(String idRes, String nombre, String descripcion, String precio,boolean disponibilidad) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		if (plato == null ) {
-			throw new IllegalArgumentException("plato: no debe ser nulo ni vacio");
+		
+		if (nombre == null || nombre.isEmpty()) {
+			throw new IllegalArgumentException("nombre del plato: no debe ser nulo ni vacio");
 		}
+		
+		if (descripcion == null || descripcion.isEmpty()) {
+			throw new IllegalArgumentException("descripcion del plato: no debe ser nulo ni vacio");
+		}
+		
+		if (precio == null || precio.isEmpty()) {
+			throw new IllegalArgumentException("precio del plato: no debe ser nulo ni vacio");
+		}
+		
 		
 		Restaurante r = repositorio.getById(idRes);
 		
-		boolean borrado = r.remove(plato.getNombre());
+		boolean borrado = r.remove(nombre);
 		
 		if (!borrado) {
 			throw new IllegalStateException("plato: no existe en este restaurante");
 		}
 		
-		r.add(plato);
-		update(r);
+		Double precioD = Double.parseDouble(precio);
+		Plato actualizacion=new Plato(nombre,descripcion,precioD);
+		actualizacion.setDisponibilidad(disponibilidad);
+		r.add(actualizacion);
+		repositorio.update(r);
 	}
 
 	@Override

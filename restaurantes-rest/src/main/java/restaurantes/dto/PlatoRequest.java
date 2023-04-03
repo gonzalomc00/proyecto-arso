@@ -7,6 +7,9 @@ public class PlatoRequest {
 	private String nombre;
 	private String descripcion;
 	private String precio; //"xx.yy"
+	private boolean disponibilidad;
+	
+
 	
 	public String getNombre() {
 		return nombre;
@@ -25,6 +28,12 @@ public class PlatoRequest {
 	}
 	public void setPrecio(String precio) {
 		this.precio = precio;
+	}
+	public boolean isDisponibilidad() {
+		return disponibilidad;
+	}
+	public void setDisponibilidad(boolean disponibilidad) {
+		this.disponibilidad = disponibilidad;
 	}
 
 	

@@ -28,6 +28,8 @@ public class Plato {
 		this.precio = precio;
 		this.disponibilidad = true;
 		
+		
+		
 	}
 	
 	@Override
@@ -60,7 +62,7 @@ public class Plato {
 		this.precio = precio;
 	}
 
-	public boolean isDisponible() {
+	public boolean isDisponibilidad() {
 		return disponibilidad;
 	}
 
