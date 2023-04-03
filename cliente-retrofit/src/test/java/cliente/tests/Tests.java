@@ -104,8 +104,6 @@ class Tests {
 		System.out.println(resultado);
 	}
 	
-	
-	
 // ------------------ Tests updateRestaurante() --------------------
 	
 	@Test 

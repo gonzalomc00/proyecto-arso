@@ -22,8 +22,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
 
@@ -42,6 +40,18 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	@Override
 	public String create(String nombre, String cp, String ciudad, Point coordenadas) throws RepositorioException {
 
+		if (nombre == null || nombre.isEmpty())
+			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+		
+		if (cp == null || cp.isEmpty())
+			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
+		
+		if (ciudad == null || ciudad.isEmpty())
+			throw new IllegalArgumentException("nombre de la ciudad: no debe ser nulo ni vacio");
+		
+		if (coordenadas == null)
+			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+
 		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, coordenadas);
 
 		String id = repositorio.add(restaurante);
@@ -49,31 +59,31 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	public void update(String id, String nombre, String ciudad, String cp, String coordenadas) throws RepositorioException, EntidadNoEncontrada {
-		
+	
 	
 		if (id == null || id.isEmpty()) 
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 			
 		if (nombre == null || nombre.isEmpty()) 
-			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+			throw new IllegalArgumentException("nombre del  restaurante modificado: no debe ser nulo ni vacio");
 	
 		if (ciudad == null || ciudad.isEmpty()) 
-			throw new IllegalArgumentException("ciudad del restaurante: no debe ser nulo ni vacio");
+			throw new IllegalArgumentException("ciudad del restaurante modificado: no debe ser nulo ni vacio");
 			
 		if (cp == null || cp.isEmpty()) 
-			throw new IllegalArgumentException("cp del restaurante: no debe ser nulo ni vacio");
+			throw new IllegalArgumentException("cp del restaurante modificado: no debe ser nulo ni vacio");
 			
 		if (coordenadas == null ||coordenadas.isEmpty() ) 
-			throw new IllegalArgumentException("coordenadas del restaurante: no debe ser nulo ni vacio");
+			throw new IllegalArgumentException("coordenadas del restaurante modificado: no debe ser nulo ni vacio");
 			
 		
 		String[] coordenadasArray = coordenadas.split(", ");
 		
 		double x = Double.parseDouble(coordenadasArray[0]);
 		double y = Double.parseDouble(coordenadasArray[1]);
+		
 		Position posicion = new Position(x, y);
 		Point coordenadasPoint = new Point(posicion);
-		
 		
 		Restaurante r= repositorio.getById(id);
 		

@@ -1,5 +1,5 @@
 
-En proyecto Restaurantes
+En proyecto: restaurantes
 
 Repositorio.properties
 

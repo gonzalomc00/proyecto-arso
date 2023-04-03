@@ -37,4 +37,5 @@ public interface IServicioRestaurante {
 	void deleteRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada;
 	
 	List<RestauranteResumen> getListadoRestaurantes() throws RepositorioException;
+	
 }

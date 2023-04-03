@@ -3,7 +3,6 @@ package retrofit.restaurantes;
 
 import java.util.List;
 
-import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
 import retrofit.restaurantes.Listado.ResumenExtendido;
@@ -26,7 +25,6 @@ public interface RestaurantesRestClient {
 	@PUT("restaurantes/{id}/sitios")
 	Call<List<SitioTuristico>> setSitiosTuristicos(@Path("id") String id, @Body List<SitioTuristico> sitios);
 	
-	
 	@PUT("restaurantes/{id}")
 	Call<Void> updateRestaurante(@Path("id") String id, @Body RestauranteRequest restaurante);
 	
@@ -42,9 +40,12 @@ public interface RestaurantesRestClient {
 	@DELETE("restaurantes/{id}")
 	Call<Void> removeRestaurante(@Path("id") String id);
 
-
 	@GET("restaurantes")
 	Call<List<ResumenExtendido>> getListadoRestaurantes();
+	
+	@GET("restaurantes/{id}")
+	Call<Restaurante> getRestaurante(@Path("id") String id);
+	
 	
 	
 }

@@ -6,7 +6,7 @@ public class RestauranteRequest {
 	private String nombre;
 	private String cp;
 	private String ciudad;
-	private String coordenadas; // Formato " x , y"
+	private String coordenadas; // Formato " x, y"
 
 	// Por simplicidad cuando se da de alta un restaurante lo hace sin platos ni
 	// sitios turisticos
