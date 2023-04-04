@@ -27,9 +27,6 @@ public class Plato {
 		this.descripcion = desc;
 		this.precio = precio;
 		this.disponibilidad = true;
-		
-		
-		
 	}
 	
 	@Override

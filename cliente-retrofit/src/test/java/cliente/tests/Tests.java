@@ -62,6 +62,7 @@ class Tests {
 
 	}
 
+	@Test
 	void testCrearRestauranteFaltaCiudad() throws IOException {
 		System.out.println("TEST CREAR RESTAURANTE SIN CIUDAD");
 		RestauranteRequest restaurante2 = new RestauranteRequest();
@@ -76,6 +77,7 @@ class Tests {
 		System.out.println("-------------------");
 	}
 
+	@Test
 	void testCrearRestauranteFaltaCP() throws IOException {
 		System.out.println("TEST CREAR RESTAURANTE SIN CP");
 		RestauranteRequest restaurante3 = new RestauranteRequest();
@@ -90,6 +92,7 @@ class Tests {
 		System.out.println("-------------------");
 	}
 
+	@Test
 	void testCrearRestauranteFaltaCoordenadas() throws IOException {
 		System.out.println("TEST CREAR RESTAURANTE SIN COORDENADAS");
 		RestauranteRequest restaurante4 = new RestauranteRequest();
@@ -114,10 +117,26 @@ class Tests {
 		System.out.println("-------------------");
 	}
 
+	@Test
+	void testGetSitiosTuristicosIdVacio() throws IOException {
+		System.out.println("TEST GET SITIOS TURISTICOS ID VACIO");
+
+		Response<List<SitioTuristico>> resultado = service.getSitiosTuristicos("").execute();
+		System.out.println(resultado);
+		System.out.println("Código de respuesta: " + resultado.code());
+		System.out.println("Mensaje de respuesta: " + resultado.message());
+		System.out.println("Cuerpo del mensaje: " + resultado.errorBody().string()); // DEBERIA DAR id del restaurante:
+																						// no debe ser nulo ni vacio
+																						// PERO no da nada
+
+		System.out.println("-------------------");
+	}
+
 // ------------------ Tests updateRestaurante() --------------------
 
 	@Test
 	void testUpdateRestauranteCorrecto() throws IOException {
+		System.out.println("TEST UPDATE RESTAURANTE CORRECTO");
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -137,11 +156,14 @@ class Tests {
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("-----------------------------------------------");
 
 	}
 
 	@Test
 	void testUpdateRestauranteNoExiste() throws IOException {
+		System.out.println("TEST UPDATE RESTAURANTE NO EXISTE");
+
 		RestauranteRequest update = new RestauranteRequest();
 		update.setNombre("Actualizacion Retrofit");
 		update.setCiudad("Ciudad actualizada");
@@ -152,11 +174,14 @@ class Tests {
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
 
 	}
 
 	@Test
 	void testUpdateRestauranteSinNombre() throws IOException {
+		System.out.println("TEST UPDATE RESTAURANTE SIN NOMBRE");
+
 		RestauranteRequest update = new RestauranteRequest();
 		update.setCiudad("Ciudad actualizada");
 		update.setCp("99999");
@@ -166,11 +191,13 @@ class Tests {
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
 
 	}
 
 	@Test
 	void testUpdateRestauranteSinCiudad() throws IOException {
+		System.out.println("TEST UPDATE RESTAURANTE SIN CIUDAD");
 		RestauranteRequest update = new RestauranteRequest();
 		update.setNombre("Actualizacion Retrofit");
 		update.setCp("99999");
@@ -180,11 +207,14 @@ class Tests {
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
 
 	}
 
 	@Test
 	void testUpdateRestauranteSinCp() throws IOException {
+		System.out.println("TEST UPDATE RESTAURANTE SIN CP");
+
 		RestauranteRequest update = new RestauranteRequest();
 		update.setNombre("Actualizacion Retrofit");
 		update.setCiudad("Ciudad actualizada");
@@ -194,11 +224,14 @@ class Tests {
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
 
 	}
 
 	@Test
 	void testUpdateRestauranteSinCoordenadas() throws IOException {
+		System.out.println("TEST UPDATE RESTAURANTE SIN COORDENADAS");
+
 		RestauranteRequest update = new RestauranteRequest();
 		update.setNombre("Actualizacion Retrofit");
 		update.setCiudad("Ciudad actualizada");
@@ -208,6 +241,7 @@ class Tests {
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
 
 	}
 
@@ -215,6 +249,8 @@ class Tests {
 
 	@Test
 	void testAddPlato() throws IOException {
+		System.out.println("TEST ADDPLATO CORRECTO");
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -235,12 +271,125 @@ class Tests {
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("-----------------------------------------------");
 
 	}
-	
+
+	@Test
+	void testAddPlatoSinNombre() throws IOException {
+		System.out.println("TEST ADDPLATO SIN NOMBRE");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		System.out.println(id1);
+		PlatoRequest plato = new PlatoRequest();
+		plato.setDescripcion("Descripcion del plato");
+		plato.setPrecio("10");
+		plato.setDisponibilidad(true);
+
+		Response<Void> resultado2 = service.addPlato(id1, plato).execute();
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
+	}
+
+	@Test
+	void testAddPlatoSinDescripcion() throws IOException {
+		System.out.println("TEST ADDPLATO SIN DESCRIPCION");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		System.out.println(id1);
+		PlatoRequest plato = new PlatoRequest();
+		plato.setNombre("Plato de prueba");
+		plato.setPrecio("10");
+		plato.setDisponibilidad(true);
+
+		Response<Void> resultado2 = service.addPlato(id1, plato).execute();
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
+	}
+
+	@Test
+	void testAddPlatoSinPrecio() throws IOException {
+		System.out.println("TEST ADDPLATO SIN PRECIO");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		System.out.println(id1);
+		PlatoRequest plato = new PlatoRequest();
+		plato.setNombre("Plato de prueba");
+		plato.setDescripcion("Descripcion del plato");
+		plato.setDisponibilidad(true);
+
+		Response<Void> resultado2 = service.addPlato(id1, plato).execute();
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Cuerpo del mensaje: " + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
+
+	}
+
+	@Test
+	void testAddPlatoSinDisponibilidad() throws IOException {
+		System.out.println("TEST ADDPLATO SIN DISPONIBILIDAD");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		System.out.println(id1);
+		PlatoRequest plato = new PlatoRequest();
+		plato.setNombre("Plato de prueba");
+		plato.setDescripcion("Descripcion del plato");
+		plato.setDisponibilidad(true);
+		plato.setPrecio("10");
+
+		// Al no definir disponibilidad se crea por defecto a false
+		Response<Void> resultado2 = service.addPlato(id1, plato).execute();
+		System.out.println("Plato: " + service.getRestaurante(id1).execute().body().getPlatos());
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("-----------------------------------------------");
+
+	}
+
 	@Test
 	void testAddPlatoRepetido() throws IOException {
-		
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -256,9 +405,9 @@ class Tests {
 		plato.setDescripcion("Descripcion del plato");
 		plato.setPrecio("10");
 		plato.setDisponibilidad(true);
-		
+
 		service.addPlato(id1, plato).execute();
-		
+
 		PlatoRequest plato2 = new PlatoRequest();
 		plato2.setNombre("Plato de prueba");
 		plato2.setDescripcion("Descripcion del plato");
@@ -270,9 +419,107 @@ class Tests {
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Cuerpo del mensaje:" + resultado2.errorBody().string());
+		System.out.println("-----------------------------------------------");
 
-		//TODO: Duda: plato repetido deberia devolver BadRequest (400) o IllegalState (Server Error 500) ??
+		// TODO: Duda: plato repetido deberia devolver BadRequest (400) o IllegalState
+		// (Server Error 500) ??
 	}
+	
+	//------------------- Tests removePlato()-----------------------
+	
+	@Test
+	void testRemovePlato() throws IOException {
+		System.out.println("TEST REMOVEPLATO CORRECTO");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		System.out.println(id1);
+		PlatoRequest plato = new PlatoRequest();
+		plato.setNombre("Plato de prueba");
+		plato.setDescripcion("Descripcion del plato");
+		plato.setPrecio("10");
+		plato.setDisponibilidad(true);
+
+		service.addPlato(id1, plato).execute();
+		
+		Response<Void> resultado2 = service.removePlato(id1, plato.getNombre()).execute();
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+
+		System.out.println("-----------------------------------------------");
+	}
+	
+	@Test
+	void testRemovePlatoIdVacio() throws IOException {
+		System.out.println("TEST REMOVEPLATO ID VACIO");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		System.out.println(id1);
+		PlatoRequest plato = new PlatoRequest();
+		plato.setNombre("Plato de prueba");
+		plato.setDescripcion("Descripcion del plato");
+		plato.setPrecio("10");
+		plato.setDisponibilidad(true);
+
+		service.addPlato(id1, plato).execute();
+		
+		Response<Void> resultado2 = service.removePlato("", plato.getNombre()).execute();
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Cuerpo del mensaje:" + resultado2.errorBody().string());
+
+		System.out.println("-----------------------------------------------");
+	}
+	
+	@Test
+	void testRemovePlatoSinNombre() throws IOException {
+		System.out.println("TEST REMOVEPLATO CORRECTO");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		System.out.println(id1);
+		PlatoRequest plato = new PlatoRequest();
+		plato.setNombre("Plato de prueba");
+		plato.setDescripcion("Descripcion del plato");
+		plato.setPrecio("10");
+		plato.setDisponibilidad(true);
+
+		service.addPlato(id1, plato).execute();
+		
+		Response<Void> resultado2 = service.removePlato(id1,"").execute();
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Cuerpo del mensaje:" + resultado2.errorBody().string());
+
+		System.out.println("-----------------------------------------------");
+	}
+	
+	
 
 	// ------------------ Tests getRestaurante() --------------------
 
@@ -285,17 +532,16 @@ class Tests {
 		restaurante.setCp("30001");
 		restaurante.setCoordenadas("20, 10");
 		Response<Void> resultado = service.createRestaurante(restaurante).execute();
-		
+
 		String url1 = resultado.headers().get("Location");
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
-
 
 		Response<Restaurante> resultado2 = service.getRestaurante(id1).execute();
 		Restaurante res = resultado2.body();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
-		System.out.println("Restaurante: " + res.toString()); //TODO: Coordenadas rarillas 
+		System.out.println("Restaurante: " + res.toString()); // TODO: Coordenadas rarillas
 		System.out.println("-------------------------------");
 
 	}
@@ -315,17 +561,17 @@ class Tests {
 
 	@Test
 	void testGetRestauranteIdVacio() throws IOException {
-		
+
 		System.out.println("TEST GETRESTAURANTE ID VACIO");
 
 		Response<Restaurante> resultado2 = service.getRestaurante("").execute();
 		Restaurante res = resultado2.body();
-		
-		//TODO: devuelve un restaurante todo null ?????????? porque no salta el error
+
+		// TODO: devuelve un restaurante todo null ?????????? porque no salta el error
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("RESTAURANTE: " + res.toString());
-		
+
 		System.out.println("-------------------------------");
 
 	}

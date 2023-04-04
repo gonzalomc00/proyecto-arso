@@ -234,6 +234,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			throw new IllegalArgumentException("precio del plato: no debe ser nulo ni vacio");
 		}
 		
+		
 		Double precioD = Double.parseDouble(precio);
 
 		Plato plato = new Plato();
