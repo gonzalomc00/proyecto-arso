@@ -1,10 +1,12 @@
 package restaurantes.servicio;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,12 +20,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
 
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
@@ -131,16 +131,21 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			// JSON
 
 			InputStreamReader fuente = new InputStreamReader(
-					new URL("https://es.dbpedia.org/data/" + sitio + ".json").openStream());
+					new URL("https://es.dbpedia.org/data/" + URLEncoder.encode(sitio,"utf-8") + ".json").openStream());
 			System.out.println("-----------------------------------------------------");
 
 			JsonReader jsonReader = Json.createReader(fuente);
 			JsonObject obj = jsonReader.readObject();
+			
+			FileWriter file=new FileWriter("C:\\Users\\Gonzalo\\Desktop\\Ejemplos processing\\texto.txt");
+			file.write(obj.toString());
 
 			SitioTuristico sitio_clase = new SitioTuristico();
+			System.out.println(sitio);
 			sitio_clase.setNombre(sitio);
 
-			JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio);
+
+			JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio); 
 
 			JsonArray categorias = infoSitio.getJsonArray("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 			JsonArray propiedadesResumen = infoSitio.getJsonArray("http://dbpedia.org/ontology/abstract");
@@ -151,7 +156,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 			System.out.println("CATEGORIAS: ");
 			List<String> categorias_clase = new LinkedList<String>();
-
+			if(categorias!=null) {
 			for (JsonObject categoria : categorias.getValuesAs(JsonObject.class)) {
 				// categoria
 				if (categoria.getString("value").equals("http://dbpedia.org/ontology/ArchitecturalStructure")
@@ -160,6 +165,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 					categorias_clase.add(categoria.getString("value"));
 					check = true;
 				}
+			}
 			}
 
 			sitio_clase.setCategorias(categorias_clase);

@@ -112,8 +112,20 @@ class Tests {
 	void testGetSitiosTuristicos() throws IOException {
 		System.out.println("TEST GET SITIOS TURISTICOS");
 
-		Response<List<SitioTuristico>> resultado = service.getSitiosTuristicos("64174b30afc54153b546599e").execute();
-		System.out.println(resultado);
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("16211");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		Response<List<SitioTuristico>> resultado2 = service.getSitiosTuristicos(id1).execute();
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Cuerpo del mensaje: "+ resultado2.body());
 		System.out.println("-------------------");
 	}
 
