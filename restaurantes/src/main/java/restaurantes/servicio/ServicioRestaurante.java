@@ -20,7 +20,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -38,63 +37,61 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 
 	@Override
-	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud) throws RepositorioException {
+	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud)
+			throws RepositorioException {
 
 		if (nombre == null || nombre.isEmpty())
 			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
-		
+
 		if (cp == null || cp.isEmpty())
 			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
-		
+
 		if (ciudad == null || ciudad.isEmpty())
 			throw new IllegalArgumentException("nombre de la ciudad: no debe ser nulo ni vacio");
-		
+
 		if (latitud == null)
 			throw new IllegalArgumentException("latitud: no debe ser nulo");
-		
+
 		if (longitud == null)
 			throw new IllegalArgumentException("longitud: no debe ser nulo");
-		
 
-		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, latitud,longitud);
+		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, latitud, longitud);
 
 		String id = repositorio.add(restaurante);
 		return id;
 	}
 
-	public void update(String id, String nombre, String ciudad, String cp, Double latitud, Double longitud) throws RepositorioException, EntidadNoEncontrada {
-	
-	
-		if (id == null || id.isEmpty()) 
+	public void update(String id, String nombre, String ciudad, String cp, Double latitud, Double longitud)
+			throws RepositorioException, EntidadNoEncontrada {
+
+		if (id == null || id.isEmpty())
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
-			
-		if (nombre == null || nombre.isEmpty()) 
+
+		if (nombre == null || nombre.isEmpty())
 			throw new IllegalArgumentException("nombre del  restaurante modificado: no debe ser nulo ni vacio");
-	
-		if (ciudad == null || ciudad.isEmpty()) 
+
+		if (ciudad == null || ciudad.isEmpty())
 			throw new IllegalArgumentException("ciudad del restaurante modificado: no debe ser nulo ni vacio");
-			
-		if (cp == null || cp.isEmpty()) 
+
+		if (cp == null || cp.isEmpty())
 			throw new IllegalArgumentException("cp del restaurante modificado: no debe ser nulo ni vacio");
-			
+
 		if (latitud == null)
 			throw new IllegalArgumentException("latitud: no debe ser nulo");
-		
+
 		if (longitud == null)
 			throw new IllegalArgumentException("longitud: no debe ser nulo");
-			
-		
 
-		Restaurante r= repositorio.getById(id);
-		
+		Restaurante r = repositorio.getById(id);
+
 		r.setNombre(nombre);
 		r.setCiudad(ciudad);
 		r.setCp(cp);
 		r.setLatitud(latitud);
 		r.setLongitud(longitud);
-		
+
 		repositorio.update(r);
-		
+
 	}
 
 	@Override
@@ -104,10 +101,9 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+
 		Restaurante r = repositorio.getById(idRes);
 
-		System.out.println(r);
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		// 1. Obtener una factoría
 		DocumentBuilderFactory factoria = DocumentBuilderFactory.newInstance();
@@ -131,21 +127,20 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			// JSON
 
 			InputStreamReader fuente = new InputStreamReader(
-					new URL("https://es.dbpedia.org/data/" + URLEncoder.encode(sitio,"utf-8") + ".json").openStream());
+					new URL("https://es.dbpedia.org/data/" + URLEncoder.encode(sitio, "utf-8") + ".json").openStream());
 			System.out.println("-----------------------------------------------------");
 
 			JsonReader jsonReader = Json.createReader(fuente);
 			JsonObject obj = jsonReader.readObject();
-			
-			FileWriter file=new FileWriter("C:\\Users\\Gonzalo\\Desktop\\Ejemplos processing\\texto.txt");
+
+			FileWriter file = new FileWriter("src/test/resources/texto.txt");
 			file.write(obj.toString());
 
 			SitioTuristico sitio_clase = new SitioTuristico();
 			System.out.println(sitio);
 			sitio_clase.setNombre(sitio);
 
-
-			JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio); 
+			JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio);
 
 			JsonArray categorias = infoSitio.getJsonArray("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 			JsonArray propiedadesResumen = infoSitio.getJsonArray("http://dbpedia.org/ontology/abstract");
@@ -156,16 +151,16 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 			System.out.println("CATEGORIAS: ");
 			List<String> categorias_clase = new LinkedList<String>();
-			if(categorias!=null) {
-			for (JsonObject categoria : categorias.getValuesAs(JsonObject.class)) {
-				// categoria
-				if (categoria.getString("value").equals("http://dbpedia.org/ontology/ArchitecturalStructure")
-						|| categoria.getString("value").equals("http://dbpedia.org/ontology/HistoricBuilding")) {
-					System.out.println(categoria.getString("value"));
-					categorias_clase.add(categoria.getString("value"));
-					check = true;
+			if (categorias != null) {
+				for (JsonObject categoria : categorias.getValuesAs(JsonObject.class)) {
+					// categoria
+					if (categoria.getString("value").equals("http://dbpedia.org/ontology/ArchitecturalStructure")
+							|| categoria.getString("value").equals("http://dbpedia.org/ontology/HistoricBuilding")) {
+						System.out.println(categoria.getString("value"));
+						categorias_clase.add(categoria.getString("value"));
+						check = true;
+					}
 				}
-			}
 			}
 
 			sitio_clase.setCategorias(categorias_clase);
@@ -210,13 +205,23 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 				sitios.add(sitio_clase);
 			}
+			file.close();
 		}
+
 		return sitios;
+
 	}
 
 	@Override
 	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios)
 			throws RepositorioException, EntidadNoEncontrada {
+
+		if (idRes == null || idRes.isEmpty()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		if (sitios.isEmpty() || sitios == null ) {
+			throw new IllegalArgumentException("lista de sitios turisticos: no debe ser nula ni vacia");
+		}
 		
 		Restaurante r = repositorio.getById(idRes);
 		r.setSitios(sitios);
@@ -224,24 +229,24 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public String addPlato(String idRes, String nombre, String descripcion,String precio,boolean disponibilidad) throws RepositorioException, EntidadNoEncontrada {
+	public String addPlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad)
+			throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+
 		if (nombre == null || nombre.isEmpty()) {
 			throw new IllegalArgumentException("nombre del plato: no debe ser nulo ni vacio");
 		}
-		
+
 		if (descripcion == null || descripcion.isEmpty()) {
 			throw new IllegalArgumentException("descripcion del plato: no debe ser nulo ni vacio");
 		}
-		
+
 		if (precio == null || precio.isEmpty()) {
 			throw new IllegalArgumentException("precio del plato: no debe ser nulo ni vacio");
 		}
-		
-		
+
 		Double precioD = Double.parseDouble(precio);
 
 		Plato plato = new Plato();
@@ -273,11 +278,9 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (nombrePlato == null || nombrePlato.isEmpty()) {
 			throw new IllegalArgumentException("nombre del plato: no debe ser nulo ni vacio");
 		}
-		
-		
+
 		Restaurante r = repositorio.getById(idRes);
-		
-		
+
 		List<Plato> listaPlatos = r.getPlatos();
 
 		boolean existePlato = false;
@@ -286,47 +289,47 @@ public class ServicioRestaurante implements IServicioRestaurante {
 				existePlato = true;
 			}
 		}
-		
+
 		if (!existePlato) {
 			throw new IllegalArgumentException("ERROR: No existe el plato en este restaurante");
 		}
-		
+
 		boolean borrado = r.remove(nombrePlato);
 		repositorio.update(r);
-		
+
 		return borrado;
 
 	}
 
 	@Override
-	public void updatePlato(String idRes, String nombre, String descripcion, String precio,boolean disponibilidad) throws RepositorioException, EntidadNoEncontrada {
+	public void updatePlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad)
+			throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+
 		if (nombre == null || nombre.isEmpty()) {
 			throw new IllegalArgumentException("nombre del plato: no debe ser nulo ni vacio");
 		}
-		
+
 		if (descripcion == null || descripcion.isEmpty()) {
 			throw new IllegalArgumentException("descripcion del plato: no debe ser nulo ni vacio");
 		}
-		
+
 		if (precio == null || precio.isEmpty()) {
 			throw new IllegalArgumentException("precio del plato: no debe ser nulo ni vacio");
 		}
-		
-		
+
 		Restaurante r = repositorio.getById(idRes);
-		
+
 		boolean borrado = r.remove(nombre);
-		
+
 		if (!borrado) {
 			throw new IllegalArgumentException("plato: no existe en este restaurante");
 		}
-		
+
 		Double precioD = Double.parseDouble(precio);
-		Plato actualizacion=new Plato(nombre,descripcion,precioD);
+		Plato actualizacion = new Plato(nombre, descripcion, precioD);
 		actualizacion.setDisponibilidad(disponibilidad);
 		r.add(actualizacion);
 		repositorio.update(r);
@@ -337,7 +340,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+
 		Restaurante r = repositorio.getById(idRes);
 		repositorio.delete(r);
 
@@ -366,7 +369,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (idRes == null || idRes.isEmpty() || idRes.isBlank()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+
 		return repositorio.getById(idRes);
 	}
 

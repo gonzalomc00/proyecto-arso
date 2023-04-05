@@ -21,7 +21,7 @@ public class RepositorioRestaurantesMemoria extends RepositorioMemoria<Restauran
 		
 		r1.setLatitud(20.0);
 		r1.setLongitud(30.0);
-		r1.setCp("30150");
+		r1.setCp("30010");
 		r1.setId("1");
 		
 		Plato p1 = new Plato();

@@ -20,11 +20,13 @@ public interface RestaurantesRestClient {
 	@POST("restaurantes")
 	Call<Void> createRestaurante(@Body RestauranteRequest actividad);
 	
+	//HECHO
 	@GET("restaurantes/{id}/sitios")
 	Call<List<SitioTuristico>> getSitiosTuristicos(@Path("id") String id);
 	
+	//HECHO
 	@PUT("restaurantes/{id}/sitios")
-	Call<List<SitioTuristico>> setSitiosTuristicos(@Path("id") String id, @Body List<SitioTuristico> sitios);
+	Call<Void> setSitiosTuristicos(@Path("id") String id, @Body List<SitioTuristico> sitios);
 	
 	//HECHO
 	@PUT("restaurantes/{id}")
