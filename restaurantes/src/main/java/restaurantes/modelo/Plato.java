@@ -5,7 +5,7 @@ public class Plato {
 	private String nombre;
 	private String descripcion;
 	private Double precio;
-	private boolean disponibilidad; 
+	private Boolean disponibilidad; 
 	
 	
 	public Plato() { //POJO
@@ -59,7 +59,7 @@ public class Plato {
 		this.precio = precio;
 	}
 
-	public boolean isDisponibilidad() {
+	public Boolean isDisponibilidad() {
 		return disponibilidad;
 	}
 

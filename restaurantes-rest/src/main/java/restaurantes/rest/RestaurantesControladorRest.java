@@ -97,8 +97,8 @@ public class RestaurantesControladorRest {
 			double longitud = Double.parseDouble(coordenadasArray[1]);
 
 			// APLICACIÓN PATRON BUILDER
-			String id = servicio.create(restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(),
-					latitud,longitud);
+			String id = servicio.create(restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(), latitud,
+					longitud);
 
 			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(id).build();
 
@@ -119,11 +119,14 @@ public class RestaurantesControladorRest {
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Restaurante no encontrado") })
 	public Response getRestaurante(@ApiParam(value = "id del restaurante", required = true) @PathParam("id") String id)
 			throws Exception {
+		
+		
 
 		return Response.status(Response.Status.OK).entity(servicio.getRestaurante(id)).build();
 	}
 
-	// curl -X GET http://localhost:8080/api/restaurantes/642ac93103896f0ae3f3b42e -H "Content-type: application/json"
+	// curl -X GET http://localhost:8080/api/restaurantes/642ac93103896f0ae3f3b42e
+	// -H "Content-type: application/json"
 
 	// 3.void update(Restaurante restaurante);
 
@@ -148,32 +151,27 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "datos del restaurante modificados", required = true) RestauranteRequest restaurante)
 			throws Exception {
 
-		/*
-		 * if (restaurante.getNombre() == null || restaurante.getNombre().isEmpty()) {
-		 * throw new
-		 * IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio"
-		 * );
-		 * 
-		 * } if (restaurante.getCp() == null || restaurante.getCp().isEmpty()) throw new
-		 * IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
-		 * 
-		 * if (restaurante.getCiudad() == null || restaurante.getCiudad().isEmpty())
-		 * throw new IllegalArgumentException("ciudad: no debe ser nulo ni vacio");
-		 * 
-		 * if (restaurante.getCoordenadas() == null) throw new
-		 * IllegalArgumentException("coordenadas: no debe ser nulo");
-		 */
-		
+		if (restaurante.getNombre() == null || restaurante.getNombre().isEmpty()) {
+			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
+
+		}
+		if (restaurante.getCp() == null || restaurante.getCp().isEmpty())
+			throw new IllegalArgumentException("codigo postal: no debe ser nulo ni vacio");
+
+		if (restaurante.getCiudad() == null || restaurante.getCiudad().isEmpty())
+			throw new IllegalArgumentException("ciudad: no debe ser nulo ni vacio");
+
+		if (restaurante.getCoordenadas() == null)
+			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+
 		String coordenadasStr = restaurante.getCoordenadas();
 		String[] coordenadasArray = coordenadasStr.split(", ");
 
 		double latitud = Double.parseDouble(coordenadasArray[0]);
 		double longitud = Double.parseDouble(coordenadasArray[1]);
 
+		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(), latitud, longitud);
 
-		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(),
-				latitud,longitud);
-		
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
@@ -346,7 +344,7 @@ public class RestaurantesControladorRest {
 
 		List<RestauranteResumen> resultado = servicio.getListadoRestaurantes();
 
-		LinkedList<ResumenExtendido> extendido = new LinkedList<Listado.ResumenExtendido>();
+		List<ResumenExtendido> extendido = new LinkedList<Listado.ResumenExtendido>();
 
 		for (RestauranteResumen restauranteResumen : resultado) {
 

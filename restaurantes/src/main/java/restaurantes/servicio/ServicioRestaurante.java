@@ -244,8 +244,6 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		plato.setPrecio(precioD);
 		plato.setDisponibilidad(disponibilidad);
 		Restaurante r = repositorio.getById(idRes);
-		System.out.println(r.getNombre());
-
 		// No añadir platos repetidos
 		List<Plato> listaPlatos = r.getPlatos();
 
@@ -255,10 +253,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			}
 
 		}
-		System.out.println(plato.toString());
 		r.add(plato);
 		repositorio.update(r);
-		System.out.println("eeeeee");
 		return plato.getNombre();
 
 	}
@@ -320,7 +316,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		boolean borrado = r.remove(nombre);
 		
 		if (!borrado) {
-			throw new IllegalStateException("plato: no existe en este restaurante");
+			throw new IllegalArgumentException("plato: no existe en este restaurante");
 		}
 		
 		Double precioD = Double.parseDouble(precio);
@@ -348,7 +344,6 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		List<RestauranteResumen> resumenes = new ArrayList<RestauranteResumen>();
 
 		for (Restaurante r : restaurantes) {
-			System.out.println(r.toString());
 			RestauranteResumen rr = new RestauranteResumen();
 			rr.setId(r.getId());
 			rr.setNombre(r.getNombre());
