@@ -18,9 +18,9 @@ public class RepositorioRestaurantesMemoria extends RepositorioMemoria<Restauran
 		Restaurante r1 = new Restaurante();
 		r1.setNombre("Burger Queen");
 		r1.setCiudad("Murcia");
-		Position posicion = new Position(20, 30);
-		Point coordenadas = new Point(posicion);
-		r1.setCoordenadas(coordenadas);
+		
+		r1.setLatitud(20.0);
+		r1.setLongitud(30.0);
 		r1.setCp("30150");
 		r1.setId("1");
 		

@@ -38,7 +38,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 
 	@Override
-	public String create(String nombre, String cp, String ciudad, Point coordenadas) throws RepositorioException {
+	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud) throws RepositorioException {
 
 		if (nombre == null || nombre.isEmpty())
 			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
@@ -49,16 +49,20 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (ciudad == null || ciudad.isEmpty())
 			throw new IllegalArgumentException("nombre de la ciudad: no debe ser nulo ni vacio");
 		
-		if (coordenadas == null)
-			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+		if (latitud == null)
+			throw new IllegalArgumentException("latitud: no debe ser nulo");
+		
+		if (longitud == null)
+			throw new IllegalArgumentException("longitud: no debe ser nulo");
+		
 
-		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, coordenadas);
+		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, latitud,longitud);
 
 		String id = repositorio.add(restaurante);
 		return id;
 	}
 
-	public void update(String id, String nombre, String ciudad, String cp, String coordenadas) throws RepositorioException, EntidadNoEncontrada {
+	public void update(String id, String nombre, String ciudad, String cp, Double latitud, Double longitud) throws RepositorioException, EntidadNoEncontrada {
 	
 	
 		if (id == null || id.isEmpty()) 
@@ -73,24 +77,21 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (cp == null || cp.isEmpty()) 
 			throw new IllegalArgumentException("cp del restaurante modificado: no debe ser nulo ni vacio");
 			
-		if (coordenadas == null ||coordenadas.isEmpty() ) 
-			throw new IllegalArgumentException("coordenadas del restaurante modificado: no debe ser nulo ni vacio");
+		if (latitud == null)
+			throw new IllegalArgumentException("latitud: no debe ser nulo");
+		
+		if (longitud == null)
+			throw new IllegalArgumentException("longitud: no debe ser nulo");
 			
 		
-		String[] coordenadasArray = coordenadas.split(", ");
-		
-		double x = Double.parseDouble(coordenadasArray[0]);
-		double y = Double.parseDouble(coordenadasArray[1]);
-		
-		Position posicion = new Position(x, y);
-		Point coordenadasPoint = new Point(posicion);
-		
+
 		Restaurante r= repositorio.getById(id);
 		
 		r.setNombre(nombre);
 		r.setCiudad(ciudad);
 		r.setCp(cp);
-		r.setCoordenadas(coordenadasPoint);
+		r.setLatitud(latitud);
+		r.setLongitud(longitud);
 		
 		repositorio.update(r);
 		

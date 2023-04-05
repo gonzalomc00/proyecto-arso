@@ -19,7 +19,8 @@ public class Restaurante implements Identificable{
 	private String nombre;
 	private String cp;
 	private String ciudad;
-	private Point coordenadas;
+	private Double latitud;
+	private Double longitud;
 	private List<SitioTuristico> sitios = new LinkedList<>();
 	private List<Plato> platos = new LinkedList<>();
 
@@ -27,7 +28,7 @@ public class Restaurante implements Identificable{
 		
 	}
 	
-	public Restaurante(String nombre2, String cp2, String ciudad2, Point coordenadas2) {
+	public Restaurante(String nombre2, String cp2, String ciudad2, Double latitud, Double longitud) {
 		
 		if (nombre2 == null || nombre2.isEmpty())
 			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
@@ -38,19 +39,23 @@ public class Restaurante implements Identificable{
 		if (ciudad2 == null || ciudad2.isEmpty())
 			throw new IllegalArgumentException("nombre de la ciudad: no debe ser nulo ni vacio");
 		
-		if (coordenadas2 == null)
-			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+		if (latitud == null)
+			throw new IllegalArgumentException("latitud: no debe ser nulo");
+		
+		if (longitud == null)
+			throw new IllegalArgumentException("longitud: no debe ser nulo");
 
 		this.nombre = nombre2;
 		this.cp = cp2;
 		this.ciudad = ciudad2;
-		this.coordenadas = coordenadas2;
+		this.latitud=latitud;
+		this.longitud=longitud;
 	}
 
 	@Override
 	public String toString() {
-		return "Restaurante [id=" + id + ", nombre=" + nombre + ", cp=" + cp + ", ciudad=" + ciudad + ", coordenadas="
-				+ coordenadas + ", sitios=" + sitios + ", platos=" + platos + "]";
+		return "Restaurante [id=" + id + ", nombre=" + nombre + ", cp=" + cp + ", ciudad=" + ciudad + ", latitud="
+				+ latitud + ", longitud="+ longitud+ ", sitios=" + sitios + ", platos=" + platos + "]";
 	}
 
 	public String getId() {
@@ -115,12 +120,22 @@ public class Restaurante implements Identificable{
 		this.ciudad = ciudad;
 	}
 
-	public Point getCoordenadas() {
-		return coordenadas;
+
+
+	public Double getLatitud() {
+		return latitud;
 	}
 
-	public void setCoordenadas(Point point) {
-		this.coordenadas = point;
+	public void setLatitud(Double latitud) {
+		this.latitud = latitud;
+	}
+
+	public Double getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(Double longitud) {
+		this.longitud = longitud;
 	}
 	
 	

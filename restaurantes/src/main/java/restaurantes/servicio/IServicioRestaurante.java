@@ -18,11 +18,11 @@ import restaurantes.modelo.SitioTuristico;
 
 public interface IServicioRestaurante {
 
-	String create(String nombre, String cp, String ciudad, Point coordenadas ) throws RepositorioException;
+	String create(String nombre, String cp, String ciudad,Double latitud, Double longitud) throws RepositorioException;
 
 	Restaurante getRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada;
 	
-	void update(String id, String nombre, String ciudad, String cp, String coordenadas) throws RepositorioException, EntidadNoEncontrada;
+	void update(String id, String nombre, String ciudad, String cp, Double latitud, Double longitud) throws RepositorioException, EntidadNoEncontrada;
 	
 	List<SitioTuristico> obtenerSitiosTuristicos(String idRes) throws MalformedURLException, SAXException, IOException, ParserConfigurationException, RepositorioException, EntidadNoEncontrada;
 	

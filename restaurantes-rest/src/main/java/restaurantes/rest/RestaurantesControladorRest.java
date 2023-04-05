@@ -93,14 +93,12 @@ public class RestaurantesControladorRest {
 			String coordenadasStr = restaurante.getCoordenadas();
 			String[] coordenadasArray = coordenadasStr.split(", ");
 
-			double x = Double.parseDouble(coordenadasArray[0]);
-			double y = Double.parseDouble(coordenadasArray[1]);
-			Position posicion = new Position(x, y);
-			Point coordenadas = new Point(posicion);
+			double latitud = Double.parseDouble(coordenadasArray[0]);
+			double longitud = Double.parseDouble(coordenadasArray[1]);
 
 			// APLICACIÓN PATRON BUILDER
 			String id = servicio.create(restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(),
-					coordenadas);
+					latitud,longitud);
 
 			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(id).build();
 
@@ -165,9 +163,17 @@ public class RestaurantesControladorRest {
 		 * if (restaurante.getCoordenadas() == null) throw new
 		 * IllegalArgumentException("coordenadas: no debe ser nulo");
 		 */
+		
+		String coordenadasStr = restaurante.getCoordenadas();
+		String[] coordenadasArray = coordenadasStr.split(", ");
+
+		double latitud = Double.parseDouble(coordenadasArray[0]);
+		double longitud = Double.parseDouble(coordenadasArray[1]);
+
 
 		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(),
-				restaurante.getCoordenadas());
+				latitud,longitud);
+		
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
