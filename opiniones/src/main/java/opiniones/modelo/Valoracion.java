@@ -9,6 +9,18 @@ public class Valoracion {
 	private double calificacion;
 	private String comentario;
 	
+	
+	public Valoracion() {
+		
+	}
+	
+	public Valoracion(String correo, LocalDate fecha, double calificacion, String comentario) {
+		this.correo=correo;
+		this.fecha=fecha;
+		this.calificacion=calificacion;
+		this.comentario=comentario;
+	}
+	
 	public String getCorreo() {
 		return correo;
 	}

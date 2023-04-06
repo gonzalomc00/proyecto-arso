@@ -62,5 +62,10 @@ public class Opinion implements Identificable {
 		this.id = id;
 
 	}
+	
+	public void add(Valoracion v) {
+		valoraciones.add(v);
+		
+	}
 
 }
