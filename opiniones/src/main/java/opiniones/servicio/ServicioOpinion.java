@@ -67,13 +67,13 @@ public class ServicioOpinion implements IServicioOpinion {
 		return repositorio.getById(id);
 	}
 
+	//Se borra opinion y valoraciones
 	@Override
 	public void removeOpinion(String id) throws RepositorioException, EntidadNoEncontrada {
 		
 		if (id == null || id.isEmpty())
 			throw new IllegalArgumentException("id de la opinión: no debe ser nulo ni vacio");
 		
-
 		repositorio.delete(repositorio.getById(id));
 		
 	}

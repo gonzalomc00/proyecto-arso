@@ -1,0 +1,30 @@
+type Opinion {
+  id: String!
+  nombreRecurso: String!
+  valoraciones: [Valoracion]!
+  numValoraciones: String! 
+  media: String!
+}
+
+type Valoracion {
+  correo: String!
+  fecha: String! # yy-MM-ddThh:mm
+  calificacion: Double!
+  comentario: String!
+}
+
+type Query {
+  findById(id:String!): Opinion!
+
+}
+
+
+type Mutation {
+  crearOpinion(nombre: String!): String!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
