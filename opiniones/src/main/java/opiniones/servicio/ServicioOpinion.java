@@ -1,4 +1,4 @@
-package restaurantes.servicio;
+package opiniones.servicio;
 
 import java.time.LocalDate;
 
