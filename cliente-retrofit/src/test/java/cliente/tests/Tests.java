@@ -1,8 +1,10 @@
 package cliente.tests;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import restaurantes.modelo.Restaurante;
@@ -115,7 +117,7 @@ class Tests {
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
-		restaurante.setCp("16211");
+		restaurante.setCp("30010");
 		restaurante.setCoordenadas("20, 10");
 		Response<Void> resultado = service.createRestaurante(restaurante).execute();
 
@@ -123,9 +125,11 @@ class Tests {
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		Response<List<SitioTuristico>> resultado2 = service.getSitiosTuristicos(id1).execute();
+		Assertions.assertEquals(resultado2.headers().get("Content-Type"), "application/json");
+
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
-		System.out.println("Cuerpo del mensaje: "+ resultado2.body());
+		System.out.println("Cuerpo del mensaje: " + resultado2.body().toString());
 		System.out.println("-------------------");
 	}
 
@@ -140,10 +144,105 @@ class Tests {
 		System.out.println("Cuerpo del mensaje: " + resultado.errorBody().string()); // DEBERIA DAR id del restaurante:
 																						// no debe ser nulo ni vacio
 																						// PERO no da nada
-
 		System.out.println("-------------------");
 	}
 
+
+	// ---------------- Tests setSitiosTuristicos() --------------------------
+	@Test
+	void testSetSitiosTuristicos() throws IOException {
+		
+		System.out.println("TEST SET SITIOS TURISTICOS");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30010");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+
+		
+		String url1 = resultado.headers().get("Location"); 
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		Response<List<SitioTuristico>> resultado2 = service.getSitiosTuristicos(id1).execute();
+		List<SitioTuristico> lista = resultado2.body();
+		
+		List<SitioTuristico> miLista = new LinkedList<SitioTuristico>();
+		
+		miLista.add(lista.get(0));
+		
+		
+		Response<Void> resultado3 = service.setSitiosTuristicos(id1, miLista).execute();
+
+			
+		System.out.println("Código de respuesta: " + resultado3.code());
+		System.out.println("Mensaje de respuesta: " + resultado3.message());
+		System.out.println("-----------------------------");
+
+		
+	}
+	
+	@Test
+	void testSetSitiosTuristicosListaVacia() throws IOException {
+		
+		System.out.println("TEST SET SITIOS TURISTICOS LISTA VACIA");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30010");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+
+		
+		String url1 = resultado.headers().get("Location"); 
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+		
+		List<SitioTuristico> miLista = new LinkedList<SitioTuristico>();
+		
+		Response<Void> resultado3 = service.setSitiosTuristicos(id1, miLista).execute();
+
+			
+		System.out.println("Código de respuesta: " + resultado3.code());
+		System.out.println("Mensaje de respuesta: " + resultado3.message());
+		System.out.println("Cuerpo del mensaje: " + resultado3.errorBody().string());
+		System.out.println("-----------------------------------------------");
+		
+	}
+	
+	@Test
+	void testSetSitiosTuristicosIdVacia() throws IOException {
+		
+		System.out.println("TEST SET SITIOS TURISTICOS ID VACIO");
+
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30010");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+
+		
+		String url1 = resultado.headers().get("Location"); 
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		Response<List<SitioTuristico>> resultado2 = service.getSitiosTuristicos(id1).execute();
+		List<SitioTuristico> lista = resultado2.body();
+		
+		List<SitioTuristico> miLista = new LinkedList<SitioTuristico>();
+		miLista.add(lista.get(0));
+		
+		
+		Response<Void> resultado3 = service.setSitiosTuristicos("", miLista).execute();
+
+			
+		System.out.println("Código de respuesta: " + resultado3.code());
+		System.out.println("Mensaje de respuesta: " + resultado3.message());
+		System.out.println("Cuerpo del mensaje: " + resultado3.errorBody().string());
+		System.out.println("-----------------------------------------------");
+		
+	}
 // ------------------ Tests updateRestaurante() --------------------
 
 	@Test
@@ -436,9 +535,9 @@ class Tests {
 		// TODO: Duda: plato repetido deberia devolver BadRequest (400) o IllegalState
 		// (Server Error 500) ??
 	}
-	
-	//------------------- Tests removePlato()-----------------------
-	
+
+	// ------------------- Tests removePlato()-----------------------
+
 	@Test
 	void testRemovePlato() throws IOException {
 		System.out.println("TEST REMOVEPLATO CORRECTO");
@@ -460,7 +559,7 @@ class Tests {
 		plato.setDisponibilidad(true);
 
 		service.addPlato(id1, plato).execute();
-		
+
 		Response<Void> resultado2 = service.removePlato(id1, plato.getNombre()).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
@@ -468,7 +567,7 @@ class Tests {
 
 		System.out.println("-----------------------------------------------");
 	}
-	
+
 	@Test
 	void testRemovePlatoIdVacio() throws IOException {
 		System.out.println("TEST REMOVEPLATO ID VACIO");
@@ -490,7 +589,7 @@ class Tests {
 		plato.setDisponibilidad(true);
 
 		service.addPlato(id1, plato).execute();
-		
+
 		Response<Void> resultado2 = service.removePlato("", plato.getNombre()).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
@@ -499,7 +598,7 @@ class Tests {
 
 		System.out.println("-----------------------------------------------");
 	}
-	
+
 	@Test
 	void testRemovePlatoSinNombre() throws IOException {
 		System.out.println("TEST REMOVEPLATO CORRECTO");
@@ -521,8 +620,8 @@ class Tests {
 		plato.setDisponibilidad(true);
 
 		service.addPlato(id1, plato).execute();
-		
-		Response<Void> resultado2 = service.removePlato(id1,"").execute();
+
+		Response<Void> resultado2 = service.removePlato(id1, "").execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
@@ -530,7 +629,7 @@ class Tests {
 
 		System.out.println("-----------------------------------------------");
 	}
-	
+
 	// ------------------ Tests updatePlato() --------------------
 
 	@Test
@@ -554,43 +653,41 @@ class Tests {
 		plato.setDisponibilidad(true);
 
 		service.addPlato(id1, plato).execute();
-		
-		
-		
+
 		plato.setDescripcion("Cambio descripcion");
 		plato.setPrecio("20");
-		
-		Response<Void> resultado2 = service.updatePlato(id1,plato).execute();
+
+		Response<Void> resultado2 = service.updatePlato(id1, plato).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("-----------------------------------------------");
 
 	}
-	
+
 	@Test
-	void testUpdatePlatoIdNoExiste() throws IOException{
+	void testUpdatePlatoIdNoExiste() throws IOException {
 		System.out.println("TEST UPDATEPLATOIDNOEXISTE");
 		PlatoRequest plato = new PlatoRequest();
 		plato.setNombre("Plato de prueba");
 		plato.setDescripcion("Descripcion del plato");
 		plato.setPrecio("10");
 		plato.setDisponibilidad(true);
-		
-		Response<Void> resultado2 = service.updatePlato("642d59a2f832f95e42e82bc8",plato).execute();
+
+		Response<Void> resultado2 = service.updatePlato("642d59a2f832f95e42e82bc8", plato).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
 		System.out.println("-----------------------------------------------");
-		
+
 	}
 
 	@Test
-	void testUpdatePlatoNoExiste() throws IOException{
-		
+	void testUpdatePlatoNoExiste() throws IOException {
+
 		System.out.println("TEST UPDATEPLATONOEXISTE");
-	
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -601,26 +698,26 @@ class Tests {
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		System.out.println(id1);
-		
+
 		PlatoRequest plato = new PlatoRequest();
 		plato.setNombre("Plato de prueba");
 		plato.setDescripcion("Descripcion del plato");
 		plato.setPrecio("10");
 		plato.setDisponibilidad(true);
-		
-		Response<Void> resultado2 = service.updatePlato(id1,plato).execute();
+
+		Response<Void> resultado2 = service.updatePlato(id1, plato).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
 		System.out.println("-----------------------------------------------");
-		
+
 	}
-	
+
 	@Test
-	void testUpdatePlatoIdRestauranteVacio() throws IOException{
+	void testUpdatePlatoIdRestauranteVacio() throws IOException {
 		System.out.println("TEST UPDATEPLATOIDRESTAURANTEVACIO");
-		
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -631,27 +728,26 @@ class Tests {
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		System.out.println(id1);
-		
+
 		PlatoRequest plato = new PlatoRequest();
 		plato.setNombre("Plato de prueba");
 		plato.setDescripcion("Descripcion del plato");
 		plato.setPrecio("10");
 		plato.setDisponibilidad(true);
-		
-		Response<Void> resultado2 = service.updatePlato("",plato).execute();
+
+		Response<Void> resultado2 = service.updatePlato("", plato).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
 		System.out.println("-----------------------------------------------");
-		
+
 	}
-	
-	
+
 	@Test
-	void testUpdatePlatoNombreVacio() throws IOException{
+	void testUpdatePlatoNombreVacio() throws IOException {
 		System.out.println("TEST UPDATEPLATONOMBREVACIO");
-		
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -662,25 +758,25 @@ class Tests {
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		System.out.println(id1);
-		
+
 		PlatoRequest plato = new PlatoRequest();
 		plato.setDescripcion("Descripcion del plato");
 		plato.setPrecio("10");
 		plato.setDisponibilidad(true);
-		
-		Response<Void> resultado2 = service.updatePlato(id1,plato).execute();
+
+		Response<Void> resultado2 = service.updatePlato(id1, plato).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
 		System.out.println("-----------------------------------------------");
-		
+
 	}
-	
+
 	@Test
-	void testUpdatePlatoDescripcionVacia() throws IOException{
+	void testUpdatePlatoDescripcionVacia() throws IOException {
 		System.out.println("TEST UPDATEPLATONOMBREVACIO");
-		
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -691,25 +787,25 @@ class Tests {
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		System.out.println(id1);
-		
+
 		PlatoRequest plato = new PlatoRequest();
 		plato.setNombre("Plato de prueba");
 		plato.setPrecio("10");
 		plato.setDisponibilidad(true);
-		
-		Response<Void> resultado2 = service.updatePlato(id1,plato).execute();
+
+		Response<Void> resultado2 = service.updatePlato(id1, plato).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
 		System.out.println("-----------------------------------------------");
-		
+
 	}
-	
+
 	@Test
-	void testUpdatePlatoPrecioVacio() throws IOException{
+	void testUpdatePlatoPrecioVacio() throws IOException {
 		System.out.println("TEST UPDATEPLATODESCRIPCIONVACIO");
-		
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -720,26 +816,25 @@ class Tests {
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		System.out.println(id1);
-		
+
 		PlatoRequest plato = new PlatoRequest();
 		plato.setNombre("Plato de prueba");
 		plato.setDescripcion("Descripcion del plato");
 		plato.setDisponibilidad(true);
-		
-		Response<Void> resultado2 = service.updatePlato(id1,plato).execute();
+
+		Response<Void> resultado2 = service.updatePlato(id1, plato).execute();
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
 		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
 		System.out.println("-----------------------------------------------");
-		
+
 	}
-	
-	//No funciona bien, no sé como comprobar que no se haya puesto ninguna disponibilidad
+
 	@Test
-	void testUpdatePlatoDisponibilidadVacia() throws IOException{
+	void testUpdatePlatoDisponibilidadVacia() throws IOException {
 		System.out.println("TEST UPDATEPLATONOMBREVACIO");
-		
+
 		RestauranteRequest restaurante = new RestauranteRequest();
 		restaurante.setNombre("Prueba Retrofit");
 		restaurante.setCiudad("Murcia");
@@ -750,77 +845,75 @@ class Tests {
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		System.out.println(id1);
-		
+
 		PlatoRequest plato = new PlatoRequest();
 		plato.setNombre("Plato de prueba");
 		plato.setDescripcion("Descripcion del plato");
 		plato.setPrecio("10");
 
-		
-		Response<Void> resultado2 = service.updatePlato(id1,plato).execute();
+		Response<Void> resultado2 = service.updatePlato(id1, plato).execute();
+		Restaurante res = service.getRestaurante(id1).execute().body();
 
+		// Comprobamos que la disponibilidad del plato por defecto, al no especificar
+		// ninguna, es false
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
-		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
+		System.out.println("Disponibilidad del plato: " + res.getPlatos().get(0).isDisponibilidad());
 		System.out.println("-----------------------------------------------");
-		
+
 	}
-	
-	
+
 	// ------------------ Tests removeRestaurante() --------------------
-		@Test
-		void testRemoveRestaurante() throws IOException {
+	@Test
+	void testRemoveRestaurante() throws IOException {
 
-			System.out.println("TEST REMOVE RESTAURANTE CORRECTO: ");
-			RestauranteRequest restaurante = new RestauranteRequest();
-			restaurante.setNombre("Prueba Retrofit");
-			restaurante.setCiudad("Murcia");
-			restaurante.setCp("30001");
-			restaurante.setCoordenadas("20, 10");
-			Response<Void> resultado = service.createRestaurante(restaurante).execute();
+		System.out.println("TEST REMOVE RESTAURANTE CORRECTO: ");
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba Retrofit");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
 
-			String url1 = resultado.headers().get("Location");
-			String id1 = url1.substring(url1.lastIndexOf("/") + 1);
-			System.out.println(id1);
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+		System.out.println(id1);
 
-			Response<Void> resultado2 = service.removeRestaurante(id1).execute();
-			
-			System.out.println("Código de respuesta: " + resultado2.code());
-			System.out.println("Mensaje de respuesta:" + resultado2.message());
+		Response<Void> resultado2 = service.removeRestaurante(id1).execute();
 
-			System.out.println("-------------------");
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta:" + resultado2.message());
 
-		}
-		
-		@Test
-		void testRemoveRestauranteNoExiste() throws IOException {
+		System.out.println("-------------------");
 
+	}
 
-			Response<Void> resultado2 = service.removeRestaurante("642d59a2f832f95e42e82bc8").execute();
-			
-			System.out.println("Código de respuesta: " + resultado2.code());
-			System.out.println("Mensaje de respuesta:" + resultado2.message());
-			System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
+	@Test
+	void testRemoveRestauranteNoExiste() throws IOException {
 
-			System.out.println("-------------------");
+		Response<Void> resultado2 = service.removeRestaurante("642d59a2f832f95e42e82bc8").execute();
 
-		}
-		
-		//Mismo problema con el ID vacio
-		@Test
-		void testRemoveRestauranteIdVacio() throws IOException {
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta:" + resultado2.message());
+		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
 
+		System.out.println("-------------------");
 
-			Response<Void> resultado2 = service.removeRestaurante("").execute();
-			
-			System.out.println("Código de respuesta: " + resultado2.code());
-			System.out.println("Mensaje de respuesta:" + resultado2.message());
-			System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
+	}
 
-			System.out.println("-------------------");
+	// Mismo problema con el ID vacio
+	@Test
+	void testRemoveRestauranteIdVacio() throws IOException {
 
-		}
-	
+		Response<Void> resultado2 = service.removeRestaurante("").execute();
+
+		System.out.println("Código de respuesta: " + resultado2.code());
+		System.out.println("Mensaje de respuesta:" + resultado2.message());
+		System.out.println("Mensaje de respuesta: " + resultado2.errorBody().string());
+
+		System.out.println("-------------------");
+
+	}
 
 	// ------------------ Tests getRestaurante() --------------------
 
@@ -839,10 +932,13 @@ class Tests {
 
 		Response<Restaurante> resultado2 = service.getRestaurante(id1).execute();
 		Restaurante res = resultado2.body();
-
+		
+		//Comprobamos que el contenido de la respuesta sea en formato JSON
+		Assertions.assertEquals(resultado2.headers().get("Content-Type"), "application/json");
+		
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
-		System.out.println("Restaurante: " + res.toString()); // TODO: Coordenadas rarillas
+		System.out.println("Restaurante: " + res.toString()); 
 		System.out.println("-------------------------------");
 
 	}
@@ -876,20 +972,21 @@ class Tests {
 		System.out.println("-------------------------------");
 
 	}
-	
-	// ------------------ Tests getRestaurante() --------------------
-	
+
+	// ------------------ Tests getListadoRestaurantes() --------------------
+
 	@Test
-	void testGetRestaurantes() throws IOException{
+	void testGetListadoRestaurantes() throws IOException {
 		Response<Listado> resultado2 = service.getListadoRestaurantes().execute();
-		Listado res = resultado2.body();	
-		for(ResumenExtendido re : res.getRestaurante()) {
+		Listado res = resultado2.body();
+		//Comprobamos que el formato sea JSON
+		Assertions.assertEquals(resultado2.headers().get("Content-Type"), "application/json");
+
+		for (ResumenExtendido re : res.getRestaurante()) {
 			System.out.println(re.getUrl());
 			System.out.println(re.getResumen());
 		}
 	}
-	
-	}
-	
 
 
+}
