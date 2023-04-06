@@ -1,10 +1,5 @@
 package restaurantes.repositorio;
 
-
-
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
-
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import repositorio.RepositorioMemoria;
