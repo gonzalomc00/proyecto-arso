@@ -11,38 +11,30 @@ import repositorio.Identificable;
 
 public class Opinion implements Identificable {
 
-	 @BsonId
-	 @BsonRepresentation(BsonType.OBJECT_ID)
-	 private String id;
-	 
-	 private String nombreRecurso;
-	 private List<Valoracion> valoraciones= new LinkedList<Valoracion>();
-	 
-	 
-	 
-	 public Opinion() {
-		 
-	 }
-	 
-	 public Opinion(String nombre) {
-		 this.nombreRecurso=nombre;
-	 }
-	 
-	 private int numValoraciones() {
-		 return this.valoraciones.size();
-	 }
-	 
-	 private double media() {
-		 double media=0;
-		 for(Valoracion v: this.valoraciones) {
-			 media= v.getCalificacion();
-		 }
-		 return media/numValoraciones();
-	 }
-	 
-	 
-	
-	
+	@BsonId
+	@BsonRepresentation(BsonType.OBJECT_ID)
+	private String id;
+
+	private String nombreRecurso;
+	private List<Valoracion> valoraciones = new LinkedList<Valoracion>();
+
+	public int getNumValoraciones() {
+		return this.valoraciones.size();
+	}
+
+	public double getMedia() {
+		if (this.valoraciones.isEmpty()) {
+			return 0;
+		} else {
+			double media = 0;
+			for (Valoracion v : this.valoraciones) {
+				media += v.getCalificacion();
+			}
+			return media / this.getNumValoraciones();
+		}
+
+	}
+
 	public String getNombreRecurso() {
 		return nombreRecurso;
 	}
@@ -67,9 +59,8 @@ public class Opinion implements Identificable {
 
 	@Override
 	public void setId(String id) {
-		this.id=id;
-		
+		this.id = id;
+
 	}
 
-	
 }
