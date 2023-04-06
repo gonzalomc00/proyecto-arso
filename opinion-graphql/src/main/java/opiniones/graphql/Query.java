@@ -14,6 +14,7 @@ public class Query implements GraphQLRootResolver {
 	
 	public Opinion findById(String id) throws RepositorioException, EntidadNoEncontrada {
 		return servicio.getOpinionById(id);
+	
 	}
 	
 	

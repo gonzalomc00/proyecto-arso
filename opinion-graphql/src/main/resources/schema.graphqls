@@ -2,14 +2,14 @@ type Opinion {
   id: String!
   nombreRecurso: String!
   valoraciones: [Valoracion]!
-  numValoraciones: String! 
+  numValoraciones: Int! 
   media: String!
 }
 
 type Valoracion {
   correo: String!
   fecha: String! # yy-MM-ddThh:mm
-  calificacion: Double!
+  calificacion: String!
   comentario: String!
 }
 
