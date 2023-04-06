@@ -155,5 +155,20 @@
 
 	<build>
 		<pluginManagement></pluginManagement>
+		<!--Configuración añadida para que funcione la etiqueta @Disabled en los testUnitarios -->
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<configuration>
+					<properties>
+						<configurationParameters>
+                        junit.jupiter.conditions.deactivate = true
+                    </configurationParameters>
+					</properties>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>

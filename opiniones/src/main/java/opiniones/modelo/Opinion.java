@@ -17,7 +17,15 @@ public class Opinion implements Identificable {
 
 	private String nombreRecurso;
 	private List<Valoracion> valoraciones = new LinkedList<Valoracion>();
-
+	
+	public Opinion() {
+		//POJO
+	}
+	
+	public Opinion(String nombre) {
+		this.nombreRecurso = nombre;
+	}
+	
 	public int getNumValoraciones() {
 		return this.valoraciones.size();
 	}

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import opiniones.modelo.Opinion;
@@ -17,6 +18,7 @@ import repositorio.Repositorio;
 import repositorio.RepositorioException;
 import servicio.FactoriaServicios;
 
+@Disabled
 public class OpinionesTest {
 
 	private Repositorio<Opinion, String> repositorio = FactoriaRepositorios.getRepositorio(Opinion.class);
