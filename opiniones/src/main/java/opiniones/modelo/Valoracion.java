@@ -10,6 +10,18 @@ public class Valoracion {
 	private String comentario;
 	
 	
+	public Valoracion() {
+		
+	}
+	
+	public Valoracion(String correo, LocalDate fecha, double calificacion, String comentario) {
+		this.correo=correo;
+		this.fecha=fecha;
+		this.calificacion=calificacion;
+		this.comentario=comentario;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "Valoracion [correo=" + correo + ", fecha=" + fecha + ", calificacion=" + calificacion + ", comentario="

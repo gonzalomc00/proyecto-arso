@@ -66,7 +66,6 @@ public abstract class RepositorioMongo<T extends Identificable> implements Repos
 	@Override
 	public void delete(T entity) throws RepositorioException, EntidadNoEncontrada {
 
-		this.getById(entity.getId());
 	
 		Bson filter = Filters.eq("_id", new ObjectId(entity.getId()));
 		collection.deleteOne(filter);

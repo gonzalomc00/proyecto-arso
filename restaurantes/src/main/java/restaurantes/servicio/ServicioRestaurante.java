@@ -133,9 +133,6 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			JsonReader jsonReader = Json.createReader(fuente);
 			JsonObject obj = jsonReader.readObject();
 
-			FileWriter file = new FileWriter("src/test/resources/texto.txt");
-			file.write(obj.toString());
-
 			SitioTuristico sitio_clase = new SitioTuristico();
 			System.out.println(sitio);
 			sitio_clase.setNombre(sitio);
@@ -205,7 +202,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 				sitios.add(sitio_clase);
 			}
-			file.close();
+
 		}
 
 		return sitios;
