@@ -20,6 +20,14 @@ public class Opinion implements Identificable {
 	 
 	 
 	 
+	 public Opinion() {
+		 
+	 }
+	 
+	 public Opinion(String nombre) {
+		 this.nombreRecurso=nombre;
+	 }
+	 
 	 private int numValoraciones() {
 		 return this.valoraciones.size();
 	 }
