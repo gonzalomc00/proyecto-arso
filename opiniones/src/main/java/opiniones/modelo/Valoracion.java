@@ -9,6 +9,13 @@ public class Valoracion {
 	private double calificacion;
 	private String comentario;
 	
+	
+	@Override
+	public String toString() {
+		return "Valoracion [correo=" + correo + ", fecha=" + fecha + ", calificacion=" + calificacion + ", comentario="
+				+ comentario + "]";
+	}
+	
 	public String getCorreo() {
 		return correo;
 	}

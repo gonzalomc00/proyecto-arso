@@ -34,6 +34,14 @@ public class Opinion implements Identificable {
 		}
 
 	}
+	
+	
+
+	@Override
+	public String toString() {
+		return "Opinion [id=" + id + ", nombreRecurso=" + nombreRecurso + ", valoraciones=" + valoraciones
+				+ ", Numero de valoraciones=" + getNumValoraciones() + ", Media=" + getMedia() + "]";
+	}
 
 	public String getNombreRecurso() {
 		return nombreRecurso;
