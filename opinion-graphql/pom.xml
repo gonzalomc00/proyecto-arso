@@ -55,13 +55,9 @@
 			<version>1.7.30</version>
 		</dependency>
 
-		<!-- MongoDB -->
+		<!-- Quitada dependencia MongoDB -->
 
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver</artifactId>
-			<version>3.8.0</version>
-		</dependency>
+		
 
 	</dependencies>
 	<build>

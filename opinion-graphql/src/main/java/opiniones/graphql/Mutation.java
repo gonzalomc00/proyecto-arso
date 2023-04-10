@@ -2,7 +2,6 @@ package opiniones.graphql;
 
 import com.coxautodev.graphql.tools.GraphQLRootResolver;
 
-import opiniones.modelo.Opinion;
 import opiniones.servicio.IServicioOpinion;
 import repositorio.RepositorioException;
 import servicio.FactoriaServicios;
