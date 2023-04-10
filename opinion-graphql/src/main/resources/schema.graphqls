@@ -3,13 +3,13 @@ type Opinion {
   nombreRecurso: String!
   valoraciones: [Valoracion]!
   numValoraciones: Int! 
-  media: String!
+  media: Float!
 }
 
 type Valoracion {
   correo: String!
-  fecha: String! # yy-MM-ddThh:mm
-  calificacion: String!
+  fecha: String! # yyyy-MM-ddThh:mm:ss
+  calificacion: Float!
   comentario: String!
 }
 
@@ -21,6 +21,9 @@ type Query {
 
 type Mutation {
   crearOpinion(nombre: String!): String!
+  removeOpinion(id: String!): Boolean!
+  addValoracion(id: String!, correo:String!, fecha:String!, calificacion: Float!, comentario:String!): Boolean!
+  
 }
 
 schema {

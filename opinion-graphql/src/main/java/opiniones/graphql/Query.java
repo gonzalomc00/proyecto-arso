@@ -17,5 +17,6 @@ public class Query implements GraphQLRootResolver {
 		return servicio.getOpinionById(id);
 
 	}
+	
 
 }

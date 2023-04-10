@@ -1,11 +1,12 @@
 package opiniones.modelo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Valoracion {
 	
 	private String correo;
-	private LocalDate fecha;
+	private LocalDateTime fecha;
 	private double calificacion;
 	private String comentario;
 	
@@ -14,7 +15,7 @@ public class Valoracion {
 		
 	}
 	
-	public Valoracion(String correo, LocalDate fecha, double calificacion, String comentario) {
+	public Valoracion(String correo, LocalDateTime fecha, double calificacion, String comentario) {
 		this.correo=correo;
 		this.fecha=fecha;
 		this.calificacion=calificacion;
@@ -34,10 +35,10 @@ public class Valoracion {
 	public void setCorreo(String correo) {
 		this.correo = correo;
 	}
-	public LocalDate getFecha() {
+	public LocalDateTime getFecha() {
 		return fecha;
 	}
-	public void setFecha(LocalDate fecha) {
+	public void setFecha(LocalDateTime fecha) {
 		this.fecha = fecha;
 	}
 	public double getCalificacion() {

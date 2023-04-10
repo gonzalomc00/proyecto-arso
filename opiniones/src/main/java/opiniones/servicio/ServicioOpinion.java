@@ -1,6 +1,6 @@
 package opiniones.servicio;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import opiniones.modelo.Opinion;
 import opiniones.modelo.Valoracion;
@@ -29,7 +29,7 @@ public class ServicioOpinion implements IServicioOpinion {
 
 	
 	@Override
-	public void addValoracion(String idOpinion, String correo, LocalDate fecha, double calificacion,
+	public boolean addValoracion(String idOpinion, String correo, LocalDateTime fecha, double calificacion,
 			String comentario) throws RepositorioException, EntidadNoEncontrada {
 		
 		if (idOpinion == null || idOpinion.isEmpty())
@@ -55,6 +55,7 @@ public class ServicioOpinion implements IServicioOpinion {
 		Valoracion valoracion= new Valoracion(correo,fecha,calificacion,comentario);
 		opinion.add(valoracion);
 		repositorio.update(opinion);
+		return true;
 
 	}
 
@@ -69,12 +70,13 @@ public class ServicioOpinion implements IServicioOpinion {
 
 	//Se borra opinion y valoraciones
 	@Override
-	public void removeOpinion(String id) throws RepositorioException, EntidadNoEncontrada {
+	public boolean removeOpinion(String id) throws RepositorioException, EntidadNoEncontrada {
 		
 		if (id == null || id.isEmpty())
 			throw new IllegalArgumentException("id de la opinión: no debe ser nulo ni vacio");
 		
 		repositorio.delete(repositorio.getById(id));
+		return true;
 		
 	}
 

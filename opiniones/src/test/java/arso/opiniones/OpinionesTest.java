@@ -1,6 +1,7 @@
 package arso.opiniones;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,8 +59,8 @@ public class OpinionesTest {
 	public void testAddVal() throws RepositorioException, EntidadNoEncontrada {
 		String id = servicio.createOpinion("papitas malitas3");
 		
-		servicio.addValoracion(id, "sofia.maciasm@um.es", LocalDate.now(), 5, null);
-		servicio.addValoracion(id, "sofia.maciasm@um.es", LocalDate.now(), 3, null);
+		servicio.addValoracion(id, "sofia.maciasm@um.es", LocalDateTime.now(), 5, null);
+		servicio.addValoracion(id, "sofia.maciasm@um.es", LocalDateTime.now(), 3, null);
 
 		
 	}
@@ -67,7 +68,7 @@ public class OpinionesTest {
 	@Test 
 	public void testRemoveOpinion() throws RepositorioException, EntidadNoEncontrada {
 		
-		servicio.addValoracion("642e9529896fa933209b7ebb", "sofia.maciasm@um.es", LocalDate.now(), 5, null);
+		servicio.addValoracion("642e9529896fa933209b7ebb", "sofia.maciasm@um.es", LocalDateTime.now(), 5, null);
 		servicio.removeOpinion("642e9529896fa933209b7ebb");
 		
 	}
