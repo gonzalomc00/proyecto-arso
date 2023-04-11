@@ -10,6 +10,7 @@ import org.bson.codecs.pojo.annotations.BsonRepresentation;
 import com.mongodb.client.model.geojson.Point;
 
 import repositorio.Identificable;
+import usuarios.modelo.Usuario;
 
 public class Restaurante implements Identificable{
 	@BsonId
@@ -23,12 +24,13 @@ public class Restaurante implements Identificable{
 	private Double longitud;
 	private List<SitioTuristico> sitios = new LinkedList<>();
 	private List<Plato> platos = new LinkedList<>();
-
+	private Usuario gestor;
+	
 	public Restaurante() { //POJO
 		
 	}
 	
-	public Restaurante(String nombre2, String cp2, String ciudad2, Double latitud, Double longitud) {
+	public Restaurante(String nombre2, String cp2, String ciudad2, Double latitud, Double longitud, Usuario u) {
 		
 		if (nombre2 == null || nombre2.isEmpty())
 			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
@@ -44,12 +46,16 @@ public class Restaurante implements Identificable{
 		
 		if (longitud == null)
 			throw new IllegalArgumentException("longitud: no debe ser nulo");
+		
+		if (u == null)
+			throw new IllegalArgumentException("usuario: no debe ser nulo");
 
 		this.nombre = nombre2;
 		this.cp = cp2;
 		this.ciudad = ciudad2;
 		this.latitud=latitud;
 		this.longitud=longitud;
+		this.gestor = u;
 	}
 
 	@Override

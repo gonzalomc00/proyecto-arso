@@ -31,7 +31,13 @@
 			<artifactId>restaurantes</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-<!-- proceso de autorizacion -->
+
+		<!-- proceso de autorizacion -->
+		<dependency>
+			<groupId>arso</groupId>
+			<artifactId>usuarios-pasarela</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>

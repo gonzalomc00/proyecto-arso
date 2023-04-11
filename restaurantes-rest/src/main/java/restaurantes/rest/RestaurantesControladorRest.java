@@ -69,7 +69,7 @@ public class RestaurantesControladorRest {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Secured(AvailableRoles.GESTOR)
+	@Secured(AvailableRoles.CLIENTE)
 	@ApiOperation(value = "Crear un nuevo restaurante", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_CREATED, message = "El restaurante se ha creado correctamente"),
@@ -104,7 +104,11 @@ public class RestaurantesControladorRest {
 
 			double latitud = Double.parseDouble(coordenadasArray[0]);
 			double longitud = Double.parseDouble(coordenadasArray[1]);
+			
 
+			String usuario = securityContext.getUserPrincipal().toString();
+			System.out.println(usuario);
+			
 			// APLICACIÓN PATRON BUILDER
 			String id = servicio.create(restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(), latitud,
 					longitud);

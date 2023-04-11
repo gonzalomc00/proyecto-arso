@@ -15,10 +15,11 @@ import repositorio.RepositorioException;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
+import usuarios.modelo.Usuario;
 
 public interface IServicioRestaurante {
 
-	String create(String nombre, String cp, String ciudad,Double latitud, Double longitud) throws RepositorioException;
+	String create(String nombre, String cp, String ciudad,Double latitud, Double longitud, Usuario u) throws RepositorioException;
 
 	Restaurante getRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada;
 	

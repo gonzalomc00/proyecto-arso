@@ -1,7 +1,6 @@
 package restaurantes.servicio;
 
 import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -31,13 +30,14 @@ import repositorio.RepositorioException;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
+import usuarios.modelo.Usuario;
 
 public class ServicioRestaurante implements IServicioRestaurante {
 
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 
 	@Override
-	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud)
+	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud, Usuario u)
 			throws RepositorioException {
 
 		if (nombre == null || nombre.isEmpty())
@@ -55,7 +55,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (longitud == null)
 			throw new IllegalArgumentException("longitud: no debe ser nulo");
 
-		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, latitud, longitud);
+		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, latitud, longitud, u);
 
 		String id = repositorio.add(restaurante);
 		return id;
