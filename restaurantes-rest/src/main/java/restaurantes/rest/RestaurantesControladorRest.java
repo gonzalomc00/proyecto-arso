@@ -3,6 +3,7 @@ package restaurantes.rest;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.security.Principal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,13 +19,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
+
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,10 +36,12 @@ import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.dto.PlatoRequest;
 import restaurantes.dto.RestauranteRequest;
-import restaurantes.modelo.Plato;
+
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
 import restaurantes.rest.Listado.ResumenExtendido;
+import restaurantes.rest.seguridad.AvailableRoles;
+import restaurantes.rest.seguridad.Secured;
 import restaurantes.servicio.IServicioRestaurante;
 import restaurantes.servicio.RestauranteResumen;
 import servicio.FactoriaServicios;
@@ -53,6 +56,9 @@ public class RestaurantesControladorRest {
 
 	@Context
 	private UriInfo uriInfo;
+	
+	@Context
+	private SecurityContext securityContext;
 
 	// 1.String create(Restaurante restaurante);
 	/*
@@ -63,6 +69,7 @@ public class RestaurantesControladorRest {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Crear un nuevo restaurante", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_CREATED, message = "El restaurante se ha creado correctamente"),
@@ -71,6 +78,8 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "Datos del restaurante a crear", required = true) RestauranteRequest restaurante)
 			throws Exception {
 
+		Principal user = securityContext.getUserPrincipal();
+		System.out.println("USUARIOO: "+ user.getName());
 		// APLICACION DEL PATRON DTO
 		try {
 
@@ -120,7 +129,7 @@ public class RestaurantesControladorRest {
 	public Response getRestaurante(@ApiParam(value = "id del restaurante", required = true) @PathParam("id") String id)
 			throws Exception {
 		
-		
+		System.out.println("nO DEBERIA PODER ENTRAR AQUI");
 
 		return Response.status(Response.Status.OK).entity(servicio.getRestaurante(id)).build();
 	}
@@ -142,6 +151,7 @@ public class RestaurantesControladorRest {
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Actualiza un restaurante", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Restaurante actualizado con éxito"),
@@ -210,6 +220,7 @@ public class RestaurantesControladorRest {
 	@PUT
 	@Path("/{id}/sitios")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Modifica los sitios turisticos de un restaurante", notes = " ")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Sitios turisticos modificados con éxito"),
@@ -236,6 +247,7 @@ public class RestaurantesControladorRest {
 	@POST
 	@Path("/{id}/platos")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Añade un nuevo plato a un restaurante", notes = " ")
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_CREATED, message = "Plato creado con éxito"),
 			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
@@ -269,6 +281,7 @@ public class RestaurantesControladorRest {
 	 */
 	@DELETE
 	@Path("/{id}/platos/{nombrePlato}")
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Borra un plato del restaurante", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Plato borrado correctamente"),
@@ -294,6 +307,7 @@ public class RestaurantesControladorRest {
 	@PUT
 	@Path("/{id}/platos/")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Actualiza un plato", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Plato actualizado correctamente"),
@@ -317,6 +331,7 @@ public class RestaurantesControladorRest {
 	 */
 	@DELETE
 	@Path("/{id}")
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Borra un restaurante", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Restaurante borrado correctamente"),
@@ -342,6 +357,10 @@ public class RestaurantesControladorRest {
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
 	public Response getListadoActividades() throws Exception {
 
+		
+		Principal user = securityContext.getUserPrincipal();
+		System.out.println("USUARIIOO: " + user);
+		
 		List<RestauranteResumen> resultado = servicio.getListadoRestaurantes();
 
 		List<ResumenExtendido> extendido = new LinkedList<Listado.ResumenExtendido>();
