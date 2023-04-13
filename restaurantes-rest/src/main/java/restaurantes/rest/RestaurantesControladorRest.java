@@ -424,9 +424,7 @@ public class RestaurantesControladorRest {
 					.port(Integer.parseInt(puerto))
 					.replacePath(uriInfo.getPath().replace("/api", ""))
 					.path(id).build();
-			
-			System.out.println(nuevaURL);
-			
+						
 			resumenExtendido.setUrl(nuevaURL.toString()); // string
 
 			extendido.add(resumenExtendido);
