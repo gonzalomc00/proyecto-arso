@@ -24,13 +24,13 @@ public class Restaurante implements Identificable{
 	private Double longitud;
 	private List<SitioTuristico> sitios = new LinkedList<>();
 	private List<Plato> platos = new LinkedList<>();
-	private Usuario gestor;
+	private String gestor;
 	
 	public Restaurante() { //POJO
 		
 	}
 	
-	public Restaurante(String nombre2, String cp2, String ciudad2, Double latitud, Double longitud, Usuario u) {
+	public Restaurante(String nombre2, String cp2, String ciudad2, Double latitud, Double longitud, String u) {
 		
 		if (nombre2 == null || nombre2.isEmpty())
 			throw new IllegalArgumentException("nombre del restaurante: no debe ser nulo ni vacio");
@@ -55,7 +55,7 @@ public class Restaurante implements Identificable{
 		this.ciudad = ciudad2;
 		this.latitud=latitud;
 		this.longitud=longitud;
-		this.gestor = u;
+		this.setGestor(u);
 	}
 
 	@Override
@@ -142,6 +142,14 @@ public class Restaurante implements Identificable{
 
 	public void setLongitud(Double longitud) {
 		this.longitud = longitud;
+	}
+
+	public String getGestor() {
+		return gestor;
+	}
+
+	public void setGestor(String gestor) {
+		this.gestor = gestor;
 	}
 	
 	

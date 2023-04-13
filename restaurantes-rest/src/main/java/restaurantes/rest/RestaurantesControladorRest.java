@@ -17,6 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -24,8 +25,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
-
-
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,7 +35,6 @@ import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.dto.PlatoRequest;
 import restaurantes.dto.RestauranteRequest;
-
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
 import restaurantes.rest.Listado.ResumenExtendido;
@@ -57,6 +55,8 @@ public class RestaurantesControladorRest {
 	@Context
 	private UriInfo uriInfo;
 	
+
+	
 	@Context
 	private SecurityContext securityContext;
 
@@ -69,7 +69,7 @@ public class RestaurantesControladorRest {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Secured(AvailableRoles.CLIENTE)
+	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Crear un nuevo restaurante", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_CREATED, message = "El restaurante se ha creado correctamente"),
@@ -78,8 +78,6 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "Datos del restaurante a crear", required = true) RestauranteRequest restaurante)
 			throws Exception {
 
-		Principal user = securityContext.getUserPrincipal();
-		System.out.println("USUARIOO: "+ user.getName());
 		// APLICACION DEL PATRON DTO
 		try {
 
@@ -106,12 +104,12 @@ public class RestaurantesControladorRest {
 			double longitud = Double.parseDouble(coordenadasArray[1]);
 			
 
-			String usuario = securityContext.getUserPrincipal().toString();
+			String usuario = securityContext.getUserPrincipal().getName();
 			System.out.println(usuario);
 			
 			// APLICACIÓN PATRON BUILDER
 			String id = servicio.create(restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(), latitud,
-					longitud);
+					longitud,usuario);
 
 			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(id).build();
 
@@ -177,6 +175,9 @@ public class RestaurantesControladorRest {
 
 		if (restaurante.getCoordenadas() == null)
 			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
+		
+		String usuario = securityContext.getUserPrincipal().getName();
+		System.out.println(usuario);
 
 		String coordenadasStr = restaurante.getCoordenadas();
 		String[] coordenadasArray = coordenadasStr.split(", ");
@@ -184,7 +185,7 @@ public class RestaurantesControladorRest {
 		double latitud = Double.parseDouble(coordenadasArray[0]);
 		double longitud = Double.parseDouble(coordenadasArray[1]);
 
-		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(), latitud, longitud);
+		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(), latitud, longitud,usuario);
 
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
@@ -233,8 +234,11 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "id del restaurante a modificar", required = true) @PathParam("id") String id,
 			@ApiParam(value = "lista de sitios turisticos", required = true) List<SitioTuristico> sitios)
 			throws RepositorioException, EntidadNoEncontrada {
+		
+		String usuario = securityContext.getUserPrincipal().getName();
+		System.out.println(usuario);
 
-		servicio.setSitiosTuristicos(id, sitios);
+		servicio.setSitiosTuristicos(id, sitios,usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 
 	}
@@ -260,9 +264,12 @@ public class RestaurantesControladorRest {
 			throws RepositorioException, EntidadNoEncontrada {
 
 		try {
+			
+			String usuario = securityContext.getUserPrincipal().getName();
+			System.out.println(usuario);
 
 			String nombre = servicio.addPlato(id, platoDTO.getNombre(), platoDTO.getDescripcion(), platoDTO.getPrecio(),
-					platoDTO.isDisponibilidad());
+					platoDTO.isDisponibilidad(),usuario);
 			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(nombre).build();
 
 			return Response.created(nuevaURL).build();
@@ -294,7 +301,9 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "nombre del plato", required = true) @PathParam("nombrePlato") String nombrePlato)
 			throws RepositorioException, EntidadNoEncontrada {
 
-		servicio.removePlato(id, nombrePlato);
+		String usuario = securityContext.getUserPrincipal().getName();
+		System.out.println(usuario);
+		servicio.removePlato(id, nombrePlato,usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
@@ -320,8 +329,10 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "plato a actualizar ", required = true) PlatoRequest plato)
 			throws RepositorioException, EntidadNoEncontrada {
 
+		String usuario = securityContext.getUserPrincipal().getName();
+		System.out.println(usuario);
 		servicio.updatePlato(id, plato.getNombre(), plato.getDescripcion(), plato.getPrecio(),
-				plato.isDisponibilidad());
+				plato.isDisponibilidad(),usuario);
 
 		return Response.status(Response.Status.NO_CONTENT).build();
 
@@ -344,7 +355,9 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id)
 			throws RepositorioException, EntidadNoEncontrada {
 
-		servicio.deleteRestaurante(id);
+		String usuario = securityContext.getUserPrincipal().getName();
+		System.out.println(usuario);
+		servicio.deleteRestaurante(id,usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
@@ -364,7 +377,6 @@ public class RestaurantesControladorRest {
 		
 		Principal user = securityContext.getUserPrincipal();
 		System.out.println("USUARIIOO: " + user);
-		
 		List<RestauranteResumen> resultado = servicio.getListadoRestaurantes();
 
 		List<ResumenExtendido> extendido = new LinkedList<Listado.ResumenExtendido>();

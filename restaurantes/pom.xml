@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>arso</groupId>
-	<artifactId>opiniones</artifactId>
+	<artifactId>restaurantes</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>

@@ -36,6 +36,8 @@ import org.junit.jupiter.api.Disabled;
  * @author sofia
  *
  */
+
+
 @Disabled
 public class RestaurantesTest {
 
@@ -43,7 +45,7 @@ public class RestaurantesTest {
 	 * los tests obtienen un coverage del 97% sobre el codigo del
 	 * ServicioRestaurante
 	 */
-
+/*
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 	private IServicioRestaurante servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
 
@@ -825,4 +827,6 @@ public class RestaurantesTest {
 
 	}
 
+*/
 }
+

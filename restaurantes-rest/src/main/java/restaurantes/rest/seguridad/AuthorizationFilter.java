@@ -61,7 +61,6 @@ public class AuthorizationFilter implements ContainerRequestFilter, ResourceFilt
 		
 		if (jwt == null) {
 			// Intenta recuperar la cabecera "Authorization" en busca del token JWT
-			System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB ");
 			final String authHeader = request.getHeaderValue(HttpHeaders.AUTHORIZATION);
 			if (authHeader != null && authHeader.startsWith(TOKEN_PREFIX)) 			
 				jwt = authHeader.substring(TOKEN_PREFIX.length());

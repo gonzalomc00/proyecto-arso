@@ -37,7 +37,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 
 	@Override
-	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud, Usuario u)
+	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud, String u)
 			throws RepositorioException {
 
 		if (nombre == null || nombre.isEmpty())
@@ -61,7 +61,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return id;
 	}
 
-	public void update(String id, String nombre, String ciudad, String cp, Double latitud, Double longitud)
+	public void update(String id, String nombre, String ciudad, String cp, Double latitud, Double longitud,String u)
 			throws RepositorioException, EntidadNoEncontrada {
 
 		if (id == null || id.isEmpty())
@@ -83,6 +83,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			throw new IllegalArgumentException("longitud: no debe ser nulo");
 
 		Restaurante r = repositorio.getById(id);
+		
+		if(!u.equals(r.getGestor())) {
+			throw new IllegalArgumentException("No eres el gestor del restaurante");
+		}
 
 		r.setNombre(nombre);
 		r.setCiudad(ciudad);
@@ -210,7 +214,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios)
+	public void setSitiosTuristicos(String idRes, List<SitioTuristico> sitios, String u)
 			throws RepositorioException, EntidadNoEncontrada {
 
 		if (idRes == null || idRes.isEmpty()) {
@@ -221,12 +225,21 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 		
 		Restaurante r = repositorio.getById(idRes);
+		
+		
+		
+		if(!u.equals(r.getGestor())) {
+			throw new IllegalArgumentException("No eres el gestor del restaurante");
+		}
+		
 		r.setSitios(sitios);
+		
+		
 		repositorio.update(r);
 	}
 
 	@Override
-	public String addPlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad)
+	public String addPlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad,String u)
 			throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
@@ -243,6 +256,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (precio == null || precio.isEmpty()) {
 			throw new IllegalArgumentException("precio del plato: no debe ser nulo ni vacio");
 		}
+		
+
+		
+		
 
 		Double precioD = Double.parseDouble(precio);
 
@@ -252,6 +269,11 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		plato.setPrecio(precioD);
 		plato.setDisponibilidad(disponibilidad);
 		Restaurante r = repositorio.getById(idRes);
+		
+		if(!u.equals(r.getGestor())) {
+			throw new IllegalArgumentException("No eres el gestor del restaurante");
+		}
+		
 		// No añadir platos repetidos
 		List<Plato> listaPlatos = r.getPlatos();
 
@@ -268,7 +290,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public boolean removePlato(String idRes, String nombrePlato) throws RepositorioException, EntidadNoEncontrada {
+	public boolean removePlato(String idRes, String nombrePlato,String u) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
@@ -277,6 +299,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		Restaurante r = repositorio.getById(idRes);
+		
+		if(!u.equals(r.getGestor())) {
+			throw new IllegalArgumentException("No eres el gestor del restaurante");
+		}
 
 		List<Plato> listaPlatos = r.getPlatos();
 
@@ -299,7 +325,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void updatePlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad)
+	public void updatePlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad,String u)
 			throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
@@ -318,6 +344,9 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		Restaurante r = repositorio.getById(idRes);
+		if(!u.equals(r.getGestor())) {
+			throw new IllegalArgumentException("No eres el gestor del restaurante");
+		}
 
 		boolean borrado = r.remove(nombre);
 
@@ -333,12 +362,16 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void deleteRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada {
+	public void deleteRestaurante(String idRes,String u) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
 
 		Restaurante r = repositorio.getById(idRes);
+		
+		if(!u.equals(r.getGestor())) {
+			throw new IllegalArgumentException("No eres el gestor del restaurante");
+		}
 		repositorio.delete(r);
 
 	}
