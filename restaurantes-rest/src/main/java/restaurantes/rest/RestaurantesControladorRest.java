@@ -54,9 +54,12 @@ public class RestaurantesControladorRest {
 
 	@Context
 	private UriInfo uriInfo;
-	
+	// La clase HttpHeaders representa las cabeceras HTTP de la solicitud y
+	// proporciona métodos para obtener los valores de las cabeceras individuales.
 
-	
+	@Context
+	private HttpHeaders headers;
+
 	@Context
 	private SecurityContext securityContext;
 
@@ -102,16 +105,32 @@ public class RestaurantesControladorRest {
 
 			double latitud = Double.parseDouble(coordenadasArray[0]);
 			double longitud = Double.parseDouble(coordenadasArray[1]);
-			
 
 			String usuario = securityContext.getUserPrincipal().getName();
 			System.out.println(usuario);
-			
-			// APLICACIÓN PATRON BUILDER
-			String id = servicio.create(restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(), latitud,
-					longitud,usuario);
 
-			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(id).build();
+			// se asigna al restaurante el usuario que lo ha creado como gestor
+			String id = servicio.create(restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(), latitud,
+					longitud, usuario);
+			// Obtener el valor de la cabecera "Host"
+
+			String hostypuerto = headers.getRequestHeader("X-Forwarded-Host").get(0).toString();
+
+			String[] partes = hostypuerto.split(":");
+			String host = partes[0];
+			String puerto = partes[1];
+
+			// APLICACIÓN PATRON BUILDER
+			System.out.println(hostypuerto);
+			// construimos la nueva Url según los parametros (host y puerto) que hemos
+			// sacado de la cabecera X-Forwarded-Host, además, quitamos de la ruta /api para
+			// que sea conforme con la pasarela
+			URI nuevaURL = uriInfo.getAbsolutePathBuilder()
+					.host(host)
+					.port(Integer.parseInt(puerto))
+					.replacePath(uriInfo.getPath().replace("/api", ""))
+					.path(id).build();
+			System.out.println(nuevaURL);
 
 			return Response.created(nuevaURL).build(); // devuelve la url del nuevo restaurante
 
@@ -130,8 +149,6 @@ public class RestaurantesControladorRest {
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Restaurante no encontrado") })
 	public Response getRestaurante(@ApiParam(value = "id del restaurante", required = true) @PathParam("id") String id)
 			throws Exception {
-		
-		System.out.println("nO DEBERIA PODER ENTRAR AQUI");
 
 		return Response.status(Response.Status.OK).entity(servicio.getRestaurante(id)).build();
 	}
@@ -175,7 +192,7 @@ public class RestaurantesControladorRest {
 
 		if (restaurante.getCoordenadas() == null)
 			throw new IllegalArgumentException("coordenadas: no debe ser nulo");
-		
+
 		String usuario = securityContext.getUserPrincipal().getName();
 		System.out.println(usuario);
 
@@ -185,7 +202,8 @@ public class RestaurantesControladorRest {
 		double latitud = Double.parseDouble(coordenadasArray[0]);
 		double longitud = Double.parseDouble(coordenadasArray[1]);
 
-		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(), latitud, longitud,usuario);
+		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(), latitud, longitud,
+				usuario);
 
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
@@ -234,11 +252,11 @@ public class RestaurantesControladorRest {
 			@ApiParam(value = "id del restaurante a modificar", required = true) @PathParam("id") String id,
 			@ApiParam(value = "lista de sitios turisticos", required = true) List<SitioTuristico> sitios)
 			throws RepositorioException, EntidadNoEncontrada {
-		
+
 		String usuario = securityContext.getUserPrincipal().getName();
 		System.out.println(usuario);
 
-		servicio.setSitiosTuristicos(id, sitios,usuario);
+		servicio.setSitiosTuristicos(id, sitios, usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 
 	}
@@ -264,12 +282,12 @@ public class RestaurantesControladorRest {
 			throws RepositorioException, EntidadNoEncontrada {
 
 		try {
-			
+
 			String usuario = securityContext.getUserPrincipal().getName();
 			System.out.println(usuario);
 
 			String nombre = servicio.addPlato(id, platoDTO.getNombre(), platoDTO.getDescripcion(), platoDTO.getPrecio(),
-					platoDTO.isDisponibilidad(),usuario);
+					platoDTO.isDisponibilidad(), usuario);
 			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(nombre).build();
 
 			return Response.created(nuevaURL).build();
@@ -303,7 +321,7 @@ public class RestaurantesControladorRest {
 
 		String usuario = securityContext.getUserPrincipal().getName();
 		System.out.println(usuario);
-		servicio.removePlato(id, nombrePlato,usuario);
+		servicio.removePlato(id, nombrePlato, usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
@@ -331,8 +349,8 @@ public class RestaurantesControladorRest {
 
 		String usuario = securityContext.getUserPrincipal().getName();
 		System.out.println(usuario);
-		servicio.updatePlato(id, plato.getNombre(), plato.getDescripcion(), plato.getPrecio(),
-				plato.isDisponibilidad(),usuario);
+		servicio.updatePlato(id, plato.getNombre(), plato.getDescripcion(), plato.getPrecio(), plato.isDisponibilidad(),
+				usuario);
 
 		return Response.status(Response.Status.NO_CONTENT).build();
 
@@ -357,7 +375,7 @@ public class RestaurantesControladorRest {
 
 		String usuario = securityContext.getUserPrincipal().getName();
 		System.out.println(usuario);
-		servicio.deleteRestaurante(id,usuario);
+		servicio.deleteRestaurante(id, usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
@@ -374,7 +392,6 @@ public class RestaurantesControladorRest {
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
 	public Response getListadoActividades() throws Exception {
 
-		
 		Principal user = securityContext.getUserPrincipal();
 		System.out.println("USUARIIOO: " + user);
 		List<RestauranteResumen> resultado = servicio.getListadoRestaurantes();
@@ -390,13 +407,33 @@ public class RestaurantesControladorRest {
 			// URL
 
 			String id = restauranteResumen.getId();
-			URI nuevaURL = uriInfo.getAbsolutePathBuilder().path(id).build();
-			System.out.println(nuevaURL.toString());
+			
+			String hostypuerto = headers.getRequestHeader("X-Forwarded-Host").get(0).toString();
+
+			String[] partes = hostypuerto.split(":");
+			String host = partes[0];
+			String puerto = partes[1];
+
+			// APLICACIÓN PATRON BUILDER
+			System.out.println(hostypuerto);
+			// construimos la nueva Url según los parametros (host y puerto) que hemos
+			// sacado de la cabecera X-Forwarded-Host, además, quitamos de la ruta /api para
+			// que sea conforme con la pasarela
+			URI nuevaURL = uriInfo.getAbsolutePathBuilder()
+					.host(host)
+					.port(Integer.parseInt(puerto))
+					.replacePath(uriInfo.getPath().replace("/api", ""))
+					.path(id).build();
+			
+			System.out.println(nuevaURL);
+			
 			resumenExtendido.setUrl(nuevaURL.toString()); // string
 
 			extendido.add(resumenExtendido);
 
 		}
+		
+
 
 		// Una lista no es un documento válido en XML
 

@@ -8,14 +8,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.mongodb.client.model.geojson.Point;
 
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
-import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
-import usuarios.modelo.Usuario;
 
 public interface IServicioRestaurante {
 

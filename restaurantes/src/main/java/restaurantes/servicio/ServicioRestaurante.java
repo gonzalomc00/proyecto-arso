@@ -30,7 +30,6 @@ import repositorio.RepositorioException;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
-import usuarios.modelo.Usuario;
 
 public class ServicioRestaurante implements IServicioRestaurante {
 
