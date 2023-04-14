@@ -115,17 +115,20 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		// 3. Analizar el documento
 		org.w3c.dom.Document documento = analizador
 				.parse(new URL("http://api.geonames.org/findNearbyWikipedia?postalcode=" + r.getCp()
-						+ "&country=ES&username=arso_gs&lang=ES").openStream());
+						+ "&country=ES&username=arso_gs&lang=ES&maxRows=20").openStream());
 
 		NodeList elementos = documento.getElementsByTagName("title");
+		NodeList distancias = documento.getElementsByTagName("distance");
 
 		List<SitioTuristico> sitios = new LinkedList<SitioTuristico>();
 
 		for (int i = 0; i < elementos.getLength(); i++) {
 
 			Element entry = (Element) elementos.item(i);
+			Element dist = (Element) distancias.item(i);
 
 			String sitio = entry.getTextContent().replace(' ', '_');
+			Double distancia = Double.parseDouble(dist.getTextContent());
 
 			// JSON
 
@@ -139,6 +142,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			SitioTuristico sitio_clase = new SitioTuristico();
 			System.out.println(sitio);
 			sitio_clase.setNombre(sitio);
+			System.out.println("DISTANCIA: " + distancia);
+			sitio_clase.setDistancia(distancia);
 
 			JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio);
 

@@ -45,8 +45,7 @@ public class RestaurantesTest {
 	 * los tests obtienen un coverage del 97% sobre el codigo del
 	 * ServicioRestaurante
 	 */
-/*
-	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
+
 	private IServicioRestaurante servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
 
 	@BeforeEach
@@ -55,6 +54,8 @@ public class RestaurantesTest {
 	}
 
 	// ------------------- TESTS EXCEPCIONES -------------------------
+	
+	/**
 	@Test
 	public void testRestauranteGetRestauranteByIdFailureEntidadNoEncontrada() throws RepositorioException {
 
@@ -701,12 +702,12 @@ public class RestaurantesTest {
 	}
 
 	// --------------Test obtenerSitiosTuristicos
-
+*/
 	@Test
 	public void TestObtenerSitiosTuristicos() throws MalformedURLException, SAXException, IOException,
 			ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
 
-		String id2 = servicio.create("GyS", "30010", "Murcia", 30.00, 40.00);
+		String id2 = servicio.create("GyS", "30010", "Murcia", 30.00, 40.00,"sofia");
 
 		List<SitioTuristico> listaSitios1 = servicio.obtenerSitiosTuristicos(id2);
 
@@ -726,7 +727,7 @@ public class RestaurantesTest {
 		Assertions.assertEquals(sitio2.getNombre(), "Catedral_de_Murcia");
 		Assertions.assertEquals(sitio3.getNombre(), "Iglesia_de_Nuestra_Señora_de_los_Dolores_(Aljucer)");
 	}
-
+/*
 	@Test
 	public void TestObtenerSitiosTuristicosIdVacio() {
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
@@ -808,6 +809,7 @@ public class RestaurantesTest {
 
 	}
 
+	/**
 	@Test
 	public void testSetSitiosTuristicosIdNull() throws MalformedURLException, SAXException, IOException,
 			ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
@@ -825,8 +827,8 @@ public class RestaurantesTest {
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 
-	}
+	}*/
 
-*/
+
 }
 

@@ -9,6 +9,7 @@ public class SitioTuristico {
 	private String resumen;
 	private List<String> enlaces = new LinkedList<String>();
 	private String foto;
+	private double distancia; //en km
 
 	public SitioTuristico() {
 		// Pojo
@@ -67,5 +68,16 @@ public class SitioTuristico {
 	public void setFoto(String foto) {
 		this.foto = foto;
 	}
+
+	public double getDistancia() {
+		return distancia;
+	}
+
+	public void setDistancia(double distancia) {
+		this.distancia = distancia;
+	}
+	
+	
+	
 
 }
