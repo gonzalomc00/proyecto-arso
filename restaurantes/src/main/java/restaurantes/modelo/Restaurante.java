@@ -17,8 +17,8 @@ public class Restaurante implements Identificable {
 	private String nombre;
 	private String cp;
 	private String ciudad;
-	private Double latitud;
-	private Double longitud;
+	private Double longitud; //x
+	private Double latitud; //y
 	private List<SitioTuristico> sitios = new LinkedList<>();
 	private List<Plato> platos = new LinkedList<>();
 	private String gestor;
