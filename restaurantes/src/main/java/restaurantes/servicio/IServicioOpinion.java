@@ -12,15 +12,15 @@ import retrofit2.http.Path;
 
 public interface IServicioOpinion {
 
-	@GET("/opiniones/{id}")
+	@GET("opiniones/{id}")
 	Call<Opinion> getOpinion(@Path("id")String id);
 	
-	@POST("/opiniones")
+	@POST("opiniones")
 	Call<String> createOpinion(@Body String nombre);
 	
-	@DELETE("/opiniones/{id}")
+	@DELETE("opiniones/{id}")
 	Call<Void> deleteOpinion(@Path("id") String id);
 	
-	@POST("/opiniones/{id}/valoraciones")
+	@POST("opiniones/{id}/valoraciones")
 	Call<Void> addValoracion(@Path("id") String id, @Body String correo, @Body LocalDateTime fecha,@Body double calificacion, @Body String comentario);
 }

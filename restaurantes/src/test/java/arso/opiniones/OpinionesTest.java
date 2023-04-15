@@ -2,6 +2,7 @@ package arso.opiniones;
 
 import org.junit.jupiter.api.Test;
 
+import opiniones.modelo.Opinion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.servicio.IServicioOpinion;
@@ -14,7 +15,8 @@ public class OpinionesTest {
 	
 	@Test
 	public void testGetOpinion() throws RepositorioException, EntidadNoEncontrada {
-		servicio.getOpinion("643a9023e8721c26a57915b6");
+		Opinion o= servicio.getOpinion("643a9023e8721c26a57915b6");
+		sysout
 		
 	}
 }

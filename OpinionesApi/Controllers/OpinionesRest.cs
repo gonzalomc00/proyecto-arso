@@ -20,6 +20,7 @@ namespace OpinionesApi.Controllers
         [HttpGet("{id}", Name = "GetOpinion")] //la misma notacion HttpGet ya lleva aparejado el path
         public ActionResult<Opinion> Get(string id)
         {
+            Console.Write("eo");
             var entidad = _servicio.GetOpinionById(id);
             if (entidad == null)
             {

@@ -2,9 +2,16 @@ package opiniones.modelo;
 
 import java.time.LocalDateTime;
 
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+
+import utils.LocalDateTimeAdapter;
+
 public class Valoracion {
 	
 	private String correo;
+    @SerializedName("fecha")
+    @JsonAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime fecha;
 	private double calificacion;
 	private String comentario;
