@@ -22,10 +22,10 @@ namespace Opiniones.Servicio
             this.repositorio = repositorio;
         }
 
-        public string CreateOpinion(String nombre)
+        public string CreateOpinion(String nombreRes)
         {
             Opinion opinion = new Opinion();
-            opinion.NombreRecurso = nombre;
+            opinion.NombreRecurso = nombreRes;
             return this.repositorio.Add(opinion);
         }
 
