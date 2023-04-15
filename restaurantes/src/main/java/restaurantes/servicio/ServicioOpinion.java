@@ -31,9 +31,12 @@ public class ServicioOpinion implements IServicioOpinion {
 
 
 	@Override
-	public String createOpinion(String nombreRes) {
-		// TODO Auto-generated method stub
-		return null;
+	public String createOpinion(String nombreRes) throws IOException {
+		Response<String> resultado= service.createOpinion(nombreRes).execute();
+		return resultado.body();
+		
+		
+		
 	}
 
 	

@@ -22,6 +22,9 @@ public class Restaurante implements Identificable {
 	private List<SitioTuristico> sitios = new LinkedList<>();
 	private List<Plato> platos = new LinkedList<>();
 	private String gestor;
+	private ResumenValoracion resumenValoracion;
+	
+
 
 	public Restaurante() { // POJO
 
@@ -145,6 +148,16 @@ public class Restaurante implements Identificable {
 
 	public void setGestor(String gestor) {
 		this.gestor = gestor;
+	}
+
+
+
+	public ResumenValoracion getResumenValoracion() {
+		return resumenValoracion;
+	}
+
+	public void setResumenValoracion(ResumenValoracion resumenValoracion) {
+		this.resumenValoracion = resumenValoracion;
 	}
 
 }

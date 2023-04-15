@@ -1,7 +1,6 @@
 package restaurantes.rest;
 
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.Principal;
@@ -32,6 +31,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.dto.PlatoRequest;
@@ -447,4 +447,36 @@ public class RestaurantesControladorRest {
 		return Response.ok(listado).build();
 
 	}
+	
+	@POST
+	@Path("/{id}/valoraciones")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
+			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
+	public Response activarValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
+		
+		
+		servicio.activarValoraciones(id);
+		return Response.status(Response.Status.NO_CONTENT).build();
+		
+		
+	}
+	
+	@GET
+	@Path("/{id}/valoraciones")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
+			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
+	public Response getValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
+		
+		
+		List<Valoracion> lista_valoraciones=servicio.getValoracionesRes(id);
+		return Response.ok(lista_valoraciones).build();
+		
+		
+	}
+	
+	
 }

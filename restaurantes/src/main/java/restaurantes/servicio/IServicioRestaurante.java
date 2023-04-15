@@ -38,8 +38,8 @@ public interface IServicioRestaurante {
 	
 	//conexion opiniones
 	
-	boolean activarValoraciones(String idRes);
+	void activarValoraciones(String idRes) throws IOException, RepositorioException, EntidadNoEncontrada;
 	
-	List<Valoracion> getValoracionesRes(String idRes);
+	List<Valoracion> getValoracionesRes(String idRes) throws RepositorioException, EntidadNoEncontrada;
 	
 }

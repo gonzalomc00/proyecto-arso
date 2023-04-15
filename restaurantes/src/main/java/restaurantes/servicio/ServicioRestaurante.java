@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import opiniones.modelo.Opinion;
 import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
@@ -30,12 +31,15 @@ import repositorio.Repositorio;
 import repositorio.RepositorioException;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
+import restaurantes.modelo.ResumenValoracion;
 import restaurantes.modelo.SitioTuristico;
+import servicio.FactoriaServicios;
 
 public class ServicioRestaurante implements IServicioRestaurante {
 
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
-
+	private IServicioOpinion servicio= FactoriaServicios.getServicio(IServicioOpinion.class);
+	
 	@Override
 	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud, String u)
 			throws RepositorioException {
@@ -408,13 +412,26 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return repositorio.getById(idRes);
 	}
 
-	public boolean activarValoraciones(String idRes) {
-		
-		return false;
+	public void activarValoraciones(String idRes) throws IOException, RepositorioException, EntidadNoEncontrada {
+		Restaurante r = repositorio.getById(idRes);
+		if(r.getResumenValoracion()==null) {
+		String idOpinion= servicio.createOpinion(r.getNombre());
+	
+		ResumenValoracion rv= new ResumenValoracion();
+		rv.setIdOpinion(idOpinion);
+		rv.setCalificacionMedia(0);
+		rv.setNumValoraciones(0);
+		r.setResumenValoracion(rv);
+		repositorio.update(r);
+		} else {
+			throw new IllegalStateException("El restaurante ya cuenta con valoraciones creadas");
+		}
 	}
 	
-	public List<Valoracion> getValoracionesRes(String idRes){
-		return null;
+	public List<Valoracion> getValoracionesRes(String idRes) throws RepositorioException, EntidadNoEncontrada{
+		Restaurante r = repositorio.getById(idRes);
+		Opinion o= servicio.getOpinion(r.getResumenValoracion().getIdOpinion());
+		return o.getValoraciones();
 		
 	}
 }

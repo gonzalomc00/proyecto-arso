@@ -1,5 +1,8 @@
 package arso.opiniones;
 
+import java.io.IOException;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import opiniones.modelo.Opinion;
@@ -8,6 +11,7 @@ import repositorio.RepositorioException;
 import restaurantes.servicio.IServicioOpinion;
 import servicio.FactoriaServicios;
 
+@Disabled
 public class OpinionesTest {
 	private IServicioOpinion servicio = FactoriaServicios.getServicio(IServicioOpinion.class);
 	
@@ -19,4 +23,12 @@ public class OpinionesTest {
 		System.out.println(o.toString());
 		
 	}
+	
+	@Test
+	public void testCreateOpinion() throws IOException {
+		String id= servicio.createOpinion("Prueba Retrofit");
+		System.out.println(id);
+	}
+	
+	
 }

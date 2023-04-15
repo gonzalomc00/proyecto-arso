@@ -3,6 +3,7 @@ using Opiniones.Servicio;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System;
+using System.Text.Json;
 
 namespace OpinionesApi.Controllers
 {
@@ -32,11 +33,11 @@ namespace OpinionesApi.Controllers
 
         //TODO: Revisar
         [HttpPost]
-        public ActionResult<Opinion> Create([FromForm] string nombre)
+        public ActionResult<Opinion> Create([FromBody] string nombre)
         {
 
             string _id = _servicio.CreateOpinion(nombre);
-            return CreatedAtRoute("GetOpinion", new { id = _id }, _servicio.GetOpinionById(_id));
+            return Content(JsonSerializer.Serialize(_id), "application/json");
         }
 
         [HttpDelete("{id}")]

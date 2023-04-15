@@ -4,7 +4,7 @@ public class ResumenValoracion {
 
 	private String idOpinion;
 	private int numValoraciones;
-	private Double calificacionMedia;
+	private double calificacionMedia;
 
 	@Override
 	public String toString() {
@@ -28,11 +28,11 @@ public class ResumenValoracion {
 		this.numValoraciones = numValoraciones;
 	}
 
-	public Double getCalificacionMedia() {
+	public double getCalificacionMedia() {
 		return calificacionMedia;
 	}
 
-	public void setCalificacionMedia(Double calificacionMedia) {
+	public void setCalificacionMedia(double calificacionMedia) {
 		this.calificacionMedia = calificacionMedia;
 	}
 
