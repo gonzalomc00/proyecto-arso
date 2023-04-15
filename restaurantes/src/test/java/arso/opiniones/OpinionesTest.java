@@ -16,7 +16,7 @@ public class OpinionesTest {
 	@Test
 	public void testGetOpinion() throws RepositorioException, EntidadNoEncontrada {
 		Opinion o= servicio.getOpinion("643a9023e8721c26a57915b6");
-		sysout
+		System.out.println(o.toString());
 		
 	}
 }

@@ -1,20 +1,18 @@
 package restaurantes.servicio;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import opiniones.modelo.Opinion;
-import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ServicioOpinion {
+public class ServicioOpinion implements IServicioOpinion {
 	
 	Retrofit retrofit = new Retrofit.Builder().baseUrl("http://localhost:5000/api/")
 			.addConverterFactory(GsonConverterFactory.create()).build();
 
-	IServicioOpinion service = retrofit.create(IServicioOpinion.class);
+	IRetrofitOpinion service = retrofit.create(IRetrofitOpinion.class);
 
 	
 	public Opinion getOpinion(String id) {
@@ -31,23 +29,13 @@ public class ServicioOpinion {
 		return null;
 	}
 
-	
-	public Call<String> createOpinion(String nombre) {
+
+	@Override
+	public String createOpinion(String nombreRes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
-	public Call<Void> deleteOpinion(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	
-	public Call<Void> addValoracion(String id, String correo, LocalDateTime fecha, double calificacion,
-			String comentario) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
