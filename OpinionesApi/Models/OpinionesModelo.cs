@@ -12,11 +12,13 @@ namespace Opiniones.Modelo
         public string NombreRecurso { get; set; }
         public List<Valoracion> Valoraciones { get; set; } = new List<Valoracion>();
 
+        [BsonElement]
         public int NumValoraciones => this.Valoraciones.Count;
-        
-        public double Media  => this.GetMedia(); 
-        
-        public double GetMedia()
+
+        [BsonElement]
+        public Double Media => calcularMedia();
+
+        public double calcularMedia()
         {
             if (this.Valoraciones.Count == 0)
             {
@@ -29,7 +31,7 @@ namespace Opiniones.Modelo
                 {
                     media += v.Calificacion;
                 }
-                return media /this.Valoraciones.Count;
+                return media / this.Valoraciones.Count;
             }
         }
     }
@@ -42,7 +44,7 @@ namespace Opiniones.Modelo
         public string Comentario { get; set; }
     }
 
-    
+
     public class OpinionResumen
     {
         public double CalificacionMedia { get; set; }

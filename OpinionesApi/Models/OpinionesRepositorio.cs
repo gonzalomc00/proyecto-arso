@@ -19,7 +19,7 @@ namespace Opiniones.Repositorio
             var client = new MongoClient("mongodb://sofia:sofia@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority");
             var database = client.GetDatabase("ZeppelinUM");
 
-            opiniones = database.GetCollection<Opinion>("opiniones.net");
+            opiniones = database.GetCollection<Opinion>("opinion");
         }
 
         public string Add(Opinion entity)
@@ -46,9 +46,8 @@ namespace Opiniones.Repositorio
 
         public Opinion GetById(string id)
         {
-            return opiniones
-                .Find(actividad => actividad.Id == id)
-                .FirstOrDefault();
+            
+            return opiniones.Find(opinion=>opinion.Id==id).FirstOrDefault();
         }
 
         public List<string> GetIds()

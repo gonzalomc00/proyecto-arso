@@ -18,7 +18,7 @@ namespace OpinionesApi.Controllers
         }
 
         [HttpGet("{id}", Name = "GetOpinion")] //la misma notacion HttpGet ya lleva aparejado el path
-        public ActionResult<Opinion> Get(String id)
+        public ActionResult<Opinion> Get(string id)
         {
             var entidad = _servicio.GetOpinionById(id);
             if (entidad == null)
@@ -51,11 +51,15 @@ namespace OpinionesApi.Controllers
             return NoContent();
         }
 
-        /**[HttpPost("{id}/valoraciones")]
-        public ActionResult addValoracion()
+        [HttpPost("{id}/valoraciones")]
+        public IActionResult addValoracion(string id, [FromForm] string correo, [FromForm] DateTime fecha, [FromForm] double calificacion,
+          [FromForm] string comentario)
         {
+            _servicio.addValoracion(id, correo, fecha, calificacion, comentario);
+            return NoContent();
 
-        }*/
+        }
+
 
     }
 
