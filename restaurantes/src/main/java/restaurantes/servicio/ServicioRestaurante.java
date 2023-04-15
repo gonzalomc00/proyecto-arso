@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
 import repositorio.Repositorio;
@@ -407,4 +408,13 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return repositorio.getById(idRes);
 	}
 
+	public boolean activarValoraciones(String idRes) {
+		
+		return false;
+	}
+	
+	public List<Valoracion> getValoracionesRes(String idRes){
+		return null;
+		
+	}
 }

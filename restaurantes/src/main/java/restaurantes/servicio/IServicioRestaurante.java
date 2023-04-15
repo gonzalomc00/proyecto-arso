@@ -8,7 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-
+import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.modelo.Restaurante;
@@ -35,5 +35,11 @@ public interface IServicioRestaurante {
 	void deleteRestaurante(String idRes, String u) throws RepositorioException, EntidadNoEncontrada;
 	
 	List<RestauranteResumen> getListadoRestaurantes() throws RepositorioException;
+	
+	//conexion opiniones
+	
+	boolean activarValoraciones(String idRes);
+	
+	List<Valoracion> getValoracionesRes(String idRes);
 	
 }

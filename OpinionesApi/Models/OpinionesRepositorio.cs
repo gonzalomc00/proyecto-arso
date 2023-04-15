@@ -31,7 +31,7 @@ namespace Opiniones.Repositorio
 
         public void Update(Opinion entity)
         {
-            opiniones.ReplaceOne(actividad => actividad.Id == entity.Id, entity);
+            opiniones.ReplaceOne(opinion => opinion.Id == entity.Id, entity);
         }
 
         public void Delete(Opinion entity)
