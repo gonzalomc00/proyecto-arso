@@ -1,6 +1,7 @@
 package restaurantes.rest;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.Principal;
@@ -405,6 +406,8 @@ public class RestaurantesControladorRest {
 			resumenExtendido.setResumen(restauranteResumen);
 
 			// URL
+			
+			System.out.println(headers.getRequestHeaders().get(HttpHeaders.HOST));
 
 			String id = restauranteResumen.getId();
 			
