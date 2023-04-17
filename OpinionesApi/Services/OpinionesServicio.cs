@@ -2,7 +2,10 @@ using Opiniones.Modelo;
 using Opiniones.Repositorio;
 using Opiniones.Eventos;
 using Repositorio;
-
+using RabbitMQ.Client;
+using System.Text.Json;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
 namespace Opiniones.Servicio
 {
     public interface IServicioOpiniones
@@ -16,10 +19,14 @@ namespace Opiniones.Servicio
     public class ServicioOpiniones : IServicioOpiniones
     {
         private Repositorio<Opinion, string> repositorio;
+        private string exchangeName;
 
         public ServicioOpiniones(Repositorio<Opinion, String> repositorio)
         {
             this.repositorio = repositorio;
+            //Declaracion del exchange
+            exchangeName = "evento.nueva.valoracion";
+
         }
 
         public string CreateOpinion(String nombreRes)
@@ -87,7 +94,7 @@ namespace Opiniones.Servicio
                 CalificacionMedia = opinion.Media,
                 NumValoraciones = opinion.NumValoraciones
             };
-            
+
             notificarEvento(evento);
 
         }
@@ -96,6 +103,32 @@ namespace Opiniones.Servicio
         {
 
             //hacer conexion rara con el servicio de eventos
+            try
+            {
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.Uri = new Uri("amqp://bmqyxhdb:t9WYA0qDTQpfRzSj5FJUHMwIp0mMatZm@whale.rmq.cloudamqp.com:5672/bmqyxhdb");
+                //aqui no se crean tipos, ES VAR
+                var connection = factory.CreateConnection();
+                var channel = connection.CreateModel();
+
+                Boolean durable = true;
+                channel.ExchangeDeclare(exchangeName, ExchangeType.Fanout, durable);
+
+                //Envio del mensaje
+                var serializerSettings = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                string mensaje = JsonSerializer.Serialize(evento, serializerSettings);
+
+                string routingKey = "arso";
+                channel.BasicPublish(exchangeName, routingKey, null, Encoding.UTF8.GetBytes(mensaje));
+
+                channel.Close();
+                connection.Close();
+            }
+            catch
+            {
+                Console.WriteLine("Error al conectar con el servicio de eventos");
+            }
+
         }
 
         public Opinion GetOpinionById(String id)

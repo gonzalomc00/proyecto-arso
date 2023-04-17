@@ -120,7 +120,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		// 3. Analizar el documento
 		org.w3c.dom.Document documento = analizador
 				.parse(new URL("http://api.geonames.org/findNearbyWikipedia?postalcode=" + r.getCp()
-						+ "&country=ES&username=arso_gs&lang=ES&maxRows=20").openStream());
+						+ "&country=ES&username=arso_gs&lang=ES&maxRows=5").openStream());
 
 		NodeList elementos = documento.getElementsByTagName("title");
 		NodeList distancias = documento.getElementsByTagName("distance");

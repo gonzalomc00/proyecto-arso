@@ -49,7 +49,6 @@ import servicio.FactoriaServicios;
 @Path("restaurantes")
 public class RestaurantesControladorRest {
 
-	// TODO: PREGUNTAR FORMATO DE ENTRADA EN PUTS
 
 	private IServicioRestaurante servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
 
