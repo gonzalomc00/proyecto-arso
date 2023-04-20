@@ -4,11 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -23,12 +28,21 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
+
 import opiniones.modelo.Opinion;
 import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
 import repositorio.Repositorio;
 import repositorio.RepositorioException;
+import restaurantes.eventos.EventoNuevaValoracion;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.ResumenValoracion;
@@ -39,6 +53,72 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 	private IServicioOpinion servicio= FactoriaServicios.getServicio(IServicioOpinion.class);
+	
+	
+	
+	public ServicioRestaurante() {
+		try {
+			ConnectionFactory factory =new ConnectionFactory();
+			factory.setUri("amqp://bmqyxhdb:t9WYA0qDTQpfRzSj5FJUHMwIp0mMatZm@whale.rmq.cloudamqp.com:5672/bmqyxhdb");
+			Connection  connection= factory.newConnection();
+			Channel channel= connection.createChannel();
+			
+			//Declaramos la cola y el enlace con el exchange
+			
+			final String exchangeName="evento.nueva.valoracion";
+			final String queueName = "arso-queue";
+			final String bindingKey="arso";
+			
+			boolean durable=true;
+			boolean exclusive=false;
+			boolean autodelete =false;
+			Map<String,Object>properties=null;
+			channel.queueDeclare(queueName,durable,exclusive,autodelete,properties);
+			
+			//Vinculamos la cola con el exchange. 
+			channel.queueBind(queueName, exchangeName, bindingKey);
+			
+			//Configuración del consumidor
+			
+			boolean autoAck=false;
+			String cola="arso-queue";
+			String etiquetaConsumidor="arso-consumidor";
+			
+			//Consumidor push
+			
+			channel.basicConsume(cola, autoAck,etiquetaConsumidor,
+					
+					new DefaultConsumer(channel) {
+				@Override
+				public void handleDelivery(String consumerTag,Envelope envelope, AMQP.BasicProperties properties, byte[]body) throws IOException{
+					String routingKey = envelope.getRoutingKey();
+					String contentType=properties.getContentType();
+					long deliveryTag= envelope.getDeliveryTag();
+					
+					String contenido= new String(body);
+					System.out.println(contenido);
+					
+					ObjectMapper mapper= new ObjectMapper();
+					EventoNuevaValoracion evento = mapper.readValue(contenido, EventoNuevaValoracion.class);
+					System.out.println(evento.toString());
+					
+					channel.basicAck(deliveryTag, false);
+					
+					
+				}
+				
+				
+			}
+					
+					);
+			
+			
+		} catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException | IOException | TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	@Override
 	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud, String u)
@@ -434,4 +514,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return o.getValoraciones();
 		
 	}
+	
+	
+	
+	
 }
