@@ -465,7 +465,7 @@ public class RestaurantesControladorRest {
 	@GET
 	@Path("/{id}/valoraciones")
 	@Produces({ MediaType.APPLICATION_JSON })
-	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
+	@ApiOperation(value = "Obtener las valoraciones", notes = "Obtener las valoraciones de un restaurante", response = Restaurante.class)
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
 	public Response getValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {

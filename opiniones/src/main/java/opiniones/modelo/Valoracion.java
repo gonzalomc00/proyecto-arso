@@ -2,6 +2,7 @@ package opiniones.modelo;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,11 +10,15 @@ import utils.LocalDateTimeAdapter;
 
 public class Valoracion {
 	
+	@JsonProperty("Correo")
 	private String correo;
     @SerializedName("fecha")
     @JsonAdapter(LocalDateTimeAdapter.class)
+    @JsonProperty("Fecha")
 	private LocalDateTime fecha;
+    @JsonProperty("Calificacion")
 	private double calificacion;
+    @JsonProperty("Comentario")
 	private String comentario;
 	
 	
