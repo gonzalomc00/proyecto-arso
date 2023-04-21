@@ -82,14 +82,14 @@ namespace Opiniones.Servicio
             //1. Crear el evento
             EventoNuevaValoracion evento = new EventoNuevaValoracion();
             evento.IdOpinion = idOp;
-            evento.nuevaValoracion = new Valoracion()
+            evento.NuevaValoracion = new Valoracion()
             {
                 Correo = correo,
                 Fecha = fecha,
                 Calificacion = calificacion,
                 Comentario = comentario
             };
-            evento.resumenOpinion = new OpinionResumen()
+            evento.ResumenOpinion = new OpinionResumen()
             {
                 CalificacionMedia = opinion.Media,
                 NumValoraciones = opinion.NumValoraciones

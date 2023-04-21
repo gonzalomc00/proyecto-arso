@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -89,6 +91,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			channel.basicConsume(cola, autoAck,etiquetaConsumidor,
 					
 					new DefaultConsumer(channel) {
+				
 				@Override
 				public void handleDelivery(String consumerTag,Envelope envelope, AMQP.BasicProperties properties, byte[]body) throws IOException{
 					String routingKey = envelope.getRoutingKey();
@@ -99,8 +102,29 @@ public class ServicioRestaurante implements IServicioRestaurante {
 					System.out.println(contenido);
 					
 					ObjectMapper mapper= new ObjectMapper();
+					mapper.registerModule(new JSR310Module());
+				    mapper.setDateFormat(new SimpleDateFormat());
+				        
 					EventoNuevaValoracion evento = mapper.readValue(contenido, EventoNuevaValoracion.class);
-					System.out.println(evento.toString());
+					try {
+						List<Restaurante> restaurantes= repositorio.getAll();
+						for(Restaurante r : restaurantes) {
+							if(r.getResumenValoracion().getIdOpinion().equals(evento.idOpinion)) {
+								ResumenValoracion nr= new ResumenValoracion();
+								nr.setCalificacionMedia(evento.getResumenOpinion().getCalificacionMedia());
+								nr.setNumValoraciones(evento.getResumenOpinion().getNumValoraciones());
+								nr.setIdOpinion(r.getResumenValoracion().getIdOpinion());
+								r.setResumenValoracion(nr);
+								repositorio.update(r);
+								
+							}
+						}
+						
+						
+					} catch (RepositorioException | EntidadNoEncontrada e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					
 					channel.basicAck(deliveryTag, false);
 					
