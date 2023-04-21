@@ -55,7 +55,6 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	private IServicioOpinion servicio= FactoriaServicios.getServicio(IServicioOpinion.class);
 	
 	
-	
 	public ServicioRestaurante() {
 		try {
 			ConnectionFactory factory =new ConnectionFactory();
@@ -118,6 +117,12 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	//creado para poder realizar las pruebas unitarias con el mock de la interfaz en vez de con la implementacion
+	@Override
+	public void setServicioOpinion(IServicioOpinion s) {
+		this.servicio = s;
 	}
 	
 	@Override

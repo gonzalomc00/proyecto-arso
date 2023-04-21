@@ -12,5 +12,4 @@ public interface IServicioOpinion {
 	String createOpinion(String nombreRes) throws IOException;
 	
 	
-	
 }

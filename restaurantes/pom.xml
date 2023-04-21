@@ -23,7 +23,7 @@
 			<artifactId>opiniones</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 		<!-- RabbitMQ -->
 
 		<dependency>
@@ -143,6 +143,32 @@
 			<version>2.9.0</version>
 		</dependency>
 
+		<!-- junit 4 -->
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!--Dependencia Mock -->
+		<!-- https://mvnrepository.com/artifact/org.jmock/jmock -->
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jmock/jmock-junit4 -->
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
+		
+
 	</dependencies>
 
 
@@ -206,13 +232,7 @@
 				<version>5.7.0-M1</version>
 				<scope>test</scope>
 			</dependency>
-			<!--Dependencia Mockito -->
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>2.7.5</version>
-				<scope>test</scope>
-			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
