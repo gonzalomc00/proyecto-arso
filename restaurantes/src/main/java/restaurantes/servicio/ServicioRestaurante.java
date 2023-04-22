@@ -229,13 +229,15 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		// 3. Analizar el documento
 		org.w3c.dom.Document documento = analizador
 				.parse(new URL("http://api.geonames.org/findNearbyWikipedia?postalcode=" + r.getCp()
-						+ "&country=ES&username=arso_gs&lang=ES&maxRows=5").openStream());
+						+ "&country=ES&username=arso_gs&lang=ES&maxRows=50").openStream());
 
 		NodeList elementos = documento.getElementsByTagName("title");
 		NodeList distancias = documento.getElementsByTagName("distance");
 
+		
 		List<SitioTuristico> sitios = new LinkedList<SitioTuristico>();
 
+		//para cada sitio turistico encontrado
 		for (int i = 0; i < elementos.getLength(); i++) {
 
 			Element entry = (Element) elementos.item(i);
@@ -255,7 +257,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 
 			SitioTuristico sitio_clase = new SitioTuristico();
 			System.out.println(sitio);
-			sitio_clase.setNombre(sitio);
+			
+			//volvemos a reparesear el nombre para quitar las _
+			String nombre = sitio.replace('_', ' ');
+			sitio_clase.setNombre(nombre);
 			System.out.println("DISTANCIA: " + distancia);
 			sitio_clase.setDistancia(distancia);
 
@@ -275,8 +280,11 @@ public class ServicioRestaurante implements IServicioRestaurante {
 					// categoria
 					if (categoria.getString("value").equals("http://dbpedia.org/ontology/ArchitecturalStructure")
 							|| categoria.getString("value").equals("http://dbpedia.org/ontology/HistoricBuilding")) {
-						System.out.println(categoria.getString("value"));
-						categorias_clase.add(categoria.getString("value"));
+						
+						//cogemos el nombre de la categoria de la url y es con lo que nos quedamos
+						String c =  categoria.getString("value").substring(categoria.getString("value").lastIndexOf('/') + 1);
+
+						categorias_clase.add(c);
 						check = true;
 					}
 				}
@@ -522,6 +530,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	public void activarValoraciones(String idRes) throws IOException, RepositorioException, EntidadNoEncontrada {
+		if (idRes == null || idRes.isEmpty() || idRes.isBlank()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		
 		Restaurante r = repositorio.getById(idRes);
 		if(r.getResumenValoracion()==null) {
 		String idOpinion= servicio.createOpinion(r.getNombre());
@@ -538,8 +550,14 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 	
 	public List<Valoracion> getValoracionesRes(String idRes) throws RepositorioException, EntidadNoEncontrada{
+		if (idRes == null || idRes.isEmpty() || idRes.isBlank()) {
+			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
+		}
+		
 		Restaurante r = repositorio.getById(idRes);
+		
 		Opinion o= servicio.getOpinion(r.getResumenValoracion().getIdOpinion());
+		
 		return o.getValoraciones();
 		
 	}

@@ -451,14 +451,13 @@ public class RestaurantesControladorRest {
 	@Path("/{id}/valoraciones")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
-	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
-			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_CREATED, message = ""),
+			@ApiResponse(code =  HttpServletResponse.SC_BAD_REQUEST, message = "id del restuarante no válida") })
 	public Response activarValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
 		
 		
 		servicio.activarValoraciones(id);
 		return Response.status(Response.Status.NO_CONTENT).build();
-		
 		
 	}
 	
