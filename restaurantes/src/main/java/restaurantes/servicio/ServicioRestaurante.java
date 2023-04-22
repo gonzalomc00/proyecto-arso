@@ -109,6 +109,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 					try {
 						List<Restaurante> restaurantes= repositorio.getAll();
 						for(Restaurante r : restaurantes) {
+
 							if(r.getResumenValoracion().getIdOpinion().equals(evento.idOpinion)) {
 								ResumenValoracion nr= new ResumenValoracion();
 								nr.setCalificacionMedia(evento.getResumenOpinion().getCalificacionMedia());
