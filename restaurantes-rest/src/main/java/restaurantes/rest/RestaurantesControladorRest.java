@@ -103,8 +103,8 @@ public class RestaurantesControladorRest {
 			String coordenadasStr = restaurante.getCoordenadas();
 			String[] coordenadasArray = coordenadasStr.split(", ");
 
-			double longitud = Double.parseDouble(coordenadasArray[0]); //x
-			double  latitud = Double.parseDouble(coordenadasArray[1]); //y
+			double latitud = Double.parseDouble(coordenadasArray[0]); //x
+			double  longitud = Double.parseDouble(coordenadasArray[1]); //y
 
 			String usuario = securityContext.getUserPrincipal().getName();
 			System.out.println(usuario);
