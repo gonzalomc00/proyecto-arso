@@ -23,22 +23,22 @@
 			<artifactId>opiniones</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
-				<dependency>
+
+		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<version>2.4.2</version>
 		</dependency>
 
-		
-			<dependency>
+
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
-			<dependency>
+
+		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>1.19.4</version>
@@ -49,7 +49,7 @@
 			<version>1.19.4</version>
 		</dependency>
 
-		
+
 		<!-- RabbitMQ -->
 
 		<dependency>
@@ -193,7 +193,7 @@
 			<version>2.6.0</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 
 	</dependencies>
 

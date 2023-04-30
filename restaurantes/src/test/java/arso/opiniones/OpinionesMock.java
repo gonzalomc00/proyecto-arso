@@ -151,6 +151,7 @@ public class OpinionesMock {
 
 		List<SitioTuristico> listaSitios1 = servicioRes.obtenerSitiosTuristicos(id2);
 
+		System.out.println(listaSitios1.toString());
 		for (SitioTuristico t : listaSitios1) {
 			System.out.println(t.toString());
 
