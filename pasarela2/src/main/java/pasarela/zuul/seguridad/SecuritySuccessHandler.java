@@ -52,6 +52,7 @@ public class SecuritySuccessHandler implements AuthenticationSuccessHandler {
 		
 		if (datosUsuario != null) {
 			String jwt = JwtUtils.createJWT(login, datosUsuario);
+			System.out.println(jwt);
 			
 			String responseBody = Utils.jwtResponse(jwt);
 

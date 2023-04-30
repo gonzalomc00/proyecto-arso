@@ -25,6 +25,7 @@ import restaurantes.modelo.Restaurante;
 
 public abstract class RepositorioMongo<T extends Identificable> implements RepositorioString<T> {
 
+	
 	protected ConnectionString connectionString = new ConnectionString(
 			"mongodb://sofia:sofia@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority");
 

@@ -1,0 +1,39 @@
+version: '3.1'
+
+services: 
+  opiniones: #opiniones api
+    build: OpinionesApi
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+      MONGO_URI: mongodb://root:example@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority
+
+  mongo: #instance mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express: #gestor web para esa instancia local de mongo
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment: #usuario administrador, contraseña y cadena de conexion de mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+  restaurantes-rest:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+
+  pasarela:
+    build: pasarela2
+    restart: always
+    ports:
+      - 8090:8090
+
