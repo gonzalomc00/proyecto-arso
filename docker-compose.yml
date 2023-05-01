@@ -26,13 +26,15 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
   restaurantes-rest:
-    build: .
+    build: 
+      dockerfile: ./Dockerfile
     restart: always
     ports:
       - 8080:8080
 
   pasarela:
-    build: pasarela2
+    build:
+      dockerfile: ./Dockerfile2
     restart: always
     ports:
       - 8090:8090

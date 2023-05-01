@@ -14,11 +14,10 @@ RUN mvn -e -B dependency:resolve
 COPY pasarela2/src ./src
 RUN mvn package
 
-
-FROM eclipse-temurin:17-jdk-alpine
-COPY target/*.jar ROOT.jar
-ENTRYPOINT ["java","-jar","/ROOT.jar"]
-
-
+FROM openjdk:8
+COPY --from=builder /app/target/pasarela-zuul-0.0.1-SNAPSHOT.jar /root.jar
+ENTRYPOINT ["java", "-jar", "/root.jar"]
 EXPOSE 8090
+
+
 
