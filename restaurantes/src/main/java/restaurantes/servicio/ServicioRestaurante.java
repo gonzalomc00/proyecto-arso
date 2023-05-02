@@ -514,6 +514,12 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			rr.setId(r.getId());
 			rr.setNombre(r.getNombre());
 			rr.setCp(r.getCp());
+			rr.setCiudad(r.getCiudad());
+			rr.setGestor(r.getGestor());
+			if(r.getResumenValoracion()!=null) {
+				rr.setValoracion(r.getResumenValoracion().getCalificacionMedia());
+			}
+			
 			resumenes.add(rr);
 		}
 
