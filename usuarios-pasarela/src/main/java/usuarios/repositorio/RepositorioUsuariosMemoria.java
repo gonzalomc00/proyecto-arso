@@ -15,7 +15,7 @@ public class RepositorioUsuariosMemoria extends RepositorioMemoria<Usuario> {
 			Usuario usuario1 = new Usuario("Marcos", "marcos@um.es", "MarcosMenarguez", Rol.GESTOR);
 			this.add(usuario1);
 			
-			Usuario usuario2 = new Usuario("Gonzalo", "gonzalo.manzanaresc@um.es", "gonzalomc00", Rol.GESTOR);
+			Usuario usuario2 = new Usuario("Gonzalo", "gonzalo.manzanesc@um.es", "gonzalomc00", Rol.GESTOR);
 			this.add(usuario2);
 			
 			Usuario usuario3 = new Usuario("Sofia", "sofia.maciasm@um.es", "mcsmrll", Rol.GESTOR);

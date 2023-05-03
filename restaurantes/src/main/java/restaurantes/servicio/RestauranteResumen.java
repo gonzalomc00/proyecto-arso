@@ -4,6 +4,9 @@ public class RestauranteResumen {
 	private String id;
 	private String nombre;
 	private String cp;
+	private String ciudad;
+	private Double valoracion;
+	private String gestor;
 
 	public String getId() {
 		return id;
@@ -29,9 +32,40 @@ public class RestauranteResumen {
 		this.cp = cp;
 	}
 
+
+	public String getCiudad() {
+		return ciudad;
+	}
+
+	public void setCiudad(String ciudad) {
+		this.ciudad = ciudad;
+	}
+
+	public Double getValoracion() {
+		return valoracion;
+	}
+
+	public void setValoracion(Double valoracion) {
+		this.valoracion = valoracion;
+	}
+
+	public String getGestor() {
+		return gestor;
+	}
+
+	public void setGestor(String gestor) {
+		this.gestor = gestor;
+	}
+
 	@Override
 	public String toString() {
-		return "RestauranteResumen [id=" + id + ", nombre=" + nombre + ", cp=" + cp + "]";
+		return "RestauranteResumen [id=" + id + ", nombre=" + nombre + ", cp=" + cp + ", ciudad=" + ciudad
+				+ ", valoracion=" + valoracion + ", gestor=" + gestor + "]";
 	}
+	
+	
+	
+	
+	
 
 }
