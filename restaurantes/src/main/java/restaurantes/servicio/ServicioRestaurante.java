@@ -54,7 +54,7 @@ import servicio.FactoriaServicios;
 public class ServicioRestaurante implements IServicioRestaurante {
 
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
-	private IServicioOpinion servicio= FactoriaServicios.getServicio(IServicioOpinion.class);
+	private IServicioOpinion servicio  = FactoriaServicios.getServicio(IServicioOpinion.class);
 	
 	
 	public ServicioRestaurante() {
@@ -142,12 +142,6 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	//creado para poder realizar las pruebas unitarias con el mock de la interfaz en vez de con la implementacion
-	@Override
-	public void setServicioOpinion(IServicioOpinion s) {
-		this.servicio = s;
 	}
 	
 	@Override

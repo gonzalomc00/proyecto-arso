@@ -16,8 +16,6 @@ import restaurantes.modelo.SitioTuristico;
 
 public interface IServicioRestaurante {
 
-	void setServicioOpinion(IServicioOpinion s);
-
 	String create(String nombre, String cp, String ciudad,Double latitud, Double longitud, String u) throws RepositorioException;
 
 	Restaurante getRestaurante(String idRes) throws RepositorioException, EntidadNoEncontrada;

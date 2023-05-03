@@ -1,5 +1,4 @@
-# Debe construirse desde la carpeta que contiene a los dos proyectos
-# Por ejemplo: docker build -t bookle-rest:v2 -f bookle-rest/Dockerfile-2 .
+
 FROM maven:3.8.5-jdk-11 AS builder
 
 WORKDIR /app-base/

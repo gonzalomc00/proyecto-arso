@@ -1,25 +1,21 @@
 package arso.opiniones;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.xml.sax.SAXException;
 
-import opiniones.modelo.Opinion;
 import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
@@ -31,15 +27,12 @@ import servicio.FactoriaServicios;
 
 public class OpinionesMock {
 
-	@Rule
-	public JUnitRuleMockery context = new JUnitRuleMockery();
-	final IServicioOpinion servicio = context.mock(IServicioOpinion.class);
-
-	private IServicioRestaurante servicioRes = FactoriaServicios.getServicio(IServicioRestaurante.class);
+	private IServicioRestaurante servicioRes;
 
 	@Before
 	public void setUp() {
-		servicioRes.setServicioOpinion(servicio);
+		servicioRes = FactoriaServicios.getServicio(IServicioRestaurante.class);
+		
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -57,13 +50,7 @@ public class OpinionesMock {
 
 	@Test
 	public void testActivarValoraciones() throws RepositorioException, IOException, EntidadNoEncontrada {
-		context.checking(new Expectations() {
-			{
-				oneOf(servicio).createOpinion(with(any(String.class)));
-				will(returnValue("idOpinion"));
-			}
-		});
-
+	
 		String id = servicioRes.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
 		servicioRes.activarValoraciones(id);
 
@@ -75,13 +62,7 @@ public class OpinionesMock {
 
 	@Test(expected = IllegalStateException.class)
 	public void testActivarValoracionesDuplicated() throws IOException, RepositorioException, EntidadNoEncontrada {
-		context.checking(new Expectations() {
-			{
-				oneOf(servicio).createOpinion(with(any(String.class)));
-				will(returnValue("idOpinion"));
-			}
-		});
-
+	
 		String id = servicioRes.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
 		servicioRes.activarValoraciones(id);
 		servicioRes.activarValoraciones(id);
@@ -90,40 +71,28 @@ public class OpinionesMock {
 
 	@Test
 	public void testGetValoraciones() throws RepositorioException, IOException, EntidadNoEncontrada {
-		context.checking(new Expectations() {
-			{
-				oneOf(servicio).createOpinion(with(any(String.class)));
-				will(returnValue("idOpinion"));
-			}
-		});
-
+		
 		String id = servicioRes.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
 		servicioRes.activarValoraciones(id);
-
-		Restaurante r = servicioRes.getRestaurante(id);
-
-		List<Valoracion> valoraciones = new LinkedList<Valoracion>();
-		valoraciones.add(new Valoracion("alumno@um.es", LocalDateTime.now(), 9.00, null));
-		Opinion o = new Opinion();
-		o.setId(id);
-		o.setNombreRecurso(r.getNombre());
-		o.setValoraciones(valoraciones);
-
-		context.checking(new Expectations() {
-			{
-				oneOf(servicio).getOpinion("idOpinion");
-				will(returnValue(o));
-			}
-		});
-
+		
 		List<Valoracion> misVal = servicioRes.getValoracionesRes(id);
-
+		
 		System.out.println(misVal.toString());
-		assertEquals(misVal, valoraciones);
-		assertEquals(misVal.get(0).getCorreo(), valoraciones.get(0).getCorreo());
-		assertEquals(misVal.get(0).getComentario(), valoraciones.get(0).getComentario());
-		assertEquals(misVal.get(0).getFecha(), valoraciones.get(0).getFecha());
-		assertEquals(misVal.get(0).getCalificacion(), valoraciones.get(0).getCalificacion(), 0.0);
+
+		//para controlar la pequeña diferencia entre las fechas 
+
+		LocalDateTime fechaEsperada = LocalDateTime.now();
+		LocalDateTime fechaReal = misVal.get(0).getFecha();
+		Duration duracion = Duration.between(fechaEsperada, fechaReal);
+		//permitimos un error de 5 segundos entre una fecha y otra
+		assertTrue(duracion.abs().getSeconds() < 5);
+
+
+		
+
+		assertEquals(misVal.get(0).getCorreo(), "alumno@um.es");
+		assertEquals(misVal.get(0).getComentario(),null);
+		assertEquals(misVal.get(0).getCalificacion(),  9.00, 0.0);
 
 	}
 	

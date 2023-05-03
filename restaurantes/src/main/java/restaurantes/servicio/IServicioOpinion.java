@@ -7,8 +7,10 @@ import opiniones.modelo.Opinion;
 
 
 public interface IServicioOpinion {
+	//recuperar opinion
 	Opinion getOpinion(String idOpinion);
 	
+	//activar valoraciones
 	String createOpinion(String nombreRes) throws IOException;
 	
 	
