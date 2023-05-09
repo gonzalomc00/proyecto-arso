@@ -1,16 +1,15 @@
 package restaurantes.eventos;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import opiniones.modelo.OpinionResumen;
-import opiniones.modelo.Valoracion;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EventoNuevaValoracion {
 
 	@JsonProperty("IdOpinion")
 	public String idOpinion;
-	@JsonProperty("NuevaValoracion")
-	public Valoracion nuevaValoracion;
 	@JsonProperty("ResumenOpinion")
 	public OpinionResumen resumenOpinion;
 	
@@ -23,8 +22,8 @@ public class EventoNuevaValoracion {
 
 	@Override
 	public String toString() {
-		return "EventoNuevaValoracion [IdOpinion=" + idOpinion + ", nuevaValoracion=" + nuevaValoracion
-				+ ", resumenOpinion=" + resumenOpinion + "]";
+		return "EventoNuevaValoracion [IdOpinion=" + idOpinion +
+				 ", resumenOpinion=" + resumenOpinion + "]";
 	}
 
 
@@ -37,13 +36,7 @@ public class EventoNuevaValoracion {
 		this.idOpinion = idOpinion;
 	}
 
-	public Valoracion getNuevaValoracion() {
-		return nuevaValoracion;
-	}
 
-	public void setNuevaValoracion(Valoracion nuevaValoracion) {
-		this.nuevaValoracion = nuevaValoracion;
-	}
 
 	public OpinionResumen getResumenOpinion() {
 		return resumenOpinion;

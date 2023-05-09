@@ -102,7 +102,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 					
 					ObjectMapper mapper= new ObjectMapper();
 					mapper.registerModule(new JSR310Module());
-				    mapper.setDateFormat(new SimpleDateFormat());
+				    mapper.setDateFormat( new SimpleDateFormat());
 				        
 					EventoNuevaValoracion evento = mapper.readValue(contenido, EventoNuevaValoracion.class);
 					try {
