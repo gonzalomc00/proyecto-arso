@@ -54,10 +54,10 @@ namespace OpinionesApi.Controllers
         }
 
         [HttpPost("{id}/valoraciones")]
-        public IActionResult addValoracion(string id, [FromForm] string correo, [FromForm] DateTime fecha, [FromForm] double calificacion,
+        public IActionResult addValoracion(string id, [FromForm] string correo, [FromForm] double calificacion,
           [FromForm] string comentario)
         {
-            _servicio.addValoracion(id, correo, fecha, calificacion, comentario);
+            _servicio.addValoracion(id, correo, DateTime.Now, calificacion, comentario);
             return NoContent();
 
         }

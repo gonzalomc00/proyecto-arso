@@ -5,6 +5,7 @@ public class RestauranteResumen {
 	private String nombre;
 	private String cp;
 	private String ciudad;
+	private String idOpinion;
 	private Double valoracion;
 	private String gestor;
 
@@ -57,11 +58,21 @@ public class RestauranteResumen {
 		this.gestor = gestor;
 	}
 
+
+	public String getIdOpinion() {
+		return idOpinion;
+	}
+
+	public void setIdOpinion(String idOpinion) {
+		this.idOpinion = idOpinion;
+	}
+
 	@Override
 	public String toString() {
 		return "RestauranteResumen [id=" + id + ", nombre=" + nombre + ", cp=" + cp + ", ciudad=" + ciudad
-				+ ", valoracion=" + valoracion + ", gestor=" + gestor + "]";
+				+ ", idOpinion=" + idOpinion + ", valoracion=" + valoracion + ", gestor=" + gestor + "]";
 	}
+	
 	
 	
 	

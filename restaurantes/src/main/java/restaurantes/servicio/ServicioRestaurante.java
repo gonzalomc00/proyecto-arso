@@ -512,6 +512,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			rr.setGestor(r.getGestor());
 			if(r.getResumenValoracion()!=null) {
 				rr.setValoracion(r.getResumenValoracion().getCalificacionMedia());
+				rr.setIdOpinion(r.getResumenValoracion().getIdOpinion());
 			}
 			
 			resumenes.add(rr);

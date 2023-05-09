@@ -393,7 +393,6 @@ public class RestaurantesControladorRest {
 	public Response getListadoActividades() throws Exception {
 
 		Principal user = securityContext.getUserPrincipal();
-		System.out.println("USUARIIOO: " + user);
 		List<RestauranteResumen> resultado = servicio.getListadoRestaurantes();
 
 		List<ResumenExtendido> extendido = new LinkedList<Listado.ResumenExtendido>();
@@ -405,8 +404,6 @@ public class RestaurantesControladorRest {
 			resumenExtendido.setResumen(restauranteResumen);
 
 			// URL
-			
-			System.out.println(headers.getRequestHeaders().get(HttpHeaders.HOST));
 
 			String id = restauranteResumen.getId();
 			
@@ -417,7 +414,6 @@ public class RestaurantesControladorRest {
 			String puerto = partes[1];
 
 			// APLICACIÓN PATRON BUILDER
-			System.out.println(hostypuerto);
 			// construimos la nueva Url según los parametros (host y puerto) que hemos
 			// sacado de la cabecera X-Forwarded-Host, además, quitamos de la ruta /api para
 			// que sea conforme con la pasarela
