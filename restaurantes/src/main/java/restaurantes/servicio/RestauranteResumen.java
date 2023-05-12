@@ -8,6 +8,8 @@ public class RestauranteResumen {
 	private String idOpinion;
 	private Double valoracion;
 	private String gestor;
+	private Double longitud;
+	private Double latitud;
 
 	public String getId() {
 		return id;
@@ -67,10 +69,28 @@ public class RestauranteResumen {
 		this.idOpinion = idOpinion;
 	}
 
+
+	public Double getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(Double longitud) {
+		this.longitud = longitud;
+	}
+	
+	public Double getLatitud() {
+		return latitud;
+	}
+	
+	public void setLatitud(Double latitud) {
+		this.latitud=latitud;
+	}
+
 	@Override
 	public String toString() {
 		return "RestauranteResumen [id=" + id + ", nombre=" + nombre + ", cp=" + cp + ", ciudad=" + ciudad
-				+ ", idOpinion=" + idOpinion + ", valoracion=" + valoracion + ", gestor=" + gestor + "]";
+				+ ", idOpinion=" + idOpinion + ", valoracion=" + valoracion + ", gestor=" + gestor + ", longitud="
+				+ longitud + ", latitud=" + latitud + "]";
 	}
 	
 	

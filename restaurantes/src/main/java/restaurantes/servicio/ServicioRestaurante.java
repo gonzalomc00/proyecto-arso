@@ -510,6 +510,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			rr.setCp(r.getCp());
 			rr.setCiudad(r.getCiudad());
 			rr.setGestor(r.getGestor());
+			rr.setLongitud(r.getLongitud());
+			rr.setLatitud(r.getLatitud());
 			if(r.getResumenValoracion()!=null) {
 				rr.setValoracion(r.getResumenValoracion().getCalificacionMedia());
 				rr.setIdOpinion(r.getResumenValoracion().getIdOpinion());
