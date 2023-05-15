@@ -24,7 +24,7 @@ public class RepositorioRestaurantesMemoria extends RepositorioMemoria<Restauran
 		p1.setPrecio(10.0);
 		p1.setDisponibilidad(true);
 		p1.setDescripcion("hamburguesa de pollo con queso");
-		
+		r1.setGestor("alguien");
 		r1.add(p1);
 		this.add(r1);
 		this.update(r1);

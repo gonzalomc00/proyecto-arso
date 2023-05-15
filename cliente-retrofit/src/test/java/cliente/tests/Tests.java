@@ -7,24 +7,38 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import okhttp3.OkHttpClient;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
+import retrofit.restaurantes.AuthInterceptor;
 import retrofit.restaurantes.Listado;
 import retrofit.restaurantes.Listado.ResumenExtendido;
 import retrofit.restaurantes.PlatoRequest;
 import retrofit.restaurantes.RestauranteRequest;
 import retrofit.restaurantes.RestaurantesRestClient;
+
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 class Tests {
+	//token con fecha de expiración de un año
+	public static final String TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4";
 
-	Retrofit retrofit = new Retrofit.Builder().baseUrl("http://localhost:8080/api/")
+	OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
+											.addInterceptor(new AuthInterceptor(TOKEN));
+
+	// Agrega el interceptor para incluir el token de autorización
+	OkHttpClient client = httpClient.build();
+
+	Retrofit retrofit = new Retrofit.Builder()
+			.baseUrl("http://localhost:8090")
+			.client(client)
 			.addConverterFactory(GsonConverterFactory.create()).build();
 
 	RestaurantesRestClient service = retrofit.create(RestaurantesRestClient.class);
-
+	
+	
 // ------------------ Tests createRestaurante() --------------------
 	@Test
 	void testCrearRestauranteCorrecto() throws IOException {
@@ -38,6 +52,7 @@ class Tests {
 		Response<Void> resultado = service.createRestaurante(restaurante).execute();
 
 		String url1 = resultado.headers().get("Location");
+		System.out.println(url1);
 		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
 
 		System.out.println("Restaurante creado: " + url1);
@@ -840,26 +855,38 @@ class Tests {
 		restaurante.setCiudad("Murcia");
 		restaurante.setCp("30001");
 		restaurante.setCoordenadas("20, 10");
+		
 		Response<Void> resultado = service.createRestaurante(restaurante).execute();
 		String url1 = resultado.headers().get("Location");
-		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+		String id = url1.substring(url1.lastIndexOf("/") + 1);
 
-		System.out.println(id1);
+		System.out.println(id);
 
 		PlatoRequest plato = new PlatoRequest();
 		plato.setNombre("Plato de prueba");
 		plato.setDescripcion("Descripcion del plato");
 		plato.setPrecio("10");
-
-		Response<Void> resultado2 = service.updatePlato(id1, plato).execute();
-		Restaurante res = service.getRestaurante(id1).execute().body();
+		plato.setDisponibilidad(true);
+		
+		service.addPlato(id, plato).execute();
+		
+		PlatoRequest plato2 = new PlatoRequest();
+		plato2.setNombre("Plato de prueba"); //actua como id
+		plato2.setDescripcion("Descripcion del plato actualizada");
+		plato2.setPrecio("20");
+		
+		Response<Void> resultado3 = service.updatePlato(id, plato2).execute();
+		Restaurante res = service.getRestaurante(id).execute().body();
 
 		// Comprobamos que la disponibilidad del plato por defecto, al no especificar
 		// ninguna, es false
-		System.out.println("Código de respuesta: " + resultado2.code());
-		System.out.println("Mensaje de respuesta: " + resultado2.message());
+		System.out.println("Código de respuesta: " + resultado3.code());
+		System.out.println("Mensaje de respuesta: " + resultado3.message());
 		System.out.println("Disponibilidad del plato: " + res.getPlatos().get(0).isDisponibilidad());
 		System.out.println("-----------------------------------------------");
+		Assertions.assertFalse(res.getPlatos().get(0).isDisponibilidad());
+		Assertions.assertEquals(res.getPlatos().get(0).getPrecio(), 20.00);
+		Assertions.assertEquals(res.getPlatos().get(0).getDescripcion(), "Descripcion del plato actualizada");
 
 	}
 
@@ -987,6 +1014,10 @@ class Tests {
 			System.out.println(re.getResumen());
 		}
 	}
+
+	// -------------------- Tests activarValoraciones ----------------
+	
+	// -------------------- Tests getValoraciones -------------------
 
 
 }

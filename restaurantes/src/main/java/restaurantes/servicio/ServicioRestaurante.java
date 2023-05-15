@@ -25,6 +25,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -54,96 +56,103 @@ import servicio.FactoriaServicios;
 public class ServicioRestaurante implements IServicioRestaurante {
 
 	private Repositorio<Restaurante, String> repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
-	private IServicioOpinion servicio  = FactoriaServicios.getServicio(IServicioOpinion.class);
-	
-	
+	private IServicioOpinion servicio = FactoriaServicios.getServicio(IServicioOpinion.class);
+
 	public ServicioRestaurante() {
 		try {
-			ConnectionFactory factory =new ConnectionFactory();
+			ConnectionFactory factory = new ConnectionFactory();
 			factory.setUri("amqp://bmqyxhdb:t9WYA0qDTQpfRzSj5FJUHMwIp0mMatZm@whale.rmq.cloudamqp.com:5672/bmqyxhdb");
-			Connection  connection= factory.newConnection();
-			Channel channel= connection.createChannel();
-			
-			//Declaramos la cola y el enlace con el exchange
-			
-			final String exchangeName="evento.nueva.valoracion";
-			final String queueName = "arso-queue";
-			final String bindingKey="arso";
-			
-			boolean durable=true;
-			boolean exclusive=false;
-			boolean autodelete =false;
-			Map<String,Object>properties=null;
-			channel.queueDeclare(queueName,durable,exclusive,autodelete,properties);
-			
-			//Vinculamos la cola con el exchange. 
-			channel.queueBind(queueName, exchangeName, bindingKey);
-			
-			//Configuración del consumidor
-			
-			boolean autoAck=false;
-			String cola="arso-queue";
-			String etiquetaConsumidor="arso-consumidor";
-			
-			//Consumidor push
-			
-			channel.basicConsume(cola, autoAck,etiquetaConsumidor,
-					
-					new DefaultConsumer(channel) {
-				
-				@Override
-				public void handleDelivery(String consumerTag,Envelope envelope, AMQP.BasicProperties properties, byte[]body) throws IOException{
-					String routingKey = envelope.getRoutingKey();
-					String contentType=properties.getContentType();
-					long deliveryTag= envelope.getDeliveryTag();
-					
-					String contenido= new String(body);
-					System.out.println(contenido);
-					
-					ObjectMapper mapper= new ObjectMapper();
-					mapper.registerModule(new JSR310Module());
-				    mapper.setDateFormat( new SimpleDateFormat());
-				        
-					EventoNuevaValoracion evento = mapper.readValue(contenido, EventoNuevaValoracion.class);
-					try {
-						List<Restaurante> restaurantes= repositorio.getAll();
-						for(Restaurante r : restaurantes) {
+			Connection connection = factory.newConnection();
+			Channel channel = connection.createChannel();
 
-							if(r.getResumenValoracion().getIdOpinion().equals(evento.idOpinion)) {
-								ResumenValoracion nr= new ResumenValoracion();
-								nr.setCalificacionMedia(evento.getResumenOpinion().getCalificacionMedia());
-								nr.setNumValoraciones(evento.getResumenOpinion().getNumValoraciones());
-								nr.setIdOpinion(r.getResumenValoracion().getIdOpinion());
-								r.setResumenValoracion(nr);
-								repositorio.update(r);
-								
-							}
-						}
-						
-						
-					} catch (RepositorioException | EntidadNoEncontrada e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					channel.basicAck(deliveryTag, false);
-					
-					
+			// Declaramos la cola y el enlace con el exchange
+
+			final String exchangeName = "evento.nueva.valoracion";
+			final String queueName = "arso-queue";
+			final String bindingKey = "arso";
+
+			boolean durable = true;
+			boolean exclusive = false;
+			boolean autodelete = false;
+			Map<String, Object> properties = null;
+			channel.queueDeclare(queueName, durable, exclusive, autodelete, properties);
+
+			// Vinculamos la cola con el exchange.
+			channel.queueBind(queueName, exchangeName, bindingKey);
+
+			// Configuración del consumidor
+
+			boolean autoAck = false;
+			String cola = "arso-queue";
+			String etiquetaConsumidor = "arso-consumidor";
+
+			// Set up shutdown listener for connection
+			connection.addShutdownListener((cause) -> {
+				// Handle connection shutdown
+				try {
+					connection.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				
-				
-			}
-					
-					);
-			
-			
-		} catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException | IOException | TimeoutException e) {
+			});
+
+			// Consumidor push
+
+			channel.basicConsume(cola, autoAck, etiquetaConsumidor,
+
+					new DefaultConsumer(channel) {
+						@Override
+						public void handleDelivery(String consumerTag, Envelope envelope,
+								AMQP.BasicProperties properties, byte[] body) throws IOException {
+							String routingKey = envelope.getRoutingKey();
+							String contentType = properties.getContentType();
+							long deliveryTag = envelope.getDeliveryTag();
+
+							String contenido = new String(body);
+							System.out.println(contenido);
+
+							ObjectMapper mapper = new ObjectMapper();
+							mapper.registerModule(new JSR310Module());
+							mapper.setDateFormat(new SimpleDateFormat());
+
+							EventoNuevaValoracion evento = mapper.readValue(contenido, EventoNuevaValoracion.class);
+							try {
+								List<Restaurante> restaurantes = repositorio.getAll();
+								for (Restaurante r : restaurantes) {
+
+									if (r.getResumenValoracion().getIdOpinion().equals(evento.idOpinion)) {
+										ResumenValoracion nr = new ResumenValoracion();
+										nr.setCalificacionMedia(evento.getResumenOpinion().getCalificacionMedia());
+										nr.setNumValoraciones(evento.getResumenOpinion().getNumValoraciones());
+										nr.setIdOpinion(r.getResumenValoracion().getIdOpinion());
+										r.setResumenValoracion(nr);
+										repositorio.update(r);
+
+									}
+								}
+
+							} catch (RepositorioException | EntidadNoEncontrada e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							channel.basicAck(deliveryTag, false);
+
+						}
+
+					}
+
+			);
+
+		} catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException | IOException
+				| TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	@Override
 	public String create(String nombre, String cp, String ciudad, Double latitud, Double longitud, String u)
 			throws RepositorioException {
@@ -163,13 +172,16 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (longitud == null)
 			throw new IllegalArgumentException("longitud: no debe ser nulo");
 
+		if (u == null || u.isEmpty())
+			throw new IllegalArgumentException("gestor: no debe ser nulo ni vacio");
+
 		Restaurante restaurante = new Restaurante(nombre, cp, ciudad, latitud, longitud, u);
 
 		String id = repositorio.add(restaurante);
 		return id;
 	}
 
-	public void update(String id, String nombre, String ciudad, String cp, Double latitud, Double longitud,String u)
+	public void update(String id, String nombre, String cp, String ciudad, Double latitud, Double longitud, String u)
 			throws RepositorioException, EntidadNoEncontrada {
 
 		if (id == null || id.isEmpty())
@@ -191,8 +203,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			throw new IllegalArgumentException("longitud: no debe ser nulo");
 
 		Restaurante r = repositorio.getById(id);
-		
-		if(!u.equals(r.getGestor())) {
+
+		if (!u.equals(r.getGestor())) {
 			throw new IllegalArgumentException("No eres el gestor del restaurante");
 		}
 
@@ -215,6 +227,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		Restaurante r = repositorio.getById(idRes);
+		System.out.println(r.getNombre());
+		System.out.println(r.getCp());
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		// 1. Obtener una factoría
@@ -224,108 +238,123 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		// 3. Analizar el documento
 		org.w3c.dom.Document documento = analizador
 				.parse(new URL("http://api.geonames.org/findNearbyWikipedia?postalcode=" + r.getCp()
-						+ "&country=ES&username=arso_gs&lang=ES&maxRows=50").openStream());
+						+ "&country=ES&username=arso_gs&lang=ES&maxRows=25").openStream());
 
 		NodeList elementos = documento.getElementsByTagName("title");
 		NodeList distancias = documento.getElementsByTagName("distance");
+		NodeList imagenes = documento.getElementsByTagName("thumbnailImg");
 
-		
 		List<SitioTuristico> sitios = new LinkedList<SitioTuristico>();
 
-		//para cada sitio turistico encontrado
+		// para cada sitio turistico encontrado
 		for (int i = 0; i < elementos.getLength(); i++) {
 
 			Element entry = (Element) elementos.item(i);
 			Element dist = (Element) distancias.item(i);
+			Element img = (Element) imagenes.item(i);
 
 			String sitio = entry.getTextContent().replace(' ', '_');
 			Double distancia = Double.parseDouble(dist.getTextContent());
+			String fotoURL = img.getTextContent();
 
 			// JSON
 
-			InputStreamReader fuente = new InputStreamReader(
-					new URL("https://es.dbpedia.org/data/" + URLEncoder.encode(sitio, "utf-8") + ".json").openStream());
-			System.out.println("-----------------------------------------------------");
+			try {
+				InputStreamReader fuente = new InputStreamReader(
+						new URL("https://es.dbpedia.org/data/" + URLEncoder.encode(sitio, "utf-8") + ".json")
+								.openStream());
+				System.out.println("-----------------------------------------------------");
 
-			JsonReader jsonReader = Json.createReader(fuente);
-			JsonObject obj = jsonReader.readObject();
+				JsonReader jsonReader = Json.createReader(fuente);
+				JsonObject obj = jsonReader.readObject();
 
-			SitioTuristico sitio_clase = new SitioTuristico();
-			System.out.println(sitio);
-			
-			//volvemos a reparesear el nombre para quitar las _
-			String nombre = sitio.replace('_', ' ');
-			sitio_clase.setNombre(nombre);
-			System.out.println("DISTANCIA: " + distancia);
-			sitio_clase.setDistancia(distancia);
+				SitioTuristico sitio_clase = new SitioTuristico();
+				System.out.println(sitio);
 
-			JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio);
+				// volvemos a reparesear el nombre para quitar las _
+				String nombre = sitio.replace('_', ' ');
+				sitio_clase.setNombre(nombre);
+				System.out.println("DISTANCIA: " + distancia);
+				sitio_clase.setDistancia(distancia);
 
-			JsonArray categorias = infoSitio.getJsonArray("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-			JsonArray propiedadesResumen = infoSitio.getJsonArray("http://dbpedia.org/ontology/abstract");
+				sitio_clase.setFoto(fotoURL);
 
-			boolean check = false;
+				JsonObject infoSitio = obj.getJsonObject("http://es.dbpedia.org/resource/" + sitio);
 
-			System.out.println(sitio);
+				JsonArray categorias = infoSitio.getJsonArray("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				JsonArray propiedadesResumen = infoSitio.getJsonArray("http://dbpedia.org/ontology/abstract");
 
-			System.out.println("CATEGORIAS: ");
-			List<String> categorias_clase = new LinkedList<String>();
-			if (categorias != null) {
-				for (JsonObject categoria : categorias.getValuesAs(JsonObject.class)) {
-					// categoria
-					if (categoria.getString("value").equals("http://dbpedia.org/ontology/ArchitecturalStructure")
-							|| categoria.getString("value").equals("http://dbpedia.org/ontology/HistoricBuilding")) {
-						
-						//cogemos el nombre de la categoria de la url y es con lo que nos quedamos
-						String c =  categoria.getString("value").substring(categoria.getString("value").lastIndexOf('/') + 1);
+				boolean check = false;
 
-						categorias_clase.add(c);
-						check = true;
-					}
-				}
-			}
-
-			sitio_clase.setCategorias(categorias_clase);
-
-			if (check == true) {
-				System.out.println("FOTO: ");
-				// COMPROBACION DE LA FOTO
-				if (infoSitio.containsKey("http://es.dbpedia.org/property/imagen")) {
-
-					JsonObject propiedadesImagen = infoSitio.getJsonArray("http://es.dbpedia.org/property/imagen")
-							.getJsonObject(0);
-
-					if (propiedadesImagen.get("value").getValueType().equals(ValueType.NUMBER)) {
-						System.out.println(propiedadesImagen.getJsonNumber("value"));
-						sitio_clase.setFoto(propiedadesImagen.getJsonNumber("value").toString());
-					} else if (propiedadesImagen.get("value").getValueType().equals(ValueType.STRING)) {
-						System.out.println(propiedadesImagen.getJsonString("value"));
-						sitio_clase.setFoto(propiedadesImagen.getString("value"));
-					}
-
-				} else {
-					System.out.println("No tiene foto");
-				}
-
-				System.out.println("RESUMEN: " + propiedadesResumen.getJsonObject(0).getJsonString("value"));
-				sitio_clase.setResumen(propiedadesResumen.getJsonObject(0).getString("value"));
-
-				System.out.println("ENLACES: ");
-				if (infoSitio.containsKey("http://dbpedia.org/ontology/wikiPageExternalLink")) {
-					List<String> enlaces_clase = new LinkedList<String>();
-					JsonArray enlaces = infoSitio.getJsonArray("http://dbpedia.org/ontology/wikiPageExternalLink");
-					for (JsonObject enlace : enlaces.getValuesAs(JsonObject.class)) {
+				System.out.println("CATEGORIAS: ");
+				List<String> categorias_clase = new LinkedList<String>();
+				if (categorias != null) {
+					for (JsonObject categoria : categorias.getValuesAs(JsonObject.class)) {
 						// categoria
-						System.out.println(enlace.getJsonString("value"));
-						enlaces_clase.add(enlace.getString("value"));
-					}
-					sitio_clase.setEnlaces(enlaces_clase);
+						if (categoria.getString("value").equals("http://dbpedia.org/ontology/ArchitecturalStructure")
+								|| categoria.getString("value")
+										.equals("http://dbpedia.org/ontology/HistoricBuilding")) {
 
-				} else {
-					System.out.println("No tiene enlaces externos");
+							// cogemos el nombre de la categoria de la url y es con lo que nos quedamos
+							String c = categoria.getString("value")
+									.substring(categoria.getString("value").lastIndexOf('/') + 1);
+
+							categorias_clase.add(c);
+							check = true;
+						}
+					}
 				}
 
-				sitios.add(sitio_clase);
+				sitio_clase.setCategorias(categorias_clase);
+
+				if (check == true) {
+					System.out.println("FOTO: ");
+					// COMPROBACION DE LA FOTO
+					// si no ha obtenido una url de la foto valida, guardamos lo que sea que nos
+					// proporcione dbpedia
+					if (sitio_clase.getFoto().isEmpty() || sitio_clase.getFoto() == null) {
+
+						if (infoSitio.containsKey("http://es.dbpedia.org/property/imagen")) {
+
+							JsonObject propiedadesImagen = infoSitio
+									.getJsonArray("http://es.dbpedia.org/property/imagen").getJsonObject(0);
+
+							if (propiedadesImagen.get("value").getValueType().equals(ValueType.NUMBER)) {
+								System.out.println(propiedadesImagen.getJsonNumber("value"));
+								sitio_clase.setFoto(propiedadesImagen.getJsonNumber("value").toString());
+							} else if (propiedadesImagen.get("value").getValueType().equals(ValueType.STRING)) {
+								System.out.println(propiedadesImagen.getJsonString("value"));
+								sitio_clase.setFoto(propiedadesImagen.getString("value"));
+							}
+
+						} else {
+							System.out.println("No tiene foto");
+						}
+					}
+					System.out.println("RESUMEN: " + propiedadesResumen.getJsonObject(0).getJsonString("value"));
+					sitio_clase.setResumen(propiedadesResumen.getJsonObject(0).getString("value"));
+
+					System.out.println("ENLACES: ");
+					if (infoSitio.containsKey("http://dbpedia.org/ontology/wikiPageExternalLink")) {
+						List<String> enlaces_clase = new LinkedList<String>();
+						JsonArray enlaces = infoSitio.getJsonArray("http://dbpedia.org/ontology/wikiPageExternalLink");
+						for (JsonObject enlace : enlaces.getValuesAs(JsonObject.class)) {
+							// categoria
+							System.out.println(enlace.getJsonString("value"));
+							enlaces_clase.add(enlace.getString("value"));
+						}
+						sitio_clase.setEnlaces(enlaces_clase);
+
+					} else {
+						System.out.println("No tiene enlaces externos");
+					}
+
+					sitios.add(sitio_clase);
+				}
+			} catch (Exception e) {
+				// si por algun motivo no se ha podido obtener correctamente la url de dbpedia
+				// pasa al siguiente elemento
+				continue;
 			}
 
 		}
@@ -341,27 +370,24 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		if (sitios.isEmpty() || sitios == null ) {
+		if (sitios.isEmpty() || sitios == null) {
 			throw new IllegalArgumentException("lista de sitios turisticos: no debe ser nula ni vacia");
 		}
-		
+
 		Restaurante r = repositorio.getById(idRes);
-		
-		
-		
-		if(!u.equals(r.getGestor())) {
+
+		if (!u.equals(r.getGestor())) {
 			throw new IllegalArgumentException("No eres el gestor del restaurante");
 		}
-		
+
 		r.setSitios(sitios);
-		
-		
+
 		repositorio.update(r);
 	}
 
 	@Override
-	public String addPlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad,String u)
-			throws RepositorioException, EntidadNoEncontrada {
+	public String addPlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad,
+			String u) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
@@ -377,10 +403,6 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (precio == null || precio.isEmpty()) {
 			throw new IllegalArgumentException("precio del plato: no debe ser nulo ni vacio");
 		}
-		
-
-		
-		
 
 		Double precioD = Double.parseDouble(precio);
 
@@ -390,11 +412,11 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		plato.setPrecio(precioD);
 		plato.setDisponibilidad(disponibilidad);
 		Restaurante r = repositorio.getById(idRes);
-		
-		if(!u.equals(r.getGestor())) {
+
+		if (!u.equals(r.getGestor())) {
 			throw new IllegalArgumentException("No eres el gestor del restaurante");
 		}
-		
+
 		// No añadir platos repetidos
 		List<Plato> listaPlatos = r.getPlatos();
 
@@ -411,7 +433,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public boolean removePlato(String idRes, String nombrePlato,String u) throws RepositorioException, EntidadNoEncontrada {
+	public boolean removePlato(String idRes, String nombrePlato, String u)
+			throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
@@ -420,8 +443,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		Restaurante r = repositorio.getById(idRes);
-		
-		if(!u.equals(r.getGestor())) {
+
+		if (!u.equals(r.getGestor())) {
 			throw new IllegalArgumentException("No eres el gestor del restaurante");
 		}
 
@@ -446,8 +469,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void updatePlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad,String u)
-			throws RepositorioException, EntidadNoEncontrada {
+	public void updatePlato(String idRes, String nombre, String descripcion, String precio, boolean disponibilidad,
+			String u) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
@@ -465,7 +488,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		Restaurante r = repositorio.getById(idRes);
-		if(!u.equals(r.getGestor())) {
+		if (!u.equals(r.getGestor())) {
 			throw new IllegalArgumentException("No eres el gestor del restaurante");
 		}
 
@@ -483,14 +506,14 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	}
 
 	@Override
-	public void deleteRestaurante(String idRes,String u) throws RepositorioException, EntidadNoEncontrada {
+	public void deleteRestaurante(String idRes, String u) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
 
 		Restaurante r = repositorio.getById(idRes);
-		
-		if(!u.equals(r.getGestor())) {
+
+		if (!u.equals(r.getGestor())) {
 			throw new IllegalArgumentException("No eres el gestor del restaurante");
 		}
 		repositorio.delete(r);
@@ -516,7 +539,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 				rr.setValoracion(r.getResumenValoracion().getCalificacionMedia());
 				rr.setIdOpinion(r.getResumenValoracion().getIdOpinion());
 			}
-			
+
 			resumenes.add(rr);
 		}
 
@@ -537,36 +560,33 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (idRes == null || idRes.isEmpty() || idRes.isBlank()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+
 		Restaurante r = repositorio.getById(idRes);
-		if(r.getResumenValoracion()==null) {
-		String idOpinion= servicio.createOpinion(r.getNombre());
-	
-		ResumenValoracion rv= new ResumenValoracion();
-		rv.setIdOpinion(idOpinion);
-		rv.setCalificacionMedia(0);
-		rv.setNumValoraciones(0);
-		r.setResumenValoracion(rv);
-		repositorio.update(r);
+		if (r.getResumenValoracion() == null) {
+			String idOpinion = servicio.createOpinion(r.getNombre());
+
+			ResumenValoracion rv = new ResumenValoracion();
+			rv.setIdOpinion(idOpinion);
+			rv.setCalificacionMedia(0);
+			rv.setNumValoraciones(0);
+			r.setResumenValoracion(rv);
+			repositorio.update(r);
 		} else {
 			throw new IllegalStateException("El restaurante ya cuenta con valoraciones creadas");
 		}
 	}
-	
-	public List<Valoracion> getValoracionesRes(String idRes) throws RepositorioException, EntidadNoEncontrada{
+
+	public List<Valoracion> getValoracionesRes(String idRes) throws RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty() || idRes.isBlank()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		
+
 		Restaurante r = repositorio.getById(idRes);
-		
-		Opinion o= servicio.getOpinion(r.getResumenValoracion().getIdOpinion());
-		
+
+		Opinion o = servicio.getOpinion(r.getResumenValoracion().getIdOpinion());
+
 		return o.getValoraciones();
-		
+
 	}
-	
-	
-	
-	
+
 }

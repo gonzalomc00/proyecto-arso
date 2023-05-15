@@ -202,7 +202,7 @@ public class RestaurantesControladorRest {
 		double latitud = Double.parseDouble(coordenadasArray[0]);
 		double longitud = Double.parseDouble(coordenadasArray[1]);
 
-		servicio.update(id, restaurante.getNombre(), restaurante.getCiudad(), restaurante.getCp(), latitud, longitud,
+		servicio.update(id, restaurante.getNombre(),  restaurante.getCp(),restaurante.getCiudad(), latitud, longitud,
 				usuario);
 
 		return Response.status(Response.Status.NO_CONTENT).build();

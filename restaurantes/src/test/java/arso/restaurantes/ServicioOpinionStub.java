@@ -16,9 +16,6 @@ public class ServicioOpinionStub implements IServicioOpinion{
 	
 	@Override
 	public Opinion getOpinion(String idOpinion) {
-		if (idOpinion == null || idOpinion.isEmpty() || idOpinion.isBlank()) {
-			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
-		}
 		Restaurante r = new Restaurante("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
 		LocalDateTime fecha = LocalDateTime.now();
 		List<Valoracion> valoraciones = new LinkedList<Valoracion>();
@@ -31,11 +28,7 @@ public class ServicioOpinionStub implements IServicioOpinion{
 	}
 
 	@Override
-	public String createOpinion(String nombreRes) throws IOException {
-		if (nombreRes == null || nombreRes.isEmpty() || nombreRes.isBlank()) {
-			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
-		}
-		
+	public String createOpinion(String nombreRes) throws IOException {	
 		String id = "idOpinion";
 		return id;
 	}
