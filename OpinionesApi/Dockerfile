@@ -14,5 +14,5 @@ ENV MONGO_URI=
 
 #dotnet run - comando que lo lanza
 CMD ["dotnet", "run"]
-#puerto 
+#puerto para atender peticiones
 EXPOSE 5000

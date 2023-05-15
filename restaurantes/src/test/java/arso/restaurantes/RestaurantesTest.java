@@ -1,7 +1,11 @@
 package arso.restaurantes;
 
+
+
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,8 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-
-
+import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
 import repositorio.Repositorio;
@@ -25,36 +28,36 @@ import restaurantes.servicio.IServicioRestaurante;
 import restaurantes.servicio.RestauranteResumen;
 import servicio.FactoriaServicios;
 
-import org.junit.jupiter.api.Disabled;
 
 /**
  * Con la etiqueta @Disabled ya no se ejecutará esta clase para las pruebas de
- * maven install. Antes de ejecutar esta clase cambiar repositorios.properties
- * al repositorio en memoria que se encuentra en el archivo README.txt
+ * maven install.
  * 
  * @author sofia
- *
  */
 
+// La conexion con RabbitMQ genera fallos ya que se establece la conexion con la cola de mensajes en el constructor del Servicio
 
-@Disabled
 public class RestaurantesTest {
 
-	/**
-	 * los tests obtienen un coverage del 97% sobre el codigo del
-	 * ServicioRestaurante
-	 */
-
-	private IServicioRestaurante servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
+	private IServicioRestaurante servicio;
+	private Repositorio<Restaurante, String> repositorio;
+	private String u;
 
 	@BeforeEach
-	public void setUp() throws RepositorioException, EntidadNoEncontrada {
+	public void setUp() {
+		servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
+		repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
+		u = "alguien";
+	
 
 	}
 
-	// ------------------- TESTS EXCEPCIONES -------------------------
-	
-	/**
+
+	// --------------------------------------------------------------
+	// ------------------- TESTS EXCEPCIONES ------------------------
+	// --------------------------------------------------------------
+
 	@Test
 	public void testRestauranteGetRestauranteByIdFailureEntidadNoEncontrada() throws RepositorioException {
 
@@ -73,20 +76,99 @@ public class RestaurantesTest {
 
 	}
 
-	// TODO: como comprobar repositorio exception
+	// RepositorioException no es posible de comprobar
+
+	// ------------------------------------------------------
+	// ------------------ TESTS OPINIONES -------------------
+	// ------------------------------------------------------
+
 	@Test
-	public void testRepositorioException() throws EntidadNoEncontrada {
-		Assertions.assertThrows(RepositorioException.class, () -> {
-			// Lanzar la excepción
-			throw new RepositorioException("Ocurrió un error en el repositorio");
+	public void testActivarValoracionIdNull() {
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.activarValoraciones(null);
 		});
+		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
+
 	}
 
+	@Test
+	public void testActivarValoraciones() throws RepositorioException, IOException, EntidadNoEncontrada {
+
+		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
+		servicio.activarValoraciones(id);
+
+		Restaurante r = servicio.getRestaurante(id);
+
+		Assertions.assertEquals("idOpinion", r.getResumenValoracion().getIdOpinion());
+		// Borramos el restaurante para asegurarnos que solo exista uno en el
+		// repositorio en caso de ejecutar todos los tests a la vez
+		servicio.deleteRestaurante(id, "alguien");
+
+	}
+
+	@Test
+	public void testActivarValoracionesDuplicated() throws IOException, RepositorioException, EntidadNoEncontrada {
+
+		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
+		servicio.activarValoraciones(id);
+
+		IllegalStateException thrown = Assertions.assertThrows(IllegalStateException.class, () -> {
+			servicio.activarValoraciones(id);
+		});
+		Assertions.assertEquals("El restaurante ya cuenta con valoraciones creadas", thrown.getMessage());
+
+		// Borramos el restaurante para asegurarnos que solo exista uno en el
+		// repositorio en caso de ejecutar todos los tests a la vez
+		servicio.deleteRestaurante(id, "alguien");
+
+	}
+
+	@Test
+	public void testGetValoraciones() throws RepositorioException, IOException, EntidadNoEncontrada {
+
+		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
+		servicio.activarValoraciones(id);
+
+		List<Valoracion> misVal = servicio.getValoracionesRes(id);
+
+		System.out.println(misVal.toString());
+
+		// para controlar la pequeña diferencia entre las fechas
+
+		LocalDateTime fechaEsperada = LocalDateTime.now();
+		LocalDateTime fechaReal = misVal.get(0).getFecha();
+		Duration duracion = Duration.between(fechaEsperada, fechaReal);
+		// permitimos un error de 5 segundos entre una fecha y otra
+		Assertions.assertTrue(duracion.abs().getSeconds() < 5);
+
+		Assertions.assertEquals(misVal.get(0).getCorreo(), "alumno@um.es");
+		Assertions.assertEquals(misVal.get(0).getComentario(), null);
+		Assertions.assertEquals(misVal.get(0).getCalificacion(), 9.00, 0.0);
+
+		// Borramos el restaurante para asegurarnos que solo exista uno en el
+		// repositorio en caso de ejecutar todos los tests a la vez
+		servicio.deleteRestaurante(id, "alguien");
+
+	}
+
+	@Test
+	public void testGetValoracionesIdNull() throws RepositorioException, IOException, EntidadNoEncontrada {
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.getValoracionesRes(null);
+		});
+		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
+
+	}
+
+	// -------------------------------------------------------
+	// ----------------- TEST RESTAURANTES -------------------
+	// -------------------------------------------------------
 	// ---------------------- createRestaurante() --------------------
 	@Test
 	public void testCreateRestaurante() throws RepositorioException, EntidadNoEncontrada {
-
-		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00);
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		List<SitioTuristico> sitios = new LinkedList<>();
 		List<Plato> platos = new LinkedList<>();
@@ -96,21 +178,20 @@ public class RestaurantesTest {
 		Assertions.assertEquals(repositorio.getById(id).getCp(), "30820");
 		Assertions.assertEquals(repositorio.getById(id).getLatitud(), 20.00);
 		Assertions.assertEquals(repositorio.getById(id).getLongitud(), 30.00);
+		Assertions.assertEquals(repositorio.getById(id).getGestor(), u);
 
 		Assertions.assertEquals(repositorio.getById(id).getPlatos(), platos);
 		Assertions.assertEquals(repositorio.getById(id).getSitios(), sitios);
-
 		// Borramos el restaurante para asegurarnos que solo exista uno en el
 		// repositorio en caso de ejecutar todos los tests a la vez
-		servicio.deleteRestaurante("2");
-
+		servicio.deleteRestaurante(id, u);
 	}
 
 	@Test
 	public void testCreateRestauranteLatitudNull() throws RepositorioException {
-
+		String u = "alguien";
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create("McDonals", "30820", "Alcantarilla", null, 2.0);
+			servicio.create("McDonals", "30820", "Alcantarilla", null, 2.0, u);
 			;
 
 		});
@@ -122,7 +203,7 @@ public class RestaurantesTest {
 	public void testCreateRestauranteLongitudNull() throws RepositorioException {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create("McDonals", "30820", "Alcantarilla", 2.0, null);
+			servicio.create("McDonals", "30820", "Alcantarilla", 2.0, null, u);
 			;
 
 		});
@@ -133,24 +214,22 @@ public class RestaurantesTest {
 	@Test
 	public void testCreateRestauranteNombreVacio() {
 		String nombre = "";
-
+		String u = "alguien";
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create(nombre, "30820", "Alcantarilla", 2.00, 2.00);
+			servicio.create(nombre, "30820", "Alcantarilla", 2.00, 2.00, u);
 			;
 
 		});
 
 		Assertions.assertEquals("nombre del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
-
 	}
 
 	@Test
 	public void testCreateRestauranteNombreNull() {
-		Position posicion = new Position(20, 30);
-		Point coordenadas = new Point(posicion);
+		String nombre = null;
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create(null, "30820", "Alcantarilla", 2.00, 2.00);
+			servicio.create(nombre, "30820", "Alcantarilla", 2.00, 2.00, u);
 			;
 
 		});
@@ -163,7 +242,7 @@ public class RestaurantesTest {
 	public void testCreateRestauranteCpNull() {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create("McDonals", null, "Alcantarilla", 20.00, 30.00);
+			servicio.create("McDonals", null, "Alcantarilla", 20.00, 30.00, u);
 			;
 
 		});
@@ -177,7 +256,7 @@ public class RestaurantesTest {
 		String cp = "";
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create("McDonals", cp, "Alcantarilla", 20.00, 30.00);
+			servicio.create("McDonals", cp, "Alcantarilla", 20.00, 30.00, u);
 			;
 
 		});
@@ -187,11 +266,9 @@ public class RestaurantesTest {
 
 	@Test
 	public void testCreateRestauranteCiudadNull() {
-		Position posicion = new Position(20, 30);
-		Point coordenadas = new Point(posicion);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create("McDonals", "30820", null, 20.00, 30.00);
+			servicio.create("McDonals", "30820", null, 20.00, 30.00, u);
 			;
 
 		});
@@ -201,11 +278,9 @@ public class RestaurantesTest {
 
 	@Test
 	public void testCreateRestauranteCiudadVacio() {
-		Position posicion = new Position(20, 30);
-		Point coordenadas = new Point(posicion);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.create("McDonals", "30820", "", 20.00, 30.00);
+			servicio.create("McDonals", "30820", "", 20.00, 30.00, u);
 			;
 
 		});
@@ -213,114 +288,158 @@ public class RestaurantesTest {
 		Assertions.assertEquals("nombre de la ciudad: no debe ser nulo ni vacio", thrown.getMessage());
 	}
 
-// ------------------- TESTS addPlato() -----------------------
+	@Test
+	public void testCreateRestauranteGestorVacio() {
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.create("McDonals", "30820", "Ciudadela", 20.00, 30.00, "");
+			;
+
+		});
+
+		Assertions.assertEquals("gestor: no debe ser nulo ni vacio", thrown.getMessage());
+	}
+
+	// ------------------- TESTS addPlato() -----------------------
 	@Test
 	public void testAddPlatoRestaurante() throws RepositorioException, EntidadNoEncontrada {
 
-		String nombre = servicio.addPlato("1", "Patatas fritas", "Patatas fritas con queso y bacon", "4.50", true);
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
+
+		String nombre = servicio.addPlato(id, "Patatas fritas", "Patatas fritas con queso y bacon", "4.50", true, u);
 
 		Assertions.assertEquals(nombre, "Patatas fritas");
-		Assertions.assertEquals(repositorio.getById("1").getPlatos().get(1).getNombre(), "Patatas fritas");
-		Assertions.assertEquals(repositorio.getById("1").getPlatos().get(1).getDescripcion(),
+		Assertions.assertEquals(repositorio.getById(id).getPlatos().get(0).getNombre(), "Patatas fritas");
+		Assertions.assertEquals(repositorio.getById(id).getPlatos().get(0).getDescripcion(),
 				"Patatas fritas con queso y bacon");
-		Assertions.assertEquals(repositorio.getById("1").getPlatos().get(1).getPrecio(), 4.50);
-		Assertions.assertTrue(repositorio.getById("1").getPlatos().get(1).isDisponibilidad());
+		Assertions.assertEquals(repositorio.getById(id).getPlatos().get(0).getPrecio(), 4.50);
+		Assertions.assertTrue(repositorio.getById(id).getPlatos().get(0).isDisponibilidad());
 
+		servicio.deleteRestaurante(id, u);
 	}
 
 	@Test
-	public void TestAddPlatoRestauranteRepetido() throws RepositorioException, EntidadNoEncontrada {
-		servicio.addPlato("1", "Croquetas", "Croquetas de pollo", "2.50", true);
+	public void testAddPlatoRestauranteRepetido() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
+
+		servicio.addPlato(id, "Croquetas", "Croquetas de pollo", "2.50", true, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.addPlato("1", "Croquetas", "Croquetas de jamon", "1.50", true);
+			servicio.addPlato(id, "Croquetas", "Croquetas de jamon", "1.50", true, u);
 			;
 
 		});
 
 		Assertions.assertEquals("ERROR: plato duplicado", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestAddPlatoRestauranteNombreNull() {
+	public void testAddPlatoNoGestor() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.addPlato(id, "Croquetas", "Croquetas de jamon", "1.50", true, "someone");
+			;
+
+		});
+		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+	}
+
+	@Test
+	public void TestAddPlatoRestauranteNombreNull() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.addPlato("1", null, "Pechuga empanada", "2.50", true);
+			servicio.addPlato(id, null, "Pechuga empanada", "2.50", true, u);
 			;
 
 		});
 
 		Assertions.assertEquals("nombre del plato: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestAddPlatoRestauranteNombreVacio() {
+	public void TestAddPlatoRestauranteNombreVacio() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.addPlato("1", "", "Pechuga empanada", "2.50", true);
+			servicio.addPlato(id, "", "Pechuga empanada", "2.50", true, u);
 			;
 
 		});
 
 		Assertions.assertEquals("nombre del plato: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestAddPlatoRestauranteDescVacio() {
+	public void TestAddPlatoRestauranteDescVacio() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.addPlato("1", "Pechuga", "", "2.50", true);
+			servicio.addPlato(id, "Pechuga", "", "2.50", true, u);
 			;
 
 		});
 
 		Assertions.assertEquals("descripcion del plato: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestAddPlatoRestauranteDescNull() {
+	public void TestAddPlatoRestauranteDescNull() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.addPlato("1", "Pechuga", null, "2.50", true);
+			servicio.addPlato(id, "Pechuga", null, "2.50", true, u);
 			;
 
 		});
 
 		Assertions.assertEquals("descripcion del plato: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestAddPlatoRestaurantePrecioNull() {
+	public void TestAddPlatoRestaurantePrecioNull() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.addPlato("1", "Pechuga", "Pechuga empanada", null, true);
+			servicio.addPlato(id, "Pechuga", "Pechuga empanada", null, true, u);
 			;
 
 		});
 
 		Assertions.assertEquals("precio del plato: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestAddPlatoRestauranteNotInRepository() {
+	public void TestAddPlatoRestauranteNotInRepository() throws RepositorioException, EntidadNoEncontrada {
+
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		EntidadNoEncontrada thrown = Assertions.assertThrows(EntidadNoEncontrada.class, () -> {
-			servicio.addPlato("28", "Pechuga", "Pechuga empanada", "10.0", true);
+			servicio.addPlato("28", "Pechuga", "Pechuga empanada", "10.0", true, u);
 
 		});
 		Assertions.assertEquals("28 no existe en el repositorio", thrown.getMessage());
-
+		servicio.deleteRestaurante(id, u);
 	}
 
 	// ------------------- TESTS removePlato() -----------------------
 	@Test
 	public void TestRemovePlato() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
+
 		// plato
 		Plato p1 = new Plato();
 		p1.setNombre("chessy burger");
@@ -328,90 +447,137 @@ public class RestaurantesTest {
 		p1.setDisponibilidad(true);
 		p1.setDescripcion("hamburguesa de pollo con queso");
 
-		boolean borrado = servicio.removePlato("1", "chessy burger");
+		LinkedList<Plato> platos = new LinkedList<Plato>();
+		platos.add(p1);
+		servicio.getRestaurante(id).setPlatos(platos);
+		boolean borrado = servicio.removePlato(id, "chessy burger", u);
 
 		Assertions.assertTrue(borrado);
-		Assertions.assertFalse(repositorio.getById("1").getPlatos().contains(p1));
+		Assertions.assertFalse(repositorio.getById(id).getPlatos().contains(p1));
 
-		System.out.println(repositorio.getById("1").toString());
+		servicio.deleteRestaurante(id, u);
+
+	}
+
+	@Test
+	public void TestRemovePlatoNotGestor() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
+
+		// plato
+		Plato p1 = new Plato();
+		p1.setNombre("chessy burger");
+		p1.setPrecio(10.0);
+		p1.setDisponibilidad(true);
+		p1.setDescripcion("hamburguesa de pollo con queso");
+
+		LinkedList<Plato> platos = new LinkedList<Plato>();
+		platos.add(p1);
+		servicio.getRestaurante(id).setPlatos(platos);
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.removePlato(id, "chessy burger", "claudia");
+			;
+
+		});
+		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
 	public void TestRemovePlatoNotInRestaurante() throws RepositorioException, EntidadNoEncontrada {
 
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
+
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.removePlato("1", "Pulpo");
+			servicio.removePlato(id, "Pulpo", u);
 			;
 
 		});
 
 		Assertions.assertEquals("ERROR: No existe el plato en este restaurante", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestRemovePlatoRestauranteNotInRepository() throws RepositorioException {
+	public void TestRemovePlatoRestauranteNotInRepository() throws RepositorioException, EntidadNoEncontrada {
+
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		EntidadNoEncontrada thrown = Assertions.assertThrows(EntidadNoEncontrada.class, () -> {
-			servicio.removePlato("87", "Batatas");
+			servicio.removePlato("87", "Batatas", u);
 
 		});
 		Assertions.assertEquals("87 no existe en el repositorio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
 	}
 
 	@Test
-	public void TestRemovePlatoRestauranteIdNull() {
+	public void TestRemovePlatoRestauranteIdNull() throws RepositorioException, EntidadNoEncontrada {
+
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.removePlato(null, "Batatas");
+			servicio.removePlato(null, "Batatas", u);
 
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 
+		servicio.deleteRestaurante(id, u);
+
 	}
 
 	@Test
-	public void TestRemovePlatoRestauranteIdVacio() {
+	public void TestRemovePlatoRestauranteIdVacio() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.removePlato("", "Batatas");
+			servicio.removePlato("", "Batatas", u);
 
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestRemovePlatoNombreVacio() {
+	public void TestRemovePlatoNombreVacio() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.removePlato("2", "");
+			servicio.removePlato(id, "", u);
 
 		});
 		Assertions.assertEquals("nombre del plato: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestRemovePlatoNombreNull() {
+	public void TestRemovePlatoNombreNull() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.removePlato("2", null);
+			servicio.removePlato(id, null, u);
 
 		});
 		Assertions.assertEquals("nombre del plato: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	// ----------------------- TESTS deleteRestaurante()
+	// -----------------------------
 
 	@Test
-	public void TestDeleteRestaurante() throws RepositorioException, EntidadNoEncontrada {
+	public void testDeleteRestaurante() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00);
+		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
 
-		servicio.deleteRestaurante(id);
+		servicio.deleteRestaurante(id, u);
 
 		EntidadNoEncontrada thrown = Assertions.assertThrows(EntidadNoEncontrada.class, () -> {
 			servicio.getRestaurante(id);
@@ -422,10 +588,10 @@ public class RestaurantesTest {
 	}
 
 	@Test
-	public void TestDeleteRestauranteIdVacio() throws RepositorioException, EntidadNoEncontrada {
+	public void testDeleteRestauranteIdVacio() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.deleteRestaurante("");
+			servicio.deleteRestaurante("", u);
 
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
@@ -433,30 +599,48 @@ public class RestaurantesTest {
 	}
 
 	@Test
-	public void TestDeleteRestauranteIdNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testDeleteRestauranteIdNull() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.deleteRestaurante(null);
+			servicio.deleteRestaurante(null, u);
 
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 
 	}
 
+	@Test
+	public void testDeleteRestauranteNotGestor() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.deleteRestaurante(id, "claudia");
+		});
+
+		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
+	}
 	// ------------- TESTS getRestaurante()
 
 	@Test
-	public void TestGetRestaurante() throws RepositorioException, EntidadNoEncontrada {
-		Restaurante r = servicio.getRestaurante("1");
+	public void testGetRestaurante() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
 
-		Assertions.assertEquals(r.getNombre(), "Burger Queen");
-		Assertions.assertEquals(r.getCiudad(), "Murcia");
-		Assertions.assertEquals(r.getCp(), "30010");
+		Restaurante r = servicio.getRestaurante(id);
+
+		Assertions.assertEquals(r.getNombre(), "Prueba");
+		Assertions.assertEquals(r.getCiudad(), "Alcantarilla");
+		Assertions.assertEquals(r.getCp(), "30820");
+		Assertions.assertEquals(r.getGestor(), u);
+		Assertions.assertEquals(r.getLatitud(), 20.00);
+		Assertions.assertEquals(r.getLongitud(), 30.00);
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestGetRestauranteIdNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testGetRestauranteIdNull() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			servicio.getRestaurante(null);
@@ -465,7 +649,7 @@ public class RestaurantesTest {
 	}
 
 	@Test
-	public void TestGetRestauranteIdVacio() throws RepositorioException, EntidadNoEncontrada {
+	public void testGetRestauranteIdVacio() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			servicio.getRestaurante("");
@@ -475,87 +659,106 @@ public class RestaurantesTest {
 
 	// ------- TESTS getListadoRestaurantes()
 	@Test
-	public void TestGetListadoRestaurantes() throws RepositorioException, EntidadNoEncontrada {
+	public void testGetListadoRestaurantes() throws RepositorioException, EntidadNoEncontrada {
 
 		Restaurante r = servicio.getRestaurante("1");
 
 		List<RestauranteResumen> resumenes = servicio.getListadoRestaurantes();
 
-		// Assertions.assertEquals(resumenes.size(), 1);
-		// System.out.println(resumenes.get(0).toString());
+		Assertions.assertEquals(resumenes.size(), 1);
 		Assertions.assertEquals(resumenes.get(0).getNombre(), r.getNombre());
 		Assertions.assertEquals(resumenes.get(0).getCp(), r.getCp());
 		Assertions.assertEquals(resumenes.get(0).getId(), r.getId());
+		Assertions.assertEquals(resumenes.get(0).getGestor(), r.getGestor());
 
 	}
-
 	// ---------- TESTS updatePlato() --------------------
 
 	@Test
-	public void TestUpdatePlato() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdatePlato() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
 
-		servicio.addPlato("1", "Plato de prueba2", "asdfgh", "8.0", true);
-		servicio.updatePlato("1", "Plato de prueba2", "prueba exitosa", "10.0", true);
+		servicio.addPlato(id, "Plato de prueba2", "asdfgh", "8.0", true, u);
+		servicio.updatePlato(id, "Plato de prueba2", "prueba exitosa", "10.0", true, u);
 
-		Assertions.assertEquals(servicio.getRestaurante("1").getPlatos().get(3).getNombre(), "Plato de prueba2");
-		Assertions.assertEquals(servicio.getRestaurante("1").getPlatos().get(3).getDescripcion(), "prueba exitosa");
-		Assertions.assertEquals(servicio.getRestaurante("1").getPlatos().get(3).getPrecio(), 10.0);
+		Assertions.assertEquals(servicio.getRestaurante(id).getPlatos().get(0).getNombre(), "Plato de prueba2");
+		Assertions.assertEquals(servicio.getRestaurante(id).getPlatos().get(0).getDescripcion(), "prueba exitosa");
+		Assertions.assertEquals(servicio.getRestaurante(id).getPlatos().get(0).getPrecio(), 10.0);
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestUpdatePlatoIdNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdatePlatoNotGestor() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
 
-		servicio.addPlato("1", "Plato de prueba", "asdfgh", "8.0", true);
+		servicio.addPlato(id, "Plato de prueba2", "asdfgh", "8.0", true, u);
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.updatePlato(id, "Plato de prueba2", "prueba exitosa", "10.0", true, "celia");
+		});
+
+		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+
+		servicio.deleteRestaurante(id, u);
+
+	}
+
+	@Test
+	public void testUpdatePlatoIdNull() throws RepositorioException, EntidadNoEncontrada {
+		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
+
+		servicio.addPlato(id, "Plato de prueba", "asdfgh", "8.0", true, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.updatePlato(null, "Plato de prueba", "prueba exitosa", "10.0", true);
+			servicio.updatePlato(null, "Plato de prueba", "prueba exitosa", "10.0", true, u);
+		});
+		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
+	}
+
+	@Test
+	public void testUpdatePlatoIdVacio() throws RepositorioException, EntidadNoEncontrada {
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.updatePlato("", "Plato de prueba", "prueba exitosa", "10.0", true, u);
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 
 	}
 
 	@Test
-	public void TestUpdatePlatoIdVacio() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateNombrePlatoNull() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.updatePlato("", "Plato de prueba", "prueba exitosa", "10.0", true);
-		});
-		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
-	}
-
-	@Test
-	public void TestUpdateNombrePlatoNull() throws RepositorioException, EntidadNoEncontrada {
-
-		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.updatePlato("1", null, "prueba exitosa", "10.0", true);
+			servicio.updatePlato("1", null, "prueba exitosa", "10.0", true, u);
 		});
 		Assertions.assertEquals("nombre del plato: no debe ser nulo ni vacio", thrown.getMessage());
 	}
 
 	@Test
-	public void TestUpdateDescripcionPlatoNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateDescripcionPlatoNull() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.updatePlato("1", "Plato de prueba", null, "10.0", true);
+			servicio.updatePlato("1", "Plato de prueba", null, "10.0", true, u);
 		});
 		Assertions.assertEquals("descripcion del plato: no debe ser nulo ni vacio", thrown.getMessage());
 	}
 
 	@Test
-	public void TestUpdatePrecioPlatoNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdatePrecioPlatoNull() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.updatePlato("1", "Plato de prueba", "prueba existosa", null, true);
+			servicio.updatePlato("1", "Plato de prueba", "prueba existosa", null, true, u);
 		});
 		Assertions.assertEquals("precio del plato: no debe ser nulo ni vacio", thrown.getMessage());
 	}
 
 	@Test
-	public void TestUpdatePlatoNotInRestaurante() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdatePlatoNotInRestaurante() throws RepositorioException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.updatePlato("1", "Calabazas", "prueba exitosa", "10.0", true);
+			servicio.updatePlato("1", "Calabazas", "prueba exitosa", "10.0", true, u);
 		});
 		Assertions.assertEquals("plato: no existe en este restaurante", thrown.getMessage());
 	}
@@ -563,11 +766,11 @@ public class RestaurantesTest {
 	// --------------------------- TEST update() del Restaurante -----------------
 
 	@Test
-	public void TestUpdateRestaurantes() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestaurante() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
+		String id = servicio.create("KFC", "30150", "Alcantarilla", 20.00, 30.00, u);
 
-		servicio.update(id, "KGB", "Valencia", "30016", 30.00, 40.00);
+		servicio.update(id, "KGB", "30016", "Valencia", 30.00, 40.00, u);
 
 		Assertions.assertEquals(servicio.getRestaurante(id).getNombre(), "KGB");
 		Assertions.assertEquals(servicio.getRestaurante(id).getCiudad(), "Valencia");
@@ -575,160 +778,183 @@ public class RestaurantesTest {
 		Assertions.assertEquals(servicio.getRestaurante(id).getLatitud(), 30.00);
 		Assertions.assertEquals(servicio.getRestaurante(id).getLongitud(), 40.00);
 
+		servicio.deleteRestaurante(id, u);
+
 	}
 
 	@Test
-	public void TestUpdateRestaurantesIdNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteNotGestor() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(null, "KGB", "Valencia", "30016", 20.00, 30.00);
+			servicio.update(id, "KGB", "Valencia", "30016", 20.00, 30.00, "sofia");
+
+		});
+		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
+	}
+
+	@Test
+	public void testUpdateRestauranteIdNull() throws RepositorioException, EntidadNoEncontrada {
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.update(null, "KGB", "30016", "Valencia", 20.00, 30.00, u);
+
+		});
+		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
+
+	}
+
+	@Test
+	public void testUpdateRestauranteIdVacio() throws RepositorioException, EntidadNoEncontrada {
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.update("", "KGB", "30016", "Valencia", 30.00, 40.00, u);
 
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 	}
 
 	@Test
-	public void TestUpdateRestaurantesIdVacio() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteNombreNull() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
-
-		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update("", "KGB", "Valencia", "30016", 30.00, 40.00);
-
-		});
-		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
-	}
-
-	@Test
-	public void TestUpdateRestaurantesNombreNull() throws RepositorioException, EntidadNoEncontrada {
-
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, null, "Valencia", "30016", 30.00, 40.00);
+			servicio.update(id, null, "30016", "Valencia", 30.00, 40.00, u);
 
 		});
 		Assertions.assertEquals("nombre del  restaurante modificado: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestUpdateRestaurantesNombreVacio() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteNombreVacio() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 30.00, 40.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 30.00, 40.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, "", "Valencia", "30016", 30.00, 40.00);
+			servicio.update(id, "", "30016", "Murcia", 30.00, 40.00, u);
 
 		});
 		Assertions.assertEquals("nombre del  restaurante modificado: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 
 	}
 
 	@Test
-	public void TestUpdateRestaurantesCiudadVacio() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteCiudadVacio() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, "KGB", "", "30016", 30.00, 40.00);
+			servicio.update(id, "KGB", "30016", "", 30.00, 40.00, u);
 
 		});
 		Assertions.assertEquals("ciudad del restaurante modificado: no debe ser nulo ni vacio", thrown.getMessage());
-
+		servicio.deleteRestaurante(id, u);
 	}
 
 	@Test
-	public void TestUpdateRestaurantesCiudadNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteCiudadNull() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, "KGB", null, "30016", 30.00, 40.00);
+			servicio.update(id, "KGB", "30016", null, 30.00, 40.00, u);
 
 		});
 		Assertions.assertEquals("ciudad del restaurante modificado: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
 	}
 
 	@Test
-	public void TestUpdateRestaurantesCpNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteCpNull() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, "KGB", "Alcantarilla", null, 30.00, 40.00);
+			servicio.update(id, "KGB", null, "Alcantarilla", 30.00, 40.00, u);
 
 		});
 		Assertions.assertEquals("cp del restaurante modificado: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
 	}
 
 	@Test
-	public void TestUpdateRestaurantesCpVacio() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteCpVacio() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 30.00, 40.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 30.00, 40.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, "KGB", "Alcantarilla", "", 30.00, 40.00);
+			servicio.update(id, "KGB", "", "Alcantarilla", 30.00, 40.00, u);
 
 		});
 		Assertions.assertEquals("cp del restaurante modificado: no debe ser nulo ni vacio", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
 	}
 
 	@Test
-	public void TestUpdateRestaurantesLatitudNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteLatitudNull() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 30.00);
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, "KGB", "Alcantarilla", "30155", null, 40.00);
+			servicio.update(id, "KGB", "30155", "Alcantarilla", null, 40.00, u);
 
 		});
 		Assertions.assertEquals("latitud: no debe ser nulo", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
 	}
 
 	@Test
-	public void TestUpdateRestaurantesLongitudNull() throws RepositorioException, EntidadNoEncontrada {
+	public void testUpdateRestauranteLongitudNull() throws RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("KFC", "Murcia", "30150", 20.00, 40.00);
+		String id = servicio.create("KFC", "30150", "Alcantarilla", 20.00, 40.00, u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.update(id, "KGB", "Alcantarilla", "30155", 20.00, null);
+			servicio.update(id, "KGB", "30155", "Alcantarilla", 20.00, null, u);
 
 		});
 		Assertions.assertEquals("longitud: no debe ser nulo", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
 	}
 
-	// --------------Test obtenerSitiosTuristicos
-*/
+	// --------------Test obtenerSitiosTuristicos ----------------------
 	@Test
-	public void TestObtenerSitiosTuristicos() throws MalformedURLException, SAXException, IOException,
-			ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
+	public void testObtenerSitiosTuristicos() throws RepositorioException, MalformedURLException, SAXException,
+			IOException, ParserConfigurationException, EntidadNoEncontrada {
+		String id = servicio.create("KFC", "30010", "Murcia", 20.00, 40.00, u);
+		List<SitioTuristico> listaSitios = servicio.obtenerSitiosTuristicos(id);
+		
+		System.out.println(listaSitios.get(0).toString());
+		System.out.println(listaSitios.get(1).toString());
+		System.out.println(listaSitios.get(2).toString());
 
-		String id2 = servicio.create("GyS", "30010", "Murcia", 30.00, 40.00,"sofia");
-
-		List<SitioTuristico> listaSitios1 = servicio.obtenerSitiosTuristicos(id2);
-
-		System.out.println("Sitios turisticos encontrados para " + servicio.getRestaurante(id2).getNombre());
-		System.out.println(listaSitios1.size());
-		System.out.println(listaSitios1.toString());
-
-		// sabemos los tres sitios turisticos que imprime por consola debido a los
-		// mensajes impresos desde el servicio
-
-		SitioTuristico sitio1 = listaSitios1.get(0);
-		SitioTuristico sitio2 = listaSitios1.get(1);
-		SitioTuristico sitio3 = listaSitios1.get(2);
+		SitioTuristico sitio1 = listaSitios.get(0);
+		SitioTuristico sitio2 = listaSitios.get(1);
+		SitioTuristico sitio3 = listaSitios.get(2);
 
 		// Comprobamos que el nombre insertado haya sido el correcto en el mismo orden
-		Assertions.assertEquals(sitio1.getNombre(), "Museo_Arqueológico_de_Murcia");
-		Assertions.assertEquals(sitio2.getNombre(), "Catedral_de_Murcia");
-		Assertions.assertEquals(sitio3.getNombre(), "Iglesia_de_Nuestra_Señora_de_los_Dolores_(Aljucer)");
+		Assertions.assertEquals(sitio1.getNombre(), listaSitios.get(0).getNombre());
+		Assertions.assertEquals(sitio2.getNombre(), listaSitios.get(1).getNombre());
+		Assertions.assertEquals(sitio3.getNombre(), listaSitios.get(2).getNombre());
+
+		servicio.deleteRestaurante(id, u);
+
 	}
-/*
+
 	@Test
-	public void TestObtenerSitiosTuristicosIdVacio() {
+	public void testObtenerSitiosTuristicosIdVacio() {
+
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			servicio.obtenerSitiosTuristicos("");
 
@@ -738,7 +964,7 @@ public class RestaurantesTest {
 	}
 
 	@Test
-	public void TestObtenerSitiosTuristicosIdNull() {
+	public void testObtenerSitiosTuristicosIdNull() {
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			servicio.obtenerSitiosTuristicos(null);
 
@@ -747,45 +973,34 @@ public class RestaurantesTest {
 
 	}
 
-	// --------------------- Test setSitiosTuristicos
+	// --------------------- Test setSitiosTuristicos -------------------
+
 	@Test
 	public void testSetSitiosTuristicos() throws MalformedURLException, SAXException, IOException,
 			ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
 
-		String id2 = servicio.create("GyS", "30010", "Murcia", 30.00, 40.00);
+		String id = servicio.create("GyS", "30150", "Murcia", 30.00, 40.00, u);
 
-		List<SitioTuristico> listaSitios = servicio.obtenerSitiosTuristicos(id2);
+		List<SitioTuristico> listaSitios = servicio.obtenerSitiosTuristicos(id);
 
 		// sabemos los tres sitios turisticos que imprime por consola debido a los
 		// mensajes impresos desde el servicio
 
+		System.out.println("BBBBBBBBBBBBBBBBBBBB: " + listaSitios.get(2));
 		SitioTuristico sitio3 = listaSitios.get(2);
 
 		List<SitioTuristico> miLista = new LinkedList<SitioTuristico>();
 		miLista.add(sitio3);
 		System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: " + miLista.size());
 
-		servicio.setSitiosTuristicos("1", miLista);
-		Restaurante r = servicio.getRestaurante("1");
+		servicio.setSitiosTuristicos(id, miLista, u);
+		Restaurante r = servicio.getRestaurante(id);
 
 		Assertions.assertEquals(r.getSitios().size(), 1);
+		Assertions.assertEquals(r.getSitios().get(0).getNombre(), "Estadio El Mayayo");
 		Assertions.assertEquals(r.getSitios().get(0), sitio3);
+		servicio.deleteRestaurante(id, u);
 
-	}
-
-	// TODO: quitar en caso de quitar comprobacion
-	@Test
-	public void testSetSitiosTuristicosListaVacia() throws MalformedURLException, SAXException, IOException,
-			ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
-
-		List<SitioTuristico> miLista = new LinkedList<SitioTuristico>();
-		// System.out.println("VACIAAA: " + miLista.isEmpty());
-
-		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.setSitiosTuristicos("1", miLista);
-
-		});
-		Assertions.assertEquals("lista de sitios turisticos: no debe ser nula ni vacia", thrown.getMessage());
 
 	}
 
@@ -801,14 +1016,13 @@ public class RestaurantesTest {
 		miLista.add(sitio3);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.setSitiosTuristicos("", miLista);
+			servicio.setSitiosTuristicos("", miLista, u);
 
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 
 	}
 
-	/**
 	@Test
 	public void testSetSitiosTuristicosIdNull() throws MalformedURLException, SAXException, IOException,
 			ParserConfigurationException, RepositorioException, EntidadNoEncontrada {
@@ -821,13 +1035,30 @@ public class RestaurantesTest {
 		miLista.add(sitio3);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.setSitiosTuristicos(null, miLista);
+			servicio.setSitiosTuristicos(null, miLista, u);
 
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 
-	}*/
+	}
 
+	@Test
+	public void testSetSitiosTuristicosNoGerente() throws RepositorioException, EntidadNoEncontrada,
+			MalformedURLException, SAXException, IOException, ParserConfigurationException {
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
+		List<SitioTuristico> listaSitios = servicio.obtenerSitiosTuristicos(id);
+
+		SitioTuristico sitio3 = listaSitios.get(2);
+
+		List<SitioTuristico> miLista = new LinkedList<SitioTuristico>();
+		miLista.add(sitio3);
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.setSitiosTuristicos(id, miLista, "sofia");
+
+		});
+		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
+	}
 
 }
-
