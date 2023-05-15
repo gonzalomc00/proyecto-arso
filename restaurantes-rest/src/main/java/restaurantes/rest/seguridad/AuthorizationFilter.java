@@ -80,7 +80,6 @@ public class AuthorizationFilter implements ContainerRequestFilter, ResourceFilt
 				// Comprueba si el rol del usuario es uno de los tokens permitidos en el método
 				
 				String userRole = claims.get(ROLE_KEY).toString();
-				System.out.println("AAAAAAAAAAAAAAAAAAAAA "+ userRole);
 
 				List<AvailableRoles> roles = Arrays.asList(method.getAnnotation(Secured.class).value());
 				
