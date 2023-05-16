@@ -255,7 +255,7 @@ public class RestaurantesControladorRest {
 
 		String usuario = securityContext.getUserPrincipal().getName();
 		System.out.println(usuario);
-
+		
 		servicio.setSitiosTuristicos(id, sitios, usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 

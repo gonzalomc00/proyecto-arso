@@ -370,8 +370,8 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		if (idRes == null || idRes.isEmpty()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
-		if (sitios.isEmpty() || sitios == null) {
-			throw new IllegalArgumentException("lista de sitios turisticos: no debe ser nula ni vacia");
+		if (sitios == null) {
+			throw new IllegalArgumentException("lista de sitios turisticos: no debe ser nula");
 		}
 
 		Restaurante r = repositorio.getById(idRes);
