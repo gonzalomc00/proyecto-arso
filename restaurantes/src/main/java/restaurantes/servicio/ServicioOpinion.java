@@ -19,7 +19,7 @@ public class ServicioOpinion implements IServicioOpinion {
 		try {
 			
 			Response<Opinion> resultado = service.getOpinion(id).execute();
-			
+			System.out.println(resultado.body());
 			Opinion o= resultado.body();
 			return o;
 		} catch (IOException e) {

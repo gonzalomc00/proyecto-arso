@@ -202,7 +202,7 @@ public class RestaurantesControladorRest {
 		double latitud = Double.parseDouble(coordenadasArray[0]);
 		double longitud = Double.parseDouble(coordenadasArray[1]);
 
-		servicio.update(id, restaurante.getNombre(),  restaurante.getCp(),restaurante.getCiudad(), latitud, longitud,
+		servicio.update(id, restaurante.getNombre(), restaurante.getCp(),restaurante.getCiudad(), latitud, longitud,
 				usuario);
 
 		return Response.status(Response.Status.NO_CONTENT).build();
@@ -254,8 +254,7 @@ public class RestaurantesControladorRest {
 			throws RepositorioException, EntidadNoEncontrada {
 
 		String usuario = securityContext.getUserPrincipal().getName();
-		System.out.println(usuario);
-		
+		System.out.println(sitios.toString());
 		servicio.setSitiosTuristicos(id, sitios, usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 
@@ -351,7 +350,6 @@ public class RestaurantesControladorRest {
 		System.out.println(usuario);
 		servicio.updatePlato(id, plato.getNombre(), plato.getDescripcion(), plato.getPrecio(), plato.isDisponibilidad(),
 				usuario);
-
 		return Response.status(Response.Status.NO_CONTENT).build();
 
 	}
@@ -448,9 +446,8 @@ public class RestaurantesControladorRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_CREATED, message = ""),
-			@ApiResponse(code =  HttpServletResponse.SC_BAD_REQUEST, message = "id del restuarante no válida") })
+			@ApiResponse(code =  HttpServletResponse.SC_BAD_REQUEST, message = "id del restaurante no válido") })
 	public Response activarValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
-		
 		
 		servicio.activarValoraciones(id);
 		return Response.status(Response.Status.NO_CONTENT).build();
@@ -467,6 +464,7 @@ public class RestaurantesControladorRest {
 		
 		
 		List<Valoracion> lista_valoraciones=servicio.getValoracionesRes(id);
+		System.out.println(lista_valoraciones.toString());
 		return Response.ok(lista_valoraciones).build();
 		
 		

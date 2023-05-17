@@ -25,8 +25,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -238,9 +236,9 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		// 3. Analizar el documento
 		org.w3c.dom.Document documento = analizador
 				.parse(new URL("http://api.geonames.org/findNearbyWikipedia?postalcode=" + r.getCp()
-						+ "&country=ES&username=arso_gs&lang=ES&maxRows=25").openStream());
+						+ "&country=ES&username=arso_gs&lang=ES&maxRows=100").openStream());
 
-		NodeList elementos = documento.getElementsByTagName("title");
+		NodeList elementos = documento.getElementsByTagName("title"); 
 		NodeList distancias = documento.getElementsByTagName("distance");
 		NodeList imagenes = documento.getElementsByTagName("thumbnailImg");
 
@@ -260,6 +258,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			// JSON
 
 			try {
+				
 				InputStreamReader fuente = new InputStreamReader(
 						new URL("https://es.dbpedia.org/data/" + URLEncoder.encode(sitio, "utf-8") + ".json")
 								.openStream());
@@ -584,7 +583,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		Restaurante r = repositorio.getById(idRes);
 
 		Opinion o = servicio.getOpinion(r.getResumenValoracion().getIdOpinion());
-
+		System.out.println("Servicio" +o.getValoraciones().toString());
 		return o.getValoraciones();
 
 	}
