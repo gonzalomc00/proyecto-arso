@@ -12,9 +12,8 @@ public class Valoracion {
 	
 	@JsonProperty("Correo")
 	private String correo;
-    @SerializedName("fecha")
-    @JsonAdapter(LocalDateTimeAdapter.class)
     @JsonProperty("Fecha")
+    @JsonAdapter(LocalDateTimeAdapter.class)
 	private LocalDateTime fecha;
     @JsonProperty("Calificacion")
 	private double calificacion;

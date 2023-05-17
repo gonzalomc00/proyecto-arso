@@ -23,6 +23,7 @@ namespace OpinionesApi.Controllers
         {
             Console.Write("eo");
             var entidad = _servicio.GetOpinionById(id);
+
             if (entidad == null)
             {
                 return NotFound();
