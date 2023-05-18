@@ -50,7 +50,6 @@ import servicio.FactoriaServicios;
 @Path("restaurantes")
 public class RestaurantesControladorRest {
 
-
 	private IServicioRestaurante servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
 
 	@Context
@@ -65,11 +64,11 @@ public class RestaurantesControladorRest {
 	private SecurityContext securityContext;
 
 	// 1.String create(Restaurante restaurante);
-	/*
-	 * curl --location 'http://127.0.0.1:8080/api/restaurantes' --header
-	 * 'content-type: application/json' --data '{ "nombre":"Prueba", "cp": "30161",
-	 * "ciudad":"Murcia", "coordenadas":"30, 30" }'
-	 */
+	// curl "http://localhost:8090/restaurantes/" -H "Content-Type:
+	// application/json" -H "Authorization: Bearer
+	// eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
+	// -d "{\"nombre\": \"Prueba Curl\", \"cp\": \"30010\", \"ciudad\": \"Murcia\",
+	// \"coordenadas\": \"30, 40\"}"
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -104,8 +103,8 @@ public class RestaurantesControladorRest {
 			String coordenadasStr = restaurante.getCoordenadas();
 			String[] coordenadasArray = coordenadasStr.split(", ");
 
-			double latitud = Double.parseDouble(coordenadasArray[0]); //x
-			double  longitud = Double.parseDouble(coordenadasArray[1]); //y
+			double latitud = Double.parseDouble(coordenadasArray[0]); // x
+			double longitud = Double.parseDouble(coordenadasArray[1]); // y
 
 			String usuario = securityContext.getUserPrincipal().getName();
 			System.out.println(usuario);
@@ -126,11 +125,8 @@ public class RestaurantesControladorRest {
 			// construimos la nueva Url según los parametros (host y puerto) que hemos
 			// sacado de la cabecera X-Forwarded-Host, además, quitamos de la ruta /api para
 			// que sea conforme con la pasarela
-			URI nuevaURL = uriInfo.getAbsolutePathBuilder()
-					.host(host)
-					.port(Integer.parseInt(puerto))
-					.replacePath(uriInfo.getPath().replace("/api", ""))
-					.path(id).build();
+			URI nuevaURL = uriInfo.getAbsolutePathBuilder().host(host).port(Integer.parseInt(puerto))
+					.replacePath(uriInfo.getPath().replace("/api", "")).path(id).build();
 			System.out.println(nuevaURL);
 
 			return Response.created(nuevaURL).build(); // devuelve la url del nuevo restaurante
@@ -141,6 +137,8 @@ public class RestaurantesControladorRest {
 
 	}
 
+	// 2. getRestaurante
+	// curl "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -154,20 +152,9 @@ public class RestaurantesControladorRest {
 		return Response.status(Response.Status.OK).entity(servicio.getRestaurante(id)).build();
 	}
 
-	// curl -X GET http://localhost:8080/api/restaurantes/642ac93103896f0ae3f3b42e
-	// -H "Content-type: application/json"
-
 	// 3.void update(Restaurante restaurante);
 
-	/*
-	 * curl --location --request PUT
-	 * 'http://127.0.0.1:8080/api/restaurantes/641754dabbef43047199d631' \ --header
-	 * 'Content-Type: application/json' \ --data '{ "nombre": "Actualizado",
-	 * "ciudad": "Albacete", "cp": "29183", "coordenadas": "20, 30" }'
-	 * 
-	 * 
-	 */
-
+	//curl -X PUT "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec" -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4" -d "{\"nombre\": \"Cambiado :P\",\"cp\": \"30010\",\"ciudad\": \"Alcantarilla\",\"coordenadas\": \"30, 40\"}"
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -175,7 +162,7 @@ public class RestaurantesControladorRest {
 	@ApiOperation(value = "Actualiza un restaurante", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Restaurante actualizado con éxito"),
-			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Parámetros no válidos") })
 	public Response update(
 			@ApiParam(value = "id del restaurante a modificar", required = true) @PathParam("id") String id,
 			@ApiParam(value = "datos del restaurante modificados", required = true) RestauranteRequest restaurante)
@@ -203,7 +190,7 @@ public class RestaurantesControladorRest {
 		double latitud = Double.parseDouble(coordenadasArray[0]);
 		double longitud = Double.parseDouble(coordenadasArray[1]);
 
-		servicio.update(id, restaurante.getNombre(), restaurante.getCp(),restaurante.getCiudad(), latitud, longitud,
+		servicio.update(id, restaurante.getNombre(), restaurante.getCp(), restaurante.getCiudad(), latitud, longitud,
 				usuario);
 
 		return Response.status(Response.Status.NO_CONTENT).build();
@@ -211,11 +198,7 @@ public class RestaurantesControladorRest {
 
 	// 3.List<SitioTuristico> obtenerSitiosTuristicos(String idRes)
 
-	/*
-	 * curl -X GET
-	 * http://localhost:8080/api/restaurantes/642ac93103896f0ae3f3b42e/sitios -H
-	 * "accept: application/json"
-	 */
+	//curl "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec/sitios" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
 	@GET
 	@Path("/{id}/sitios")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -234,13 +217,8 @@ public class RestaurantesControladorRest {
 
 	// 4.void setSitiosTuristicos(String id, List<SitioTuristico> sitios);
 
-	/**
-	 * curl -X 'PUT' \
-	 * 'http://localhost:8080/api/restaurantes/642ac93103896f0ae3f3b42e/sitios' \ -H
-	 * 'accept: application/json' \ -H 'Content-Type: application/json' \ -d '[ {
-	 * "nombre": "string", "categorias": [ "string" ], "resumen": "string",
-	 * "enlaces": [ "string" ], "foto": "string" } ]'
-	 */
+	//curl -X PUT "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec/sitios" -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4" -d "[{\"nombre\": \"Estadio El Mayayo\",\"categorias\": [\"ArchitecturalStructure\"],\"resumen\": \"El estadio de fútbol \\\"El Mayayo\\\", se encuentra en Sangonera la Verde en el municipio de Murcia en la Región de Murcia, España en el año 1975. En él se han disputado partidos de 2ªB y de Tercera división. Fue sede de extinto Sangonera Atlético el cual consiguió que en el campo se jugaran partidos de 2ªb, tras la venta del equipo local a Lorca pasó a jugar en el Campo el Costa Cálida que más tarde compraría la Universidad Católica de Murcia y volverían los partidos de 2ªb en 2012 al adquirir una plaza en esa categoría. Junto a el hay otro campo de fútbol de césped artificial y otro de tierra. En 2006 se anunció que se construiría el complejo deportivo del Real Murcia junto al estadio pero en 2012 se declinó. \n*  Datos: Q5847924\",\"enlaces\": [],\"foto\": \"\",\"distancia\": 9.1449}]"
+	
 	@PUT
 	@Path("/{id}/sitios")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -262,21 +240,16 @@ public class RestaurantesControladorRest {
 	}
 
 	// 5.void addPlato(String idRes, Plato plato);
-	/*
-	 * curl --location
-	 * 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/platos' \
-	 * --header 'content-type: application/json' \ --data '{ "nombre":
-	 * "Plato de prueba", "descripcion": "Descripcion del plato", "precio": "10"
-	 * 
-	 * }'
-	 */
+
+	//curl "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec/platos" -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4" -d "{\"nombre\": \"Papitas fritas3\",\"descripcion\": \"papitas fritas muy ricas con queso y bacon\",\"precio\": \"10.0\",\"disponibilidad\": true}"
+	
 	@POST
 	@Path("/{id}/platos")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Secured(AvailableRoles.GESTOR)
 	@ApiOperation(value = "Añade un nuevo plato a un restaurante", notes = " ")
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_CREATED, message = "Plato creado con éxito"),
-			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Parametros o url no valida") })
 	public Response addPlato(@ApiParam(value = "id del restaurante", required = true) @PathParam("id") String id,
 			@ApiParam(value = "datos del plato para añadir", required = true) PlatoRequest platoDTO)
 			throws RepositorioException, EntidadNoEncontrada {
@@ -299,15 +272,9 @@ public class RestaurantesControladorRest {
 	}
 
 	// 6.void removePlato(String idRes, String nombrePlato);
-	/*
-	 * curl --location --request DELETE
-	 * 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/platos/Plato
-	 * %20de%20prueba' \ --header 'content-type: application/json' \ --data '{
-	 * "nombre": "Plato de prueba", "descripcion": "Descripcion del plato",
-	 * "precio": "10"
-	 * 
-	 * }'
-	 */
+	
+	//curl -X DELETE "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec/platos/Papitas" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
+	
 	@DELETE
 	@Path("/{id}/platos/{nombrePlato}")
 	@Secured(AvailableRoles.GESTOR)
@@ -326,15 +293,9 @@ public class RestaurantesControladorRest {
 	}
 
 	// 7.void updatePlato(String idRes, Plato plato);
-	/*
-	 * curl --location --request PUT
-	 * 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/platos' \
-	 * --header 'content-type: application/json' \ --data '{ "nombre":
-	 * "Plato de prueba", "descripcion": "Descripcion del plato modificada",
-	 * "precio": "10"
-	 * 
-	 * }'
-	 */
+	
+	//curl -X PUT "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec/platos" -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4" -d "{\"nombre\": \"AAA\",\"descripcion\": \"desc modificada\",\"precio\": \"10.0\",\"disponibilidad\": true}"
+	
 	@PUT
 	@Path("/{id}/platos/")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -356,11 +317,9 @@ public class RestaurantesControladorRest {
 	}
 
 	// 8.void deleteRestaurante(String idRes);
-	/*
-	 * curl --location --request DELETE
-	 * 'http://127.0.0.1:8080/api/restaurantes/6417560abbef43047199d632/' \ --header
-	 * 'content-type: application/json' \ --data ''
-	 */
+
+	//curl -X DELETE "http://localhost:8090/restaurantes/64668bb753762a5be5b422ed" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
+
 	@DELETE
 	@Path("/{id}")
 	@Secured(AvailableRoles.GESTOR)
@@ -379,11 +338,8 @@ public class RestaurantesControladorRest {
 	}
 
 	// 9.List<RestauranteResumen> getListadoRestaurantes();
-	/*
-	 * curl --location 'http://127.0.0.1:8080/api/restaurantes/' \ --header
-	 * 'content-type: application/json' \ --data ''
-	 */
 
+	//curl "http://localhost:8090/restaurantes/" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Consulta los restaurantes", notes = "Retorna un listado de restaurantes", response = Restaurante.class)
@@ -405,7 +361,7 @@ public class RestaurantesControladorRest {
 			// URL
 
 			String id = restauranteResumen.getId();
-			
+
 			String hostypuerto = headers.getRequestHeader("X-Forwarded-Host").get(0).toString();
 
 			String[] partes = hostypuerto.split(":");
@@ -416,19 +372,14 @@ public class RestaurantesControladorRest {
 			// construimos la nueva Url según los parametros (host y puerto) que hemos
 			// sacado de la cabecera X-Forwarded-Host, además, quitamos de la ruta /api para
 			// que sea conforme con la pasarela
-			URI nuevaURL = uriInfo.getAbsolutePathBuilder()
-					.host(host)
-					.port(Integer.parseInt(puerto))
-					.replacePath(uriInfo.getPath().replace("/api", ""))
-					.path(id).build();
-						
+			URI nuevaURL = uriInfo.getAbsolutePathBuilder().host(host).port(Integer.parseInt(puerto))
+					.replacePath(uriInfo.getPath().replace("/api", "")).path(id).build();
+
 			resumenExtendido.setUrl(nuevaURL.toString()); // string
 
 			extendido.add(resumenExtendido);
 
 		}
-		
-
 
 		// Una lista no es un documento válido en XML
 
@@ -441,19 +392,29 @@ public class RestaurantesControladorRest {
 		return Response.ok(listado).build();
 
 	}
+
+	//11. activarValoraciones
+
+	//curl -X POST "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec/valoraciones" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
 	
 	@POST
 	@Path("/{id}/valoraciones")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
-	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_CREATED, message = "Valoraciones creadas correctamente"),
-			@ApiResponse(code =  HttpServletResponse.SC_BAD_REQUEST, message = "id del restaurante no válido o valoraciones ya activadas") })
-	public Response activarValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
-		
+	@ApiResponses(value = {
+			@ApiResponse(code = HttpServletResponse.SC_CREATED, message = "Valoraciones creadas correctamente"),
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "id del restaurante no válido o valoraciones ya activadas") })
+	public Response activarValoraciones(
+			@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
+
 		servicio.activarValoraciones(id);
-		return Response.status(Response.Status.NO_CONTENT).build();
-		
+		return Response.status(Response.Status.CREATED).build();
+
 	}
+
+	//12. getValoraciones
+	
+	//curl "http://localhost:8090/restaurantes/6466892c53762a5be5b422ec/valoraciones" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxODVkYjllMy05NDJlLTQxMmItYTdiNC0zYTY3YzBhMTlhMDUiLCJpc3MiOiJQYXNhcmVsYSBadXVsIiwiZXhwIjoxNzE1Njc4MDE1LCJzdWIiOiJtY3NtcmxsIiwidXN1YXJpbyI6InNvZmlhLm1hY2lhc21AdW0uZXMiLCJyb2wiOiJHRVNUT1IifQ.gsX5KS7e9BGhtjR9LdgvffRU1ZD2PBoNUGH_ykfHjc4"
 	
 	@GET
 	@Path("/{id}/valoraciones")
@@ -461,15 +422,13 @@ public class RestaurantesControladorRest {
 	@ApiOperation(value = "Obtener las valoraciones", notes = "Obtener las valoraciones de un restaurante", response = Restaurante.class)
 	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "No se han encontrado restaurantes") })
-	public Response getValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
-		
-		
-		List<Valoracion> lista_valoraciones=servicio.getValoracionesRes(id);
+	public Response getValoraciones(
+			@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
+
+		List<Valoracion> lista_valoraciones = servicio.getValoracionesRes(id);
 		System.out.println(lista_valoraciones.toString());
 		return Response.ok(lista_valoraciones).build();
-		
-		
+
 	}
-	
-	
+
 }

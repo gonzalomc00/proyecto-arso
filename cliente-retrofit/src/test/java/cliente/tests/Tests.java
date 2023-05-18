@@ -152,7 +152,7 @@ class Tests {
 
 		Response<List<SitioTuristico>> resultado2 = service.getSitiosTuristicos(id1).execute();
 		Assertions.assertEquals(resultado2.headers().get("Content-Type"), "application/json");
-		Assertions.assertEquals(resultado.code(), 200);
+		Assertions.assertEquals(resultado2.code(), 200);
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());
@@ -538,7 +538,7 @@ class Tests {
 
 		Response<Void> resultado2 = service.addPlato(id1, plato).execute();
 		Assertions.assertEquals(resultado2.code(), 400);
-		Assertions.assertEquals(resultado2.errorBody().string(), "descripcion del plato: no debe ser nulo ni vacio");
+		Assertions.assertEquals(resultado2.errorBody().string(), "precio del plato: no debe ser nulo ni vacio");
 
 		System.out.println("Código de respuesta: " + resultado2.code());
 		System.out.println("Mensaje de respuesta: " + resultado2.message());

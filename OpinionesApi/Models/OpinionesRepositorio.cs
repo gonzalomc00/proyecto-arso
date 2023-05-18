@@ -17,9 +17,9 @@ namespace Opiniones.Repositorio
 
         public RepositorioOpinionesMongoDB()
         {
-            
-           string uri =  Environment.GetEnvironmentVariable("MONGO_URI");
-       // string uri= "mongodb://sofia:sofia@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority";
+
+            string uri =  Environment.GetEnvironmentVariable("MONGO_URI");
+            //string uri = "mongodb://sofia:sofia@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority";
 
             //si una variable se va a inciar en su declaracion no hace falta ponerle el tipo --> inferencia de variables
             var client = new MongoClient(uri);
@@ -52,13 +52,13 @@ namespace Opiniones.Repositorio
 
         public Opinion GetById(string id)
         {
-            
-            return opiniones.Find(opinion=>opinion.Id==id).FirstOrDefault();
+
+            return opiniones.Find(opinion => opinion.Id == id).FirstOrDefault();
         }
 
         public List<string> GetIds()
         {
-            var todas =  opiniones.Find(_ => true).ToList();
+            var todas = opiniones.Find(_ => true).ToList();
 
             return todas.Select(p => p.Id).ToList();
 
