@@ -457,7 +457,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		if (!existePlato) {
-			throw new IllegalArgumentException("ERROR: No existe el plato en este restaurante");
+			throw new EntidadNoEncontrada("ERROR: No existe el plato en este restaurante");
 		}
 
 		boolean borrado = r.remove(nombrePlato);
@@ -571,7 +571,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			r.setResumenValoracion(rv);
 			repositorio.update(r);
 		} else {
-			throw new IllegalStateException("El restaurante ya cuenta con valoraciones creadas");
+			throw new IllegalArgumentException("El restaurante ya cuenta con valoraciones creadas");
 		}
 	}
 

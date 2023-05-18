@@ -219,7 +219,7 @@ public class RestaurantesControladorRest {
 	@Path("/{id}/sitios")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Consulta los sitios turisticos cercanos a un restaurante", notes = "Retorna listado de sitios turisticos cercanos un restaurante ")
-	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = ""),
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = "Sitios turisticos encontrados"),
 			@ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Sitios turisticos no encontrados") })
 	public Response obtenerSitiosTuristicos(
 			@ApiParam(value = "id del restaurante", required = true) @PathParam("id") String id)
@@ -247,7 +247,7 @@ public class RestaurantesControladorRest {
 	@ApiOperation(value = "Modifica los sitios turisticos de un restaurante", notes = " ")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Sitios turisticos modificados con éxito"),
-			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Parámetros no válidos") })
 	public Response setSitiosTuristicos(
 			@ApiParam(value = "id del restaurante a modificar", required = true) @PathParam("id") String id,
 			@ApiParam(value = "lista de sitios turisticos", required = true) List<SitioTuristico> sitios)
@@ -341,7 +341,7 @@ public class RestaurantesControladorRest {
 	@ApiOperation(value = "Actualiza un plato", notes = "")
 	@ApiResponses(value = {
 			@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Plato actualizado correctamente"),
-			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "") })
+			@ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = "Solicitud incorrecta") })
 	public Response updatePlato(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id,
 			@ApiParam(value = "plato a actualizar ", required = true) PlatoRequest plato)
 			throws RepositorioException, EntidadNoEncontrada {
@@ -445,8 +445,8 @@ public class RestaurantesControladorRest {
 	@Path("/{id}/valoraciones")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
-	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_CREATED, message = ""),
-			@ApiResponse(code =  HttpServletResponse.SC_BAD_REQUEST, message = "id del restaurante no válido") })
+	@ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_CREATED, message = "Valoraciones creadas correctamente"),
+			@ApiResponse(code =  HttpServletResponse.SC_BAD_REQUEST, message = "id del restaurante no válido o valoraciones ya activadas") })
 	public Response activarValoraciones(@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
 		
 		servicio.activarValoraciones(id);

@@ -38,7 +38,6 @@ import servicio.FactoriaServicios;
  */
 
 // La conexion con RabbitMQ genera fallos ya que se establece la conexion con la cola de mensajes en el constructor del Servicio
-@Disabled
 public class RestaurantesTest {
 
 	private IServicioRestaurante servicio;
@@ -50,8 +49,6 @@ public class RestaurantesTest {
 		servicio = FactoriaServicios.getServicio(IServicioRestaurante.class);
 		repositorio = FactoriaRepositorios.getRepositorio(Restaurante.class);
 		u = "alguien";
-	
-
 	}
 
 
@@ -114,7 +111,7 @@ public class RestaurantesTest {
 		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
 		servicio.activarValoraciones(id);
 
-		IllegalStateException thrown = Assertions.assertThrows(IllegalStateException.class, () -> {
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			servicio.activarValoraciones(id);
 		});
 		Assertions.assertEquals("El restaurante ya cuenta con valoraciones creadas", thrown.getMessage());
@@ -138,10 +135,10 @@ public class RestaurantesTest {
 		// para controlar la pequeña diferencia entre las fechas
 
 		LocalDateTime fechaEsperada = LocalDateTime.now();
-		//LocalDateTime fechaReal = misVal.get(0).getFecha();
-		//Duration duracion = Duration.between(fechaEsperada, fechaReal);
+		LocalDateTime fechaReal = misVal.get(0).getFecha();
+		Duration duracion = Duration.between(fechaEsperada, fechaReal);
 		// permitimos un error de 5 segundos entre una fecha y otra
-		//Assertions.assertTrue(duracion.abs().getSeconds() < 5);
+		Assertions.assertTrue(duracion.abs().getSeconds() < 5);
 
 		Assertions.assertEquals(misVal.get(0).getCorreo(), "alumno@um.es");
 		Assertions.assertEquals(misVal.get(0).getComentario(), null);
@@ -422,6 +419,18 @@ public class RestaurantesTest {
 		servicio.deleteRestaurante(id, u);
 
 	}
+	
+	@Test
+	public void TestAddPlatoRestauranteIdResVacio() throws RepositorioException, EntidadNoEncontrada {
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.addPlato(null, "Pechuga", "Pechuga empanada", "2.0", true, u);
+			;
+
+		});
+
+		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
+
+	}
 
 	@Test
 	public void TestAddPlatoRestauranteNotInRepository() throws RepositorioException, EntidadNoEncontrada {
@@ -491,7 +500,7 @@ public class RestaurantesTest {
 
 		String id = servicio.create("McDonals", "30820", "Alcantarilla", 20.00, 30.00, u);
 
-		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+		EntidadNoEncontrada thrown = Assertions.assertThrows(EntidadNoEncontrada.class, () -> {
 			servicio.removePlato(id, "Pulpo", u);
 			;
 
@@ -671,6 +680,27 @@ public class RestaurantesTest {
 		Assertions.assertEquals(resumenes.get(0).getCp(), r.getCp());
 		Assertions.assertEquals(resumenes.get(0).getId(), r.getId());
 		Assertions.assertEquals(resumenes.get(0).getGestor(), r.getGestor());
+
+		
+	}
+	
+	@Test
+	public void testGetListadoRestaurantesResumenVal() throws RepositorioException, EntidadNoEncontrada, IOException {
+
+		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
+		Restaurante r = servicio.getRestaurante(id);
+		servicio.activarValoraciones(id);
+		
+		List<RestauranteResumen> resumenes = servicio.getListadoRestaurantes();
+		Assertions.assertEquals(resumenes.size(), 2); //la primera posicion la ocupa el restaurante que ya está en memoria 
+		Assertions.assertEquals(resumenes.get(1).getNombre(), r.getNombre());
+		Assertions.assertEquals(resumenes.get(1).getCp(), r.getCp());
+		Assertions.assertEquals(resumenes.get(1).getId(), r.getId());
+		Assertions.assertEquals(resumenes.get(1).getGestor(), r.getGestor());
+		Assertions.assertEquals(resumenes.get(1).getIdOpinion(), "idOpinion");
+		Assertions.assertEquals(resumenes.get(1).getValoracion(), 0.0);
+
+		servicio.deleteRestaurante(id, u);
 
 	}
 	// ---------- TESTS updatePlato() --------------------
@@ -1058,6 +1088,19 @@ public class RestaurantesTest {
 
 		});
 		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
+
+	}
+	@Test
+	public void testSetSitiosTuristicosListaNull() throws RepositorioException, EntidadNoEncontrada,
+			MalformedURLException, SAXException, IOException, ParserConfigurationException {
+		String id = servicio.create("KFC", "30150", "Murcia", 20.00, 30.00, u);
+		
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.setSitiosTuristicos(id, null, "sofia");
+
+		});
+		Assertions.assertEquals("lista de sitios turisticos: no debe ser nula", thrown.getMessage());
 		servicio.deleteRestaurante(id, u);
 
 	}
