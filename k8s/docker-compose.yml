@@ -2,7 +2,7 @@ version: '3.1'
 
 services: 
   opiniones: #opiniones api
-    image: opiniones-1
+    image: opiniones-api:2.0
     restart: always
     ports:
       - 5000:5000
@@ -31,14 +31,16 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
   
   restaurantes-rest:
-    image: restaurantes-rest-1
+    image: restaurantes-rest:2.0
     restart: always
     ports:
       - 8080:8080
 
   pasarela:
-    image: pasarela-1 
+    image: pasarela:2.0
     restart: always
     ports:
       - 8090:8090
 
+volumes:
+  volumen_mongo:

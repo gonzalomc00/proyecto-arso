@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: opiniones
+  name: opiniones
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: opiniones
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/opt-default: "true"
+        io.kompose.service: opiniones
+    spec:
+      containers:
+        - env:
+            - name: MONGO_URI
+              value: mongodb://root:example@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority
+          image: opiniones-api:2.0
+          name: opiniones
+          ports:
+            - containerPort: 5000
+          resources: {}
+      restartPolicy: Always
+status: {}
