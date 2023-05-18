@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-import opiniones.modelo.Opinion;
-import opiniones.modelo.Valoracion;
+import restaurantes.modelo.Opinion;
 import restaurantes.modelo.Restaurante;
+import restaurantes.modelo.Valoracion;
 import restaurantes.servicio.IServicioOpinion;
 
 public class ServicioOpinionStub implements IServicioOpinion{

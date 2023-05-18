@@ -3,12 +3,6 @@
 FROM maven:3.8.5-jdk-11 AS builder
 
 WORKDIR /app-base/
-COPY opiniones/pom.xml .
-RUN mvn -e -B dependency:resolve
-COPY opiniones/src ./src
-RUN mvn install
-
-WORKDIR /app-base/
 COPY restaurantes/pom.xml .
 RUN mvn -e -B dependency:resolve
 COPY restaurantes/src ./src

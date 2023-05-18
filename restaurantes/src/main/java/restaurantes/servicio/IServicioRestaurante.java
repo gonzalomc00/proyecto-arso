@@ -8,11 +8,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import opiniones.modelo.Valoracion;
+
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
+import restaurantes.modelo.Valoracion;
 
 public interface IServicioRestaurante {
 

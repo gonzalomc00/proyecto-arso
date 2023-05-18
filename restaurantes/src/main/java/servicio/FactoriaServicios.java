@@ -19,7 +19,7 @@ public class FactoriaServicios {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T getServicio(Class<T> servicio) {
-				
+			
 			
 			try {
 				if (servicios.containsKey(servicio)) {

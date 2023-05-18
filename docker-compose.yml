@@ -31,7 +31,6 @@ services:
     build: 
       dockerfile: ./Dockerfile
     image: restaurantes-rest:2.0
-
     restart: always
     ports:
       - 8080:8080

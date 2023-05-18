@@ -18,11 +18,6 @@
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
 
-		<dependency>
-			<groupId>arso</groupId>
-			<artifactId>opiniones</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
@@ -168,6 +163,13 @@
 			<artifactId>converter-jaxb</artifactId>
 			<version>2.9.0</version>
 		</dependency>
+		
+			<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
+		</dependency>
+		
 
 	
 	</dependencies>
@@ -182,11 +184,6 @@
 				<version>29.0-jre</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.8.6</version>
-			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>

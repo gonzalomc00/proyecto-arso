@@ -2,13 +2,12 @@ package arso.opiniones;
 
 import java.io.IOException;
 
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import opiniones.modelo.Opinion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
+import restaurantes.modelo.Opinion;
 import restaurantes.servicio.IServicioOpinion;
 import servicio.FactoriaServicios;
 

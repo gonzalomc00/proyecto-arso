@@ -31,13 +31,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import opiniones.modelo.Valoracion;
+
 import repositorio.EntidadNoEncontrada;
 import repositorio.RepositorioException;
 import restaurantes.dto.PlatoRequest;
 import restaurantes.dto.RestauranteRequest;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
+import restaurantes.modelo.Valoracion;
 import restaurantes.rest.Listado.ResumenExtendido;
 import restaurantes.rest.seguridad.AvailableRoles;
 import restaurantes.rest.seguridad.Secured;

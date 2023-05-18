@@ -13,11 +13,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
 import repositorio.Repositorio;
@@ -25,6 +23,7 @@ import repositorio.RepositorioException;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
+import restaurantes.modelo.Valoracion;
 import restaurantes.servicio.IServicioRestaurante;
 import restaurantes.servicio.RestauranteResumen;
 import servicio.FactoriaServicios;

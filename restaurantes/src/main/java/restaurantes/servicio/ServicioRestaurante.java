@@ -38,17 +38,17 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
-import opiniones.modelo.Opinion;
-import opiniones.modelo.Valoracion;
 import repositorio.EntidadNoEncontrada;
 import repositorio.FactoriaRepositorios;
 import repositorio.Repositorio;
 import repositorio.RepositorioException;
 import restaurantes.eventos.EventoNuevaValoracion;
+import restaurantes.modelo.Opinion;
 import restaurantes.modelo.Plato;
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.ResumenValoracion;
 import restaurantes.modelo.SitioTuristico;
+import restaurantes.modelo.Valoracion;
 import servicio.FactoriaServicios;
 
 public class ServicioRestaurante implements IServicioRestaurante {
@@ -57,7 +57,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	private IServicioOpinion servicio = FactoriaServicios.getServicio(IServicioOpinion.class);
 
 	public ServicioRestaurante() {
+		
+		
 		try {
+			
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setUri("amqp://bmqyxhdb:t9WYA0qDTQpfRzSj5FJUHMwIp0mMatZm@whale.rmq.cloudamqp.com:5672/bmqyxhdb");
 			Connection connection = factory.newConnection();
@@ -148,6 +151,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 
 	}
 
@@ -522,6 +526,7 @@ public class ServicioRestaurante implements IServicioRestaurante {
 	@Override
 	public List<RestauranteResumen> getListadoRestaurantes() throws RepositorioException {
 
+	
 		List<Restaurante> restaurantes = repositorio.getAll();
 		List<RestauranteResumen> resumenes = new ArrayList<RestauranteResumen>();
 

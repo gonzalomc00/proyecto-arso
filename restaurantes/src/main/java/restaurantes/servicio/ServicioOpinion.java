@@ -2,14 +2,14 @@ package restaurantes.servicio;
 
 import java.io.IOException;
 
-import opiniones.modelo.Opinion;
+import restaurantes.modelo.Opinion;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServicioOpinion implements IServicioOpinion {
 	
-	Retrofit retrofit = new Retrofit.Builder().baseUrl("http://localhost:5000/api/")
+	Retrofit retrofit = new Retrofit.Builder().baseUrl("http://opiniones:5000/api/")
 			.addConverterFactory(GsonConverterFactory.create()).build();
 
 	IRetrofitOpinion service = retrofit.create(IRetrofitOpinion.class);

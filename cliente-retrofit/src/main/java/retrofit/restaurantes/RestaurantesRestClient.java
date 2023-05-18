@@ -2,9 +2,10 @@ package retrofit.restaurantes;
 
 import java.util.List;
 
-import opiniones.modelo.Valoracion;
+
 import restaurantes.modelo.Restaurante;
 import restaurantes.modelo.SitioTuristico;
+import restaurantes.modelo.Valoracion;
 import retrofit.restaurantes.Listado.ResumenExtendido;
 import retrofit2.Call;
 import retrofit2.http.Body;

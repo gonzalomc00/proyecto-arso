@@ -1,7 +1,8 @@
 package restaurantes.servicio;
 
 
-import opiniones.modelo.Opinion;
+
+import restaurantes.modelo.Opinion;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

@@ -9,16 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import okhttp3.OkHttpClient;
 import restaurantes.modelo.Restaurante;
-import opiniones.modelo.Valoracion;
-
 import restaurantes.modelo.SitioTuristico;
+import restaurantes.modelo.Valoracion;
 import retrofit.restaurantes.AuthInterceptor;
 import retrofit.restaurantes.Listado;
 import retrofit.restaurantes.Listado.ResumenExtendido;
 import retrofit.restaurantes.PlatoRequest;
 import retrofit.restaurantes.RestauranteRequest;
 import retrofit.restaurantes.RestaurantesRestClient;
-
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

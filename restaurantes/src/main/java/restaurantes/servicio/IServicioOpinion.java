@@ -3,7 +3,9 @@ package restaurantes.servicio;
 
 import java.io.IOException;
 
-import opiniones.modelo.Opinion;
+import restaurantes.modelo.Opinion;
+
+
 
 
 public interface IServicioOpinion {
