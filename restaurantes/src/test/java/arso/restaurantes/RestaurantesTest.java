@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
@@ -37,7 +38,6 @@ import servicio.FactoriaServicios;
  */
 
 // La conexion con RabbitMQ genera fallos ya que se establece la conexion con la cola de mensajes en el constructor del Servicio
-@Disabled
 public class RestaurantesTest {
 
 	private IServicioRestaurante servicio;
