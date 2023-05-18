@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurantes-lb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080 #puerto de acceso externo
+    targetPort: 8080 #puerto de acceso interno
+  selector:
+    io.kompose.service: restaurantes-rest
+
+#especificamos que para todo pod (cajon donde corre los contenedores) que tenga la etiqueta io.kompose.service: restaurantes-rest, queremos que se interponga el balanceador de carga que da acceso al puerto 8080 de esos pods utilizando el puerto de acceso externamente 8080 
