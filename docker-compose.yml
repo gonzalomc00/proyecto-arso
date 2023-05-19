@@ -8,7 +8,8 @@ services:
     ports:
       - 5000:5000
     environment:
-      MONGO_URI: mongodb://root:example@ac-yfyrl7f-shard-00-00.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-01.68qbknn.mongodb.net:27017,ac-yfyrl7f-shard-00-02.68qbknn.mongodb.net:27017/?ssl=true&replicaSet=atlas-sbil5s-shard-0&authSource=admin&retryWrites=true&w=majority
+      MONGO_URI: mongodb://root:example@mongo:27017/
+  
 
   mongo: #instance mongo
     image: mongo
