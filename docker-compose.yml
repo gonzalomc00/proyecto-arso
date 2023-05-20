@@ -35,6 +35,8 @@ services:
     restart: always
     ports:
       - 8080:8080
+    environment: 
+       OPINIONES_API_URL: http://opiniones:5000/api/
 
   pasarela:
     build:
