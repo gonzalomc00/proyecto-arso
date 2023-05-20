@@ -38,6 +38,7 @@ import servicio.FactoriaServicios;
  */
 
 // La conexion con RabbitMQ genera fallos ya que se establece la conexion con la cola de mensajes en el constructor del Servicio
+
 public class RestaurantesTest {
 
 	private IServicioRestaurante servicio;
