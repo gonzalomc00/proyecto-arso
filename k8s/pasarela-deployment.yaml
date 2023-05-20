@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pasarela
+  name: pasarela
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: pasarela
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/opt-default: "true"
+        io.kompose.service: pasarela
+    spec:
+      containers:
+        - env:
+            - name: RUTA_OPINIONES_URL
+              value: http://opiniones:5000/api/opiniones
+            - name: RUTA_RESTAURANTES_URL
+              value: http://restaurantes-rest:8080/api/restaurantes
+          image: pasarela:2.0
+          name: pasarela
+          ports:
+            - containerPort: 8090
+          resources: {}
+      restartPolicy: Always
+status: {}
