@@ -2,6 +2,10 @@
 # Por ejemplo: docker build -t bookle-rest:v2 -f bookle-rest/Dockerfile-2 .
 FROM maven:3.8.5-jdk-11 AS builder
 
+#variable de entorno de conexion al servicio opiniones
+
+ENV OPINIONES_API_URL=http://opiniones:5000/api/
+
 WORKDIR /app-base/
 COPY restaurantes/pom.xml .
 RUN mvn -e -B dependency:resolve
