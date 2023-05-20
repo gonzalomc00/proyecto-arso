@@ -36,7 +36,10 @@ namespace OpinionesApi.Controllers
         [HttpPost]
         public ActionResult<Opinion> Create([FromBody] string nombre)
         {
-
+            if (string.IsNullOrEmpty(nombre))
+            {
+                return BadRequest("Los parámetros proporcionados son inválidos.");
+            }
             string _id = _servicio.CreateOpinion(nombre);
             return Content(JsonSerializer.Serialize(_id), "application/json");
         }
@@ -59,12 +62,13 @@ namespace OpinionesApi.Controllers
           [FromForm] string comentario)
         {
             _servicio.addValoracion(id, correo, DateTime.Now, calificacion, comentario);
-            return NoContent();
 
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(correo) || calificacion <= 0 || calificacion > 5)
+            {
+                return BadRequest("Los parámetros proporcionados son inválidos.");
+            }
+            
+            return StatusCode(201);
         }
-
-
     }
-
-
 }
