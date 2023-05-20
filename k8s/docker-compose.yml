@@ -41,6 +41,9 @@ services:
     restart: always
     ports:
       - 8090:8090
+    environment:
+      RUTA_RESTAURANTES_URL: http://restaurantes-rest:8080/api/restaurantes
+      RUTA_OPINIONES_URL: http://opiniones:5000/api/opiniones
 
 volumes:
   volumen_mongo:
