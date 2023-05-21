@@ -1213,4 +1213,25 @@ class Tests {
 		Assertions.assertEquals(resultado3.body(), valoracionesIni);
 
 	}
+	
+	@Test
+	void testGetValoracionesNotVal() throws IOException {
+		RestauranteRequest restaurante = new RestauranteRequest();
+		restaurante.setNombre("Prueba RetrofitGetRestaurante");
+		restaurante.setCiudad("Murcia");
+		restaurante.setCp("30001");
+		restaurante.setCoordenadas("20, 10");
+		Response<Void> resultado = service.createRestaurante(restaurante).execute();
+
+		String url1 = resultado.headers().get("Location");
+		String id1 = url1.substring(url1.lastIndexOf("/") + 1);
+
+		Response<List<Valoracion>> resultado3 = service.getValoraciones(id1).execute();
+		
+		List<Valoracion> valoracionesIni = new LinkedList<Valoracion>();
+		Assertions.assertEquals(resultado3.code(), 400);
+		Assertions.assertEquals(resultado3.errorBody().string(),
+				"El restaurante no tiene valoraciones activadas");
+
+	}
 }
