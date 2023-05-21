@@ -85,7 +85,7 @@ public class RestaurantesTest {
 	public void testActivarValoracionIdNull() {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.activarValoraciones(null);
+			servicio.activarValoraciones(null, u);
 		});
 		Assertions.assertEquals("id del restaurante: no debe ser nulo ni vacio", thrown.getMessage());
 
@@ -94,26 +94,37 @@ public class RestaurantesTest {
 	@Test
 	public void testActivarValoraciones() throws RepositorioException, IOException, EntidadNoEncontrada {
 
-		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
-		servicio.activarValoraciones(id);
+		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, u);
+		servicio.activarValoraciones(id, u);
 
 		Restaurante r = servicio.getRestaurante(id);
 
 		Assertions.assertEquals("idOpinion", r.getResumenValoracion().getIdOpinion());
 		// Borramos el restaurante para asegurarnos que solo exista uno en el
 		// repositorio en caso de ejecutar todos los tests a la vez
-		servicio.deleteRestaurante(id, "alguien");
+		servicio.deleteRestaurante(id, u);
+	}
+	@Test
+	public void testActivarValoracionesNotGestor() throws RepositorioException, IOException, EntidadNoEncontrada {
 
+		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, u);
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.activarValoraciones(id, "ssss");
+		});
+
+		Assertions.assertEquals("No eres el gestor del restaurante", thrown.getMessage());
+		servicio.deleteRestaurante(id, u);
 	}
 
 	@Test
 	public void testActivarValoracionesDuplicated() throws IOException, RepositorioException, EntidadNoEncontrada {
 
-		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
-		servicio.activarValoraciones(id);
+		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, u);
+		servicio.activarValoraciones(id,u);
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			servicio.activarValoraciones(id);
+			servicio.activarValoraciones(id,u);
 		});
 		Assertions.assertEquals("El restaurante ya cuenta con valoraciones creadas", thrown.getMessage());
 
@@ -127,7 +138,7 @@ public class RestaurantesTest {
 	public void testGetValoraciones() throws RepositorioException, IOException, EntidadNoEncontrada {
 
 		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
-		servicio.activarValoraciones(id);
+		servicio.activarValoraciones(id, u);
 
 		List<Valoracion> misVal = servicio.getValoracionesRes(id);
 
@@ -690,7 +701,7 @@ public class RestaurantesTest {
 
 		String id = servicio.create("Prueba", "30820", "Alcantarilla", 20.00, 30.00, u);
 		Restaurante r = servicio.getRestaurante(id);
-		servicio.activarValoraciones(id);
+		servicio.activarValoraciones(id,u);
 		
 		List<RestauranteResumen> resumenes = servicio.getListadoRestaurantes();
 		Assertions.assertEquals(resumenes.size(), 2); //la primera posicion la ocupa el restaurante que ya está en memoria 
