@@ -560,12 +560,17 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		return repositorio.getById(idRes);
 	}
 
-	public void activarValoraciones(String idRes) throws IOException, RepositorioException, EntidadNoEncontrada {
+	public void activarValoraciones(String idRes, String usuario) throws IOException, RepositorioException, EntidadNoEncontrada {
 		if (idRes == null || idRes.isEmpty() || idRes.isBlank()) {
 			throw new IllegalArgumentException("id del restaurante: no debe ser nulo ni vacio");
 		}
 
 		Restaurante r = repositorio.getById(idRes);
+		
+		if (!usuario.equals(r.getGestor())) {
+			throw new IllegalArgumentException("No eres el gestor del restaurante");
+		}
+		
 		if (r.getResumenValoracion() == null) {
 			String idOpinion = servicio.createOpinion(r.getNombre());
 

@@ -332,7 +332,6 @@ public class RestaurantesControladorRest {
 			throws RepositorioException, EntidadNoEncontrada {
 
 		String usuario = securityContext.getUserPrincipal().getName();
-		System.out.println(usuario);
 		servicio.deleteRestaurante(id, usuario);
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
@@ -399,6 +398,7 @@ public class RestaurantesControladorRest {
 	
 	@POST
 	@Path("/{id}/valoraciones")
+	@Secured(AvailableRoles.GESTOR)
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "Activar las valoraciones", notes = "Activa las opiniones de un restaurante", response = Restaurante.class)
 	@ApiResponses(value = {
@@ -407,7 +407,8 @@ public class RestaurantesControladorRest {
 	public Response activarValoraciones(
 			@ApiParam(value = "id del restaurante ", required = true) @PathParam("id") String id) throws Exception {
 
-		servicio.activarValoraciones(id);
+		String usuario = securityContext.getUserPrincipal().getName();
+		servicio.activarValoraciones(id,usuario);
 		return Response.status(Response.Status.CREATED).build();
 
 	}
