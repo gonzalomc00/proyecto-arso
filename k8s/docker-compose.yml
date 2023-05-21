@@ -1,0 +1,52 @@
+version: '3.1'
+
+services: 
+  opiniones: #opiniones api
+    image: opiniones-api:2.0
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+      MONGO_URI: mongodb://root:example@mongo:27017/
+
+  mongo: #instance mongo
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - volumen_mongo:/data/db
+
+  mongo-express: #gestor web para esa instancia local de mongo
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment: #usuario administrador, contraseña y cadena de conexion de mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+  
+  restaurantes-rest:
+    image: restaurantes-rest:2.0
+    restart: always
+    ports:
+      - 8080:8080
+    environment: 
+       OPINIONES_API_URL: http://opiniones:5000/api/
+
+
+  pasarela:
+    image: pasarela:2.0
+    restart: always
+    ports:
+      - 8090:8090
+    environment:
+      RUTA_RESTAURANTES_URL: http://restaurantes-rest:8080/api/restaurantes
+      RUTA_OPINIONES_URL: http://opiniones:5000/api/opiniones
+
+volumes:
+  volumen_mongo:

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: restaurantes-rest
+  name: restaurantes-rest
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: restaurantes-rest
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/opt-default: "true"
+        io.kompose.service: restaurantes-rest
+    spec:
+      containers:
+        - env:
+            - name: OPINIONES_API_URL
+              value: http://opiniones:5000/api/
+          image: restaurantes-rest:2.0
+          name: restaurantes-rest
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+status: {}
