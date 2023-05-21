@@ -15,6 +15,7 @@ public class ServicioOpinion implements IServicioOpinion {
 
 	Retrofit retrofit = new Retrofit.Builder().baseUrl(urlOpiniones).addConverterFactory(GsonConverterFactory.create())
 			.build();
+
 	/*
 	 * Retrofit retrofit = new
 	 * Retrofit.Builder().baseUrl("http://opiniones:5000/api/")
