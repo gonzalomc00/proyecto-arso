@@ -591,6 +591,10 @@ public class ServicioRestaurante implements IServicioRestaurante {
 		}
 
 		Restaurante r = repositorio.getById(idRes);
+		
+		if(r.getResumenValoracion()==null) {
+			throw new IllegalArgumentException("El restaurante no tiene valoraciones activadas");
+		}
 
 		Opinion o = servicio.getOpinion(r.getResumenValoracion().getIdOpinion());
 		System.out.println("Servicio" +o.getValoraciones().toString());
