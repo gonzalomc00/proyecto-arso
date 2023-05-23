@@ -163,6 +163,18 @@ public class RestaurantesTest {
 	}
 
 	@Test
+	public void testGetValoracionesNotVal() throws RepositorioException, IOException, EntidadNoEncontrada {
+		String id = servicio.create("Prueba", "30150", "Murcia", 30.00, 20.00, "alguien");
+
+		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			servicio.getValoracionesRes(id);
+		});
+		Assertions.assertEquals("El restaurante no tiene valoraciones activadas", thrown.getMessage());
+		servicio.deleteRestaurante(id, "alguien");
+
+	}
+	
+	@Test
 	public void testGetValoracionesIdNull() throws RepositorioException, IOException, EntidadNoEncontrada {
 
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
